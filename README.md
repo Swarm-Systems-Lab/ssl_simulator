@@ -1,1 +1,1 @@
-# SimulatorEngine
+# Swarm Systems Lab Python Simulator
