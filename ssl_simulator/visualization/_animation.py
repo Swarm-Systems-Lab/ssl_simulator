@@ -3,6 +3,18 @@
 
 __all__ = ["Animation"]
 
+# # Figsize adjusted to 16:9
+# FIGSIZE = (16,9)
+
+# # DPI resolution dictionary
+# RES_DIC = {
+#     "480p"   : 640,
+#     "HD"     : 1280,
+#     "FullHD" : 1920,
+#     "2K"     : 2560,
+#     "4K"     : 3880
+#     }
+
 #######################################################################################
 
 class Animation: # TODO:

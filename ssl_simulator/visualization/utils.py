@@ -89,35 +89,25 @@ def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
         "fontset": "cm"
         })
 
-
-def unicycle_patch(XY, yaw, color, size=1, lw=0.5):
+def unicycle_patch(XY, yaw, size=1, **patch_kwargs):
     """
-    Generate a patch representing a unicycle.
+    Generate a Matplotlib patch representing a unicycle.
 
-    This function creates a 2D patch in the shape of a unicycle, with a given position 
-    (`XY`), heading (`yaw`), and customizable size, color, and line width. The patch 
-    is represented as a triangle with a specific apex angle to approximate the shape 
-    of a unicycle.
+    The unicycle is visualized as a triangular patch with a given position (`XY`), 
+    heading (`yaw`), and size. Additional keyword arguments are passed to customize 
+    patch properties (e.g., color, edge width).
 
     Parameters:
-        XY (tuple or list): The [X, Y] position of the unicycle's center in the 2D plane.
-        yaw (float): The heading (or orientation) of the unicycle, in radians.
-        color (str): The color of the unicycle patch.
-        size (float, optional): The scaling factor for the size of the unicycle. Default is 1.
-        lw (float, optional): The line width of the unicycle's boundary. Default is 0.5.
+        XY (tuple or list): The (X, Y) coordinates of the unicycle's center.
+        yaw (float): The heading (orientation) in radians.
+        size (float, optional): Scaling factor for the unicycle. Default is 1.
+        **patch_kwargs: Additional properties for `PathPatch` (e.g., `fc`, `ec`, `lw`).
 
     Returns:
-        matplotlib.patches.PathPatch: A Matplotlib `PathPatch` representing the unicycle.
-
-    Notes:
-        - The unicycle shape is approximated as a triangle with specific geometric 
-        relationships, such as the apex angle and the length of the sides.
-        - The heading (`yaw`) rotates the shape based on the specified angle, using 
-        standard rotation matrices.
-        - The patch can be added to a Matplotlib Axes object for visualization.
+        matplotlib.patches.PathPatch: A Matplotlib patch representing the unicycle.
 
     Example:
-        unicycle_patch([2, 3], np.pi / 4, color="red", size=1.5)
+        ax.add_patch(unicycle_patch([2, 3], np.pi / 4, size=1.5, fc="red", lw=0.5))
     """
     Rot = np.array([[np.cos(yaw), np.sin(yaw)], [-np.sin(yaw), np.cos(yaw)]])
 
@@ -144,7 +134,7 @@ def unicycle_patch(XY, yaw, color, size=1, lw=0.5):
     codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY]
     path = Path(verts, codes)
 
-    return patches.PathPatch(path, fc=color, lw=lw)
+    return patches.PathPatch(path, **patch_kwargs)
 
 
 def vector2d(ax, P0, Pf, c="k", ls="-", s=1, lw=0.7, hw=0.1, hl=0.2, alpha=1, zorder=1):

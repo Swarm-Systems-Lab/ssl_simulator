@@ -2,6 +2,11 @@
 # Copyright (C) 2024 Jesús Bautista Villar <jesbauti20@gmail.com>
 """
 
-from .gvf_traj_ellipse import *
-from .gvf_traj_line import *
-from .gvf_traj import *
+from ._gvf_traj import *
+
+from .gvf_ellipse import *
+
+from .gvf_line_AB import *
+from .gvf_line_heading import *
+from .gvf_line import *
+

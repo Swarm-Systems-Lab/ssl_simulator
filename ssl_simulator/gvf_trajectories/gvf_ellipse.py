@@ -5,7 +5,7 @@ __all__ = ["GvfEllipse"]
 
 import numpy as np
 
-from .gvf_traj import GvfTrajectory
+from ._gvf_traj import GvfTrajectory
 
 #######################################################################################
 
