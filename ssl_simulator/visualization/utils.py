@@ -4,11 +4,10 @@ File: utils.py
 Description:
     This Python module contains a collection of utility functions designed to 
     facilitate data visualization and Matplotlib customization. The functions in 
-    this file simplify common tasks such as plotting 2D vectors, creating custom 
-    patches (e.g., unicycles), configuring Matplotlib axes, and applying alpha 
-    blending to colormaps. These utilities are intended to enhance the visual 
-    quality and flexibility of plots, particularly for scientific and engineering 
-    applications.
+    this file simplify common tasks such as plotting 2D vectors, configuring 
+    Matplotlib axes, and applying alpha blending to colormaps. These utilities are 
+    intended to enhance the visual quality and flexibility of plots, particularly 
+    for scientific and engineering applications.
 
 Usage:
     Import this module into your script or Jupyter notebook to leverage the 
@@ -38,7 +37,6 @@ from matplotlib.colors import ListedColormap
 
 __all__ = [
     "set_paper_parameters",
-    "unicycle_patch",
     "vector2d",
     "zoom_range",
     "alpha_cmap",
