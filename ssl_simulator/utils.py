@@ -1,7 +1,11 @@
 """
 """
 
-__all__ = ["createDir", "create_dir", "load_data"]
+__all__ = [
+    "createDir", 
+    "create_dir", 
+    "load_data",
+    "parse_kwargs"]
 
 import os
 import pandas as pd
@@ -64,5 +68,26 @@ def load_data(filename: str, t0: float, tf: float = None, sep: str = "\t",
     else:
         data = data.loc[(data[time_label] >= t0) & (data[time_label] <= tf)]
     return data
+
+def parse_kwargs(kwargs_input, kwargs_default):
+    """
+    Merge user-provided keyword arguments with default values.
+
+    Parameters
+    ----------
+    kwargs_input : dict  
+        Dictionary containing user-specified keyword arguments.  
+    kwargs_default : dict  
+        Dictionary containing default keyword arguments.  
+
+    Returns
+    -------
+    dict  
+        A dictionary where user-specified values override the defaults, while 
+        preserving unspecified default values.  
+    """
+    kwargs = kwargs_default.copy()  # Avoid modifying the original default dictionary
+    kwargs.update({k: v for k, v in kwargs_input.items() if k in kwargs_default})
+    return kwargs
 
 #######################################################################################
