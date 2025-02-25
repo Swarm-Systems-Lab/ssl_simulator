@@ -33,10 +33,14 @@ from matplotlib.path import Path
 import matplotlib.patches as patches
 from matplotlib.colors import ListedColormap
 
+# Interpolation
+from scipy.interpolate import interp1d, UnivariateSpline
+
 # -----------------------------------------
 
 __all__ = [
     "set_paper_parameters",
+    "smooth_interpolation",
     "vector2d",
     "zoom_range",
     "alpha_cmap",
@@ -87,52 +91,64 @@ def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
         "fontset": "cm"
         })
 
-def unicycle_patch(XY, yaw, size=1, **patch_kwargs):
+def smooth_interpolation(x, y, method="cubic", num_points=100):
     """
-    Generate a Matplotlib patch representing a unicycle.
-
-    The unicycle is visualized as a triangular patch with a given position (`XY`), 
-    heading (`yaw`), and size. Additional keyword arguments are passed to customize 
-    patch properties (e.g., color, edge width).
-
-    Parameters:
-        XY (tuple or list): The (X, Y) coordinates of the unicycle's center.
-        yaw (float): The heading (orientation) in radians.
-        size (float, optional): Scaling factor for the unicycle. Default is 1.
-        **patch_kwargs: Additional properties for `PathPatch` (e.g., `fc`, `ec`, `lw`).
-
-    Returns:
-        matplotlib.patches.PathPatch: A Matplotlib patch representing the unicycle.
-
-    Example:
-        ax.add_patch(unicycle_patch([2, 3], np.pi / 4, size=1.5, fc="red", lw=0.5))
+    Perform smooth interpolation to avoid big jumps.
+    
+    Parameters
+    ----------
+    x : array-like
+        The x-coordinates of the data points.
+    y : array-like
+        The y-coordinates of the data points (may contain NaNs for missing values).
+    method : str, optional
+        Interpolation method: "linear", "quadratic", "cubic", or "spline".
+        - "linear", "quadratic", "cubic" use `interp1d`
+        - "spline" uses `UnivariateSpline` for smooth results
+    num_points : int, optional
+        Number of interpolated points for smooth plotting (default: 100).
+    
+    Returns
+    -------
+    x_smooth : numpy.ndarray
+        Interpolated x values for smooth plotting.
+    y_smooth : numpy.ndarray
+        Interpolated y values.
+    
+    Example
+    -------
+    x_smooth, y_smooth = smooth_interpolation(x, y, method="cubic")
+    plt.plot(x_smooth, y_smooth, label="Smoothed Curve")
+    plt.scatter(x, y, color="red", label="Original Data")
+    plt.legend()
+    plt.show()
     """
-    Rot = np.array([[np.cos(yaw), np.sin(yaw)], [-np.sin(yaw), np.cos(yaw)]])
+    # Convert to numpy arrays
+    x, y = np.array(x), np.array(y)
 
-    apex = 45 * np.pi / 180  # 30 degrees apex angle
-    b = np.sqrt(1) / np.sin(apex)
-    a = b * np.sin(apex / 2)
-    h = b * np.cos(apex / 2)
+    # Remove duplicates while keeping order
+    unique_x, unique_indices = np.unique(x, return_index=True)
+    y = y[unique_indices]
 
-    z1 = size * np.array([a / 2, -h * 0.3])
-    z2 = size * np.array([-a / 2, -h * 0.3])
-    z3 = size * np.array([0, h * 0.6])
+    # Remove remaining NaNs (start or end of data)
+    mask = ~np.isnan(y)
+    x, y = unique_x[mask], y[mask]
 
-    z1 = Rot.dot(z1)
-    z2 = Rot.dot(z2)
-    z3 = Rot.dot(z3)
+    # Generate smooth x values
+    x_smooth = np.linspace(x.min(), x.max(), num_points)
 
-    verts = [
-        (XY[0] + z1[1], XY[1] + z1[0]),
-        (XY[0] + z2[1], XY[1] + z2[0]),
-        (XY[0] + z3[1], XY[1] + z3[0]),
-        (0, 0),
-        ]
+    # Choose interpolation method
+    if method in ["linear", "quadratic", "cubic"]:
+        interp_func = interp1d(x, y, kind=method, fill_value="extrapolate")
+    elif method == "spline":
+        interp_func = UnivariateSpline(x, y, s=1)  # s=1 controls smoothness
+    else:
+        raise ValueError("Invalid method. Choose 'linear', 'quadratic', 'cubic', or 'spline'.")
 
-    codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY]
-    path = Path(verts, codes)
+    # Compute smooth y values
+    y_smooth = interp_func(x_smooth)
 
-    return patches.PathPatch(path, **patch_kwargs)
+    return x_smooth, y_smooth
 
 
 def vector2d(ax, P0, Pf, c="k", ls="-", s=1, lw=0.7, hw=0.1, hl=0.2, alpha=1, zorder=1):
