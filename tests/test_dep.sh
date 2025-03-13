@@ -26,7 +26,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Install dependencies
-pip install -e .
+pip install $SCRIPT_DIR/../.
 
 # Run the project to test
 python3 $SCRIPT_DIR/_requirements.py

@@ -19,7 +19,7 @@ setup(
     author="Swarm Systems Lab",
     author_email="",
     url="",
-    packages=find_packages(),
+    packages=find_packages(include=["ssl_simulator","ssl_simulator.*"]),
     install_requires=requires,
     dependency_links=links,
 )
