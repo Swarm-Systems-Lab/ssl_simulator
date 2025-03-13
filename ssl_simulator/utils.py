@@ -5,6 +5,7 @@ __all__ = [
     "createDir", 
     "create_dir", 
     "load_data",
+    "get_idx",
     "parse_kwargs"]
 
 import os
@@ -68,6 +69,51 @@ def load_data(filename: str, t0: float, tf: float = None, sep: str = "\t",
     else:
         data = data.loc[(data[time_label] >= t0) & (data[time_label] <= tf)]
     return data
+
+def get_idx(data: pd.DataFrame, t: float, time_label: str = "Time") -> int:
+    """
+    Get the index of the first row where the time column is greater than or equal to `t`.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The DataFrame containing the time series data.
+    t : float
+        The target time value to find in the DataFrame.
+    time_label : str, optional
+        The column name representing time (default is "Time").
+
+    Returns
+    -------
+    int
+        The index of the first row where `time_label` is greater than or equal to `t`.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty or if no valid index is found.
+    KeyError
+        If `time_label` is not found in the DataFrame.
+
+    Example
+    -------
+    >>> df = pd.DataFrame({"Time": [0, 1, 2, 3, 4, 5]})
+    >>> get_idx(df, 2.5)
+    3
+    """
+    if time_label not in data.columns:
+        raise KeyError(f"Column '{time_label}' not found in DataFrame.")
+
+    if data.empty:
+        raise ValueError("The DataFrame is empty.")
+
+    filtered_data = data[data[time_label] >= t]
+    
+    if filtered_data.empty:
+        raise ValueError(f"No index found where '{time_label}' >= {t}.")
+
+    return filtered_data.index[0]
+
 
 def parse_kwargs(kwargs_input, kwargs_default):
     """
