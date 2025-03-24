@@ -1,5 +1,6 @@
 # Tmp, output and model folders
 output/
+tmp/
 
 # --------------------------------------
 

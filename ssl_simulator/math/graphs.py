@@ -32,6 +32,11 @@ def build_B(list_edges: list[tuple[int, int]], N: int) -> np.ndarray:
     -------
     np.ndarray
         Incidence matrix of shape (N, E), where E is the number of edges.
+    
+    Note
+    ----
+    This definition of the incidence matrix is for computing z = sum(x_i - x_j).
+    If you need z = sum(x_j - x_i), multiply B by -1.
     """
     B = np.zeros((N, len(list_edges)))
     for k, (tail, head) in enumerate(list_edges):
@@ -40,24 +45,34 @@ def build_B(list_edges: list[tuple[int, int]], N: int) -> np.ndarray:
     return B
 
 
-def build_L_from_B(B: np.ndarray) -> np.ndarray:
+def build_L_from_B(B: np.ndarray, W : np.ndarray = None) -> np.ndarray:
     """
     Compute the Laplacian matrix from the incidence matrix.
 
-    The Laplacian matrix is defined as: L = B * B^T / 2
+    The Laplacian matrix is defined as: L = B W B^T
 
     Parameters
     ----------
     B : np.ndarray
         Incidence matrix of shape (N, E), where N is the number of nodes 
         and E is the number of edges.
-
+    W : np.ndarray, optional
+        Diagonal weight matrix of shape (E, E), where each diagonal entry 
+        corresponds to the weight of an edge. If None, assumes uniform weights.
+        
     Returns
     -------
     np.ndarray
         Laplacian matrix of shape (N, N).
+
+    Note
+    ----
+    If no weight matrix W is provided, it defaults to the unweighted case: L = B B^T.
     """
-    return B @ B.T / 2
+    if W is None:
+        return B @ B.T
+    else:
+        return B @ W @ B.T
 
 
 #######################################################################################
