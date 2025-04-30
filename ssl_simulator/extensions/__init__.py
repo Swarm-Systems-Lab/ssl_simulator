@@ -1,3 +1,3 @@
 """
 """
-__all__ = ["gvf_trajectories"]
+__all__ = ["gvf_trajectories", "network", "scalar_fields"]
