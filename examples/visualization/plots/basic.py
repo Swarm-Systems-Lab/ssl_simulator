@@ -23,8 +23,8 @@ class PlotBasic:
         self.config_axes()
         
         # Extract derired data
-        x = np.array(self.data["p"].tolist())[:,:,0]
-        y = np.array(self.data["p"].tolist())[:,:,1]
+        x = self.data["p"][:,:,0]
+        y = self.data["p"][:,:,1]
 
         # Create the plot and show it
         self.ax.plot(x, y, "b")

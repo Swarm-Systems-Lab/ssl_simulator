@@ -10,14 +10,16 @@ from .integrators import INTEGRATORS
 #######################################################################################
 
 class SimulationEngine:
-    def __init__(self, robot_model, controller, time_step=0.01, integrator="euler"):
+    def __init__(self, robot_model, controller, time_step=0.01, integrator="euler",
+                 log_filename=None):
         
         self.robot_model = robot_model
         self.controller = controller
         self.time_step = time_step
-        
-        # Check if the integrator exists in INTEGRATORS
-        if integrator in INTEGRATORS:
+        self.time = 0.0
+
+        # Initialize integrator
+        if integrator in INTEGRATORS: # check if the integrator exists in INTEGRATORS
             self.integrator = INTEGRATORS[integrator]()
         else:
             supported_integrators = ", ".join(INTEGRATORS.keys())
@@ -26,17 +28,19 @@ class SimulationEngine:
                 f"Supported integrators are: {supported_integrators}."
             )
         
-        self.time = 0.0
+        # Initialize logger if a filename is provided
+        if log_filename is not None:
+            # Set labels of the variables to be tracked
+            labels = [*self.robot_model.get_labels(), *self.controller.get_labels()]
+            self.logger = DataLogger(labels, log_filename)
 
-        # Initialize the logger with the labels of the variables to be tracked
-        labels = [*self.robot_model.get_labels(), *self.controller.get_labels()]
-
-        self.logger = DataLogger(labels)
-
-        # Log initial state of the system
-        state = self.robot_model.get_state()
-        self.controller.compute_control(self.time, state)
-        self.log_data()
+            # Log initial state
+            state = self.robot_model.get_state()
+            self.controller.compute_control(self.time, state)
+            self.log_data()
+        else:
+            self.logger = None
+            print("Warning: No log filename provided. Logger is disabled and data will not be stored.")
 
     def log_data(self):
         data = self.robot_model.get_data()
@@ -58,7 +62,8 @@ class SimulationEngine:
         self.robot_model.set_state(new_state)
 
         # Log data
-        self.log_data()
+        if self.logger is not None:
+            self.log_data()
 
     def run(self, duration, eta=True):
         steps = int(duration / self.time_step)
