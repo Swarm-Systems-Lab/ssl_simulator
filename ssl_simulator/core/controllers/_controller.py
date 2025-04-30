@@ -6,8 +6,8 @@ __all__ = ["Controller"]
 
 class Controller:
     def __init__(self):
-        self.control_vars = {}
-        self.tracked_vars = {}
+        self.control_vars = {} # Controller output variables (go to the dynamics)
+        self.tracked_vars = {} # Controller variables to be tracked by logger
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):

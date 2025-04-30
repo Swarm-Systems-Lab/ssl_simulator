@@ -21,7 +21,6 @@ class RobotModel:
         for key,value in self.state_dot.items():
             self.data[key] = value
 
-
     def get_labels(self):
         return self.data.keys() 
 
@@ -37,9 +36,9 @@ class RobotModel:
         self.state = new_state
     
     # Dynamics  -----------------------------------------------------------------------
-    def dynamics(self, state, control_vars):
+    def dynamics(self, state, dynamics_input):
         raise NotImplementedError(
-            "The robot model's dynamics have not been implemented."
+            "The dynamics have not been implemented."
             )
 
 #######################################################################################

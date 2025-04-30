@@ -11,6 +11,7 @@ from .integrators import INTEGRATORS
 
 class SimulationEngine:
     def __init__(self, robot_model, controller, time_step=0.01, integrator="euler"):
+        
         self.robot_model = robot_model
         self.controller = controller
         self.time_step = time_step
@@ -29,10 +30,12 @@ class SimulationEngine:
 
         # Initialize the logger with the labels of the variables to be tracked
         labels = [*self.robot_model.get_labels(), *self.controller.get_labels()]
+
         self.logger = DataLogger(labels)
 
         # Log initial state of the system
-        self.controller.compute_control(self.time, self.robot_model.get_state())
+        state = self.robot_model.get_state()
+        self.controller.compute_control(self.time, state)
         self.log_data()
 
     def log_data(self):
@@ -57,9 +60,9 @@ class SimulationEngine:
         # Log data
         self.log_data()
 
-    def run(self, duration):
+    def run(self, duration, eta=True):
         steps = int(duration / self.time_step)
-        for _ in tqdm(range(steps), desc="Running simulation"):
+        for _ in tqdm(range(steps), desc="Running simulation", disable=not eta):
             self.step()
 
 #######################################################################################

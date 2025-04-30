@@ -16,6 +16,16 @@ Usage:
 
 """
 
+__all__ = [
+    "set_paper_parameters",
+    "smooth_interpolation",
+    "vector2d",
+    "zoom_range",
+    "alpha_cmap",
+    "config_data_axis",
+    "get_nice_ticks"
+]
+
 # Standard libraries
 import os
 
@@ -35,17 +45,6 @@ from matplotlib.colors import ListedColormap
 
 # Interpolation
 from scipy.interpolate import interp1d, UnivariateSpline
-
-# -----------------------------------------
-
-__all__ = [
-    "set_paper_parameters",
-    "smooth_interpolation",
-    "vector2d",
-    "zoom_range",
-    "alpha_cmap",
-    "config_data_axis"
-]
 
 #######################################################################################
 
@@ -290,7 +289,8 @@ def alpha_cmap(cmap, alpha):
 
 
 def config_data_axis(ax, x_step = None, y_step = None, y_right = True, 
-                     format_float = False, xlims = None, ylims = None):
+                     format_float = False, xlims = None, ylims = None,
+                     **kw_nice_ticks):
     """
     Configure the data axis properties of a Matplotlib Axes object.
 
@@ -320,13 +320,6 @@ def config_data_axis(ax, x_step = None, y_step = None, y_right = True,
         - Minor ticks are automatically calculated as one-fourth of the major tick step size.
         - Gridlines are always enabled after this configuration.
     """
-    
-    if x_step is not None:
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(x_step))
-        ax.xaxis.set_minor_locator(ticker.MultipleLocator(x_step / 4))
-    if y_step is not None:
-        ax.yaxis.set_major_locator(ticker.MultipleLocator(y_step))
-        ax.yaxis.set_minor_locator(ticker.MultipleLocator(y_step / 4))
 
     if y_right:
         ax.yaxis.tick_right()
@@ -339,7 +332,71 @@ def config_data_axis(ax, x_step = None, y_step = None, y_right = True,
     if ylims is not None:
         ax.set_ylim(ylims)
 
+    is_empty = (len(ax.collections) == 0) and (len(ax.patches) == 0) and (len(ax.lines) == 0)
+
+    if x_step is not None and xlims is None:
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(x_step))
+        ax.xaxis.set_minor_locator(ticker.MultipleLocator(x_step / 4))
+    elif xlims is not None:
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kw_nice_ticks)
+        ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
+        ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
+    elif not is_empty:
+        xlims = ax.get_xlim()
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kw_nice_ticks)
+        ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
+        ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
+
+    if y_step is not None and ylims is None:
+        ax.yaxis.set_major_locator(ticker.MultipleLocator(y_step))
+        ax.yaxis.set_minor_locator(ticker.MultipleLocator(y_step / 4))
+    elif ylims is not None:
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kw_nice_ticks)
+        ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
+        ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
+    elif not is_empty:
+        ylims = ax.get_ylim()
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kw_nice_ticks)
+        ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
+        ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
+
     ax.grid(True)
+
+
+def get_nice_ticks(vmin, vmax, max_major_ticks=6, n_minor=4):
+    """
+    Dynamically pick 'nice' major tick spacing and compute minor ticks.
+
+    Parameters:
+        vmin, vmax        -- value range
+        max_major_ticks   -- maximum number of major ticks (spacing auto-chosen)
+        n_minor           -- number of subdivisions between major levels
+
+    Returns:
+        major_levels, minor_levels, major_step
+    """
+    # Use MaxNLocator to pick a good major step
+    locator = ticker.MaxNLocator(nbins=max_major_ticks, steps=[1, 2, 2.5, 4, 5, 10], min_n_ticks=max_major_ticks)
+    major_levels = locator.tick_values(vmin, vmax)
+
+    # Compute actual step
+    major_step = np.round(major_levels[1] - major_levels[0], 10)
+
+    # Align start and end
+    major_start = np.floor(vmin / major_step) * major_step
+    major_end   = np.ceil(vmax / major_step) * major_step
+    major_levels = np.arange(major_start, major_end + major_step, major_step)
+
+    # Minor levels
+    minor_step = major_step / (n_minor + 1)
+    minor_start = np.floor(vmin / minor_step) * minor_step
+    minor_end   = np.ceil(vmax / minor_step) * minor_step
+    all_minor = np.arange(minor_start, minor_end + minor_step, minor_step)
+
+    # Remove any minor levels that are major
+    minor_levels = np.setdiff1d(np.round(all_minor, 10), np.round(major_levels, 10))
+
+    return major_levels, minor_levels, major_step
 
 #######################################################################################
     

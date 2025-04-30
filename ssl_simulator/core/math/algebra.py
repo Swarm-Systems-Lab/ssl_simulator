@@ -1,29 +1,14 @@
 """
 """
 
-__all__ = ["unit_vec", "R_2D_matrix"]
+__all__ = [
+    "R_2D_matrix",
+    "norm_2", 
+]
 
 import numpy as np
 
 #######################################################################################
-
-def unit_vec(v):
-    """
-    Compute the unit vector of a given vector.
-
-    Parameters
-    ----------
-    v : np.ndarray
-        Input vector.
-
-    Returns
-    -------
-    np.ndarray
-        Unit vector in the same direction as `v`. If `v` has zero magnitude, 
-        it is returned unchanged to avoid division by zero.
-    """
-    norm = np.linalg.norm(v)
-    return v / norm if norm > 0 else v
 
 def R_2D_matrix(angle):
     """
@@ -43,5 +28,8 @@ def R_2D_matrix(angle):
         [np.cos(angle), -np.sin(angle)], 
         [np.sin(angle), np.cos(angle)]
     ])
+
+def norm_2(A):
+    return np.sqrt(np.max(np.linalg.eigvals(A.T @ A)))
 
 #######################################################################################

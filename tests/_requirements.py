@@ -27,6 +27,10 @@ from matplotlib.animation import PillowWriter
 # Import the Main Module of the Project
 import ssl_simulator
 
+# Test some import shortcuts
+from ssl_simulator import debug_eig, create_dir, SimulationEngine
+from ssl_simulator.data_manager import load_sim
+
 #######################################################################################
 
 if __name__ == "__main__":

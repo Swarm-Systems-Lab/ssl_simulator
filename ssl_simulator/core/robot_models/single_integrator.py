@@ -5,7 +5,7 @@ __all__ = ["SingleIntegrator"]
 
 import numpy as np
 
-from ._robot_model import RobotModel
+from ._robot_models import RobotModel
 
 #######################################################################################
 

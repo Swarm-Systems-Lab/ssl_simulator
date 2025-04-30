@@ -1,8 +1,11 @@
 """
 File: patches.py
-
-
 """
+
+__all__ = [
+    "unicycle_patch",
+    "fixedwing_patch"
+]
 
 # Third-party libraries -------------------
 
@@ -12,13 +15,6 @@ import numpy as np
 # Visualization
 from matplotlib.path import Path
 import matplotlib.patches as patches
-
-# -----------------------------------------
-
-__all__ = [
-    "unicycle_patch",
-    "fixedwing_patch"
-]
 
 #######################################################################################
 
@@ -43,11 +39,12 @@ def unicycle_patch(XY, yaw, size=1, **patch_kwargs):
         ax.add_patch(unicycle_patch([2, 3], np.pi / 4, size=1.5, fc="red", lw=0.5))
     """
     # Rotation matrix for transforming the shape
+    yaw -= np.pi/2
     Rot = np.array([
         [np.cos(yaw), np.sin(yaw)],
         [-np.sin(yaw), np.cos(yaw)]
     ])
-
+    
     # Define the geometry of the triangle (unicycle shape)
     apex_angle = np.radians(30) # 30-degree apex angle
     side_length = size / np.sin(apex_angle)          # Triangle side length
@@ -55,22 +52,18 @@ def unicycle_patch(XY, yaw, size=1, **patch_kwargs):
     height = side_length * np.cos(apex_angle / 2)    # Triangle height
 
     # Define the local vertices of the unicycle
-    vertex_1 = np.array([base_half, -0.3 * height])  # Bottom right
-    vertex_2 = np.array([-base_half, -0.3 * height]) # Bottom left
-    vertex_3 = np.array([0, 0.6 * height])  # Top (front)
+    points = np.array([
+        [base_half, -0.3 * height],  # Bottom right
+        [-base_half, -0.3 * height], # Bottom left
+        [0, 0.6 * height]            # Top (front)
+    ])
 
     # Apply rotation
-    vertex_1 = Rot.dot(vertex_1)
-    vertex_2 = Rot.dot(vertex_2)
-    vertex_3 = Rot.dot(vertex_3)
+    rotated_points = np.dot(points, Rot)
 
     # Convert to global coordinates
-    verts = [
-        (XY[0] + vertex_1[1], XY[1] + vertex_1[0]),
-        (XY[0] + vertex_2[1], XY[1] + vertex_2[0]),
-        (XY[0] + vertex_3[1], XY[1] + vertex_3[0]),
-        (0, 0),  # Close the path
-    ]
+    verts = [(XY[0] + x, XY[1] + y) for x, y in rotated_points]
+    verts.append((0,0))
 
     # Define path codes
     codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY]

@@ -6,11 +6,14 @@ __all__ = [
     "regpoly_formation",
     "flower_formation",
     "circular_distrib",
+    "elliptical_distrib",
     "XY_distrib",
     "batman_distrib"]
 
 import numpy as np
 import random
+
+from .algebra import R_2D_matrix
 
 # Affine transformation
 M_scale = lambda s, n=2: np.eye(n)*s
@@ -97,42 +100,99 @@ def flower_formation(N, R, b=3):
 
     return P_form[0:N,:]
 
-# TODO: test
-# TODO: Adjust the distribution to be uniform in curved space
-def circular_distrib(N, rc0, r, h=0, border_noise=0.1):
-    # Generate random angles
-    rand_ang = 2 * np.pi * np.random.rand(N)
-    
-    # Compute random directions in 2D (unit vectors)
-    rand_dirs = np.array([np.cos(rand_ang), np.sin(rand_ang)]).T
-    
-    # Generate random radial distances, scaled by r and h, with some border noise
-    rand_rads = (r - h) * np.random.rand(N) + h + border_noise * np.random.rand(N)
-    
-    # Compute the positions in the plane
-    X0 = rand_rads[:, None] * rand_dirs / np.linalg.norm(rand_dirs, axis=1)[:, None]
-    
-    return rc0 + X0
+def circular_distrib(N, rc0=0, r=1, **kwargs):
+    """
+    Generate points approximately uniformly distributed in a circular annulus.
 
-# TODO: test
-def XY_distrib(N, n, rc0, lims, scale=1):
+    Parameters
+    ----------
+    N : int
+        Number of points to generate.
+    rc0 : array-like
+        Center of the circular distribution.
+    r : float
+        Outer radius.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (N, 2) containing the 2D coordinates of sampled points.
     """
-    Function to generate uniform rectangular distributions.
-    * N: number of points
-    * n: dimension of the real space
-    * rc0: position in the real space of the central point
+    return elliptical_distrib(N, rc0, rx=r, ry=r, **kwargs)
+
+def elliptical_distrib(N, rc0=0, rx=1.0, ry=1.0, h=0.0, border_noise=0.0, rot_angle=0.0):
     """
-    # Generate random points uniformly distributed in [-1, 1] range
-    X0 = (np.random.rand(N, n) - 0.5) * 2
-    
-    # Scale the points to the specified limits for each dimension
+    Generate a uniform distribution in an elliptical (or circular) annulus.
+
+    Parameters
+    ----------
+    N : int
+        Number of points
+    rc0 : array-like
+        Center of the ellipse
+    rx : float
+        Horizontal radius (semi-major axis)
+    ry : float
+        Vertical radius (semi-minor axis)
+    h : float
+        Inner radius (for annulus); use 0 for full disk
+    border_noise : float
+        Adds random jitter to the radial position
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (N, 2) with sampled positions
+    """
+    # Sample random angles uniformly in [0, 2π)
+    theta = 2 * np.pi * np.random.rand(N)
+
+    # Sample radius with sqrt to get uniform density in area
+    U = np.random.rand(N)
+    r_scaled = np.sqrt(U * (1 - h / max(rx, ry)) + h / max(rx, ry))  # normalized
+
+    # Apply elliptical scaling
+    x = (r_scaled + border_noise * np.random.rand(N)) * rx * np.cos(theta)
+    y = (r_scaled + border_noise * np.random.rand(N)) * ry * np.sin(theta)
+    xy = np.stack((x, y), axis=1) @ R_2D_matrix(rot_angle).T
+
+    return rc0 + xy
+
+def XY_distrib(N, rc0, lims, scale=1, n=2):
+    """
+    Generate a uniform distribution of points in a rectangular region.
+
+    Parameters
+    ----------
+    N : int
+        Number of points to generate.
+    rc0 : array-like of shape (n,)
+        Central point in real space around which the points are distributed.
+    lims : array-like of shape (n,)
+        Range limits for each dimension (defines the half-length of the box in each direction).
+    scale : float, optional
+        Scaling factor applied to the overall distribution (default is 1).
+    n : int, optional
+        Number of dimensions (default is 2).
+
+    Returns
+    -------
+    numpy.ndarray of shape (N, n)
+        Array of generated points.
+    """
+    rc0 = np.array(rc0)
+
+    # Generate N points uniformly in [-1, 1]^n
+    points = (np.random.rand(N, n) - 0.5) * 2
+
+    # Scale according to specified limits
     for i in range(n):
-        X0[:, i] = X0[:, i] * lims[i]
-    
-    # Apply scaling matrix
-    X0 = X0 @ M_scale(scale, n)
-    
-    return rc0 + X0
+        points[:, i] *= lims[i]
+
+    # Apply uniform scaling and shift by center point
+    points = points @ M_scale(scale, n)
+
+    return rc0 + points
 
 # TODO: test
 def batman_distrib(N, rc0, lims, scale=1):

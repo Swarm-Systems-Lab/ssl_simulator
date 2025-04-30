@@ -8,9 +8,9 @@ import numpy as np
 #######################################################################################
 
 class EulerIntegrator:
-    def integrate(self, dynamics, state, control_input, dt):
+    def integrate(self, dynamics, state, dynamics_input, dt):
         new_state = {}
-        state_dot = dynamics(state, control_input)
+        state_dot = dynamics(state, dynamics_input)
         for key in state.keys():
             integration = state[key] + dt * state_dot[key+"_dot"]
             new_state.update({key: integration})
