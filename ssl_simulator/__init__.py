@@ -1,28 +1,18 @@
 """
 """
-import sys
 
-# Expose core modules at the top level
-from .core.simulator_engine.simulator_engine import SimulationEngine
+# Utils
+from ssl_simulator.utils.dict_ops import *
+from ssl_simulator.utils.path_ops import *
+from ssl_simulator.utils.pprz import *
+from ssl_simulator.utils.processing import *
 
-from .core import controllers, data_manager, math, robot_models
-sys.modules["ssl_simulator.controllers"] = controllers
-sys.modules["ssl_simulator.data_manager"] = data_manager
-sys.modules["ssl_simulator.math"] = math
-sys.modules["ssl_simulator.robot_models"] = robot_models
+# Core
+from ssl_simulator.core._controller import Controller
+from ssl_simulator.core._robot_model import RobotModel
+from ssl_simulator.core.simulator_engine import SimulationEngine
 
-from .core.utils import *
+# Submodules
+from ssl_simulator import components, controllers, math, robot_models, visualization
 
-# Expose extensions optionally
-from .extensions import scalar_fields, network, gvf_trajectories
-sys.modules["ssl_simulator.scalar_fields"] = scalar_fields
-sys.modules["ssl_simulator.network"] = network
-sys.modules["ssl_simulator.gvf_trajectories"] = gvf_trajectories
-
-# Expose visualization separately
-from . import visualization
-
-# Expose testing functions
-from .testing.debug import *
-
-del sys, core, extensions, testing
+del core, utils

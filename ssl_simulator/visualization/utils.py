@@ -23,6 +23,7 @@ __all__ = [
     "zoom_range",
     "alpha_cmap",
     "config_data_axis",
+    "config_axis",
     "get_nice_ticks"
 ]
 
@@ -39,8 +40,6 @@ from numpy import linalg as la
 import matplotlib
 import matplotlib.pylab as plt
 import matplotlib.ticker as ticker
-from matplotlib.path import Path
-import matplotlib.patches as patches
 from matplotlib.colors import ListedColormap
 
 # Interpolation
@@ -288,15 +287,21 @@ def alpha_cmap(cmap, alpha):
     return my_cmap
 
 
-def config_data_axis(ax, x_step = None, y_step = None, y_right = True, 
-                     format_float = False, xlims = None, ylims = None,
-                     **kw_nice_ticks):
+def config_data_axis(ax, y_right = True, x_tick = True, **kwargs):
+    config_axis(ax, **kwargs)
+    if y_right: # y-axis ticks to the right
+        ax.yaxis.tick_right()
+    if not x_tick: # remove x-axis tick labels
+        ax.set_xticklabels([])  # Removes all tick labels on the x-axi
+
+def config_axis(ax, x_step = None, y_step = None, format_float = False, xlims = None, ylims = None,
+                **kwargs):
     """
     Configure the data axis properties of a Matplotlib Axes object.
 
     This function customizes various aspects of a Matplotlib axis (`ax`), including 
-    tick spacing, axis limits, tick formatting, and whether ticks appear on the 
-    right side of the y-axis. It also enables gridlines for better visualization.
+    tick spacing, axis limits and tick formatting. It also enables gridlines for better 
+    visualization.
 
     Parameters:
         ax (matplotlib.axes.Axes): The Axes object to configure.
@@ -321,9 +326,6 @@ def config_data_axis(ax, x_step = None, y_step = None, y_right = True,
         - Gridlines are always enabled after this configuration.
     """
 
-    if y_right:
-        ax.yaxis.tick_right()
-
     if format_float:
         ax.yaxis.set_major_formatter(plt.FormatStrFormatter("%.2f"))
 
@@ -338,12 +340,12 @@ def config_data_axis(ax, x_step = None, y_step = None, y_right = True,
         ax.xaxis.set_major_locator(ticker.MultipleLocator(x_step))
         ax.xaxis.set_minor_locator(ticker.MultipleLocator(x_step / 4))
     elif xlims is not None:
-        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kw_nice_ticks)
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwargs)
         ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
     elif not is_empty:
         xlims = ax.get_xlim()
-        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kw_nice_ticks)
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwargs)
         ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
 
@@ -351,17 +353,16 @@ def config_data_axis(ax, x_step = None, y_step = None, y_right = True,
         ax.yaxis.set_major_locator(ticker.MultipleLocator(y_step))
         ax.yaxis.set_minor_locator(ticker.MultipleLocator(y_step / 4))
     elif ylims is not None:
-        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kw_nice_ticks)
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwargs)
         ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
     elif not is_empty:
         ylims = ax.get_ylim()
-        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kw_nice_ticks)
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwargs)
         ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
 
     ax.grid(True)
-
 
 def get_nice_ticks(vmin, vmax, max_major_ticks=6, n_minor=4):
     """

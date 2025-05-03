@@ -1,8 +1,6 @@
 """
 """
 
-__all__ = ["Animation"]
-
 # # Figsize adjusted to 16:9
 # FIGSIZE = (16,9)
 

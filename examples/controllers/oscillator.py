@@ -5,7 +5,7 @@ __all__ = ["Oscillator"]
 
 import numpy as np
 
-from ssl_simulator.controllers import Controller
+from ssl_simulator import Controller
 
 class Oscillator(Controller):
     def __init__(self, A, omega, speed):
