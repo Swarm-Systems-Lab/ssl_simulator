@@ -49,27 +49,23 @@ from scipy.interpolate import interp1d, UnivariateSpline
 
 def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
     """
-    Set Matplotlib parameters for consistent styling.
+    Set Matplotlib parameters for consistent, publication-quality plots.
 
-    This function configures Matplotlib settings to control the appearance of text, 
-    fonts, and math formatting in plots. It allows you to set the font size, font 
-    family, and whether to use LaTeX for rendering text and mathematical expressions.
+    This function configures font styles, sizes, and LaTeX rendering options for consistent 
+    figure appearance across plots.
 
     Parameters:
-        fontsize (int, optional): The font size for the text in the plot. Default is 12.
-        fontfamily (str, optional): The font family to use for the text. Default is "serif".
-        uselatex (bool, optional): If True, LaTeX is used to render the text and math. 
-            Default is True. If False, Matplotlib's default text rendering is used.
+        fontsize (int, optional): Global font size. Default is 12.
+        fontfamily (str, optional): Font family (e.g., "serif", "Arial"). Default is "serif".
+        uselatex (bool, optional): Whether to use LaTeX rendering. Default is True.
 
     Returns:
         None
 
     Notes:
-        - LaTeX rendering is enabled by setting the `usetex` parameter, which requires 
-        a working LaTeX installation.
-        - The function sets the font to be used for both text and math expressions and 
-        loads the `amsmath` LaTeX package to handle advanced math formatting.
-        - The math font is set to use the Computer Modern font set (a standard in LaTeX).
+        - Requires LaTeX installed if `uselatex=True`.
+        - Applies to all future plots in the session.
+        - Math rendering uses the AMS math package and Computer Modern fonts.
 
     Example:
         set_paper_parameters(fontsize=14, fontfamily="Arial", uselatex=False)
@@ -91,35 +87,27 @@ def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
 
 def smooth_interpolation(x, y, method="cubic", num_points=100):
     """
-    Perform smooth interpolation to avoid big jumps.
-    
-    Parameters
-    ----------
-    x : array-like
-        The x-coordinates of the data points.
-    y : array-like
-        The y-coordinates of the data points (may contain NaNs for missing values).
-    method : str, optional
-        Interpolation method: "linear", "quadratic", "cubic", or "spline".
-        - "linear", "quadratic", "cubic" use `interp1d`
-        - "spline" uses `UnivariateSpline` for smooth results
-    num_points : int, optional
-        Number of interpolated points for smooth plotting (default: 100).
-    
-    Returns
-    -------
-    x_smooth : numpy.ndarray
-        Interpolated x values for smooth plotting.
-    y_smooth : numpy.ndarray
-        Interpolated y values.
-    
-    Example
-    -------
-    x_smooth, y_smooth = smooth_interpolation(x, y, method="cubic")
-    plt.plot(x_smooth, y_smooth, label="Smoothed Curve")
-    plt.scatter(x, y, color="red", label="Original Data")
-    plt.legend()
-    plt.show()
+    Perform smooth interpolation over 1D data.
+
+    This function interpolates data points using a specified method, optionally 
+    filling in missing values (NaNs) and returning a smooth curve for plotting.
+
+    Parameters:
+        x (array-like): X-coordinates of the input data.
+        y (array-like): Y-coordinates of the input data. Can contain NaNs.
+        method (str, optional): Interpolation method: "linear", "quadratic", "cubic", 
+            or "spline". Defaults to "cubic".
+        num_points (int, optional): Number of interpolated points. Default is 100.
+
+    Returns:
+        tuple:
+            - x_smooth (np.ndarray): Interpolated X values.
+            - y_smooth (np.ndarray): Interpolated Y values.
+
+    Example:
+        x_smooth, y_smooth = smooth_interpolation(x, y, method="cubic")
+        plt.plot(x_smooth, y_smooth)
+        plt.scatter(x, y)
     """
     # Convert to numpy arrays
     x, y = np.array(x), np.array(y)
@@ -151,38 +139,33 @@ def smooth_interpolation(x, y, method="cubic", num_points=100):
 
 def vector2d(ax, P0, Pf, c="k", ls="-", s=1, lw=0.7, hw=0.1, hl=0.2, alpha=1, zorder=1):
     """
-    Plot a 2D vector on a Matplotlib Axes object.
+    Draw a 2D vector as an arrow on a Matplotlib Axes.
 
-    This function simplifies plotting a 2D vector as an arrow on a given `ax` (Matplotlib 
-    Axes). The arrow is drawn from the starting point `P0` to the end point `Pf`, with 
-    customizable parameters for color, line style, size, and arrowhead properties.
+    This function adds a vector (arrow) from point P0 to point Pf on the given axes. 
+    The appearance of the vector (color, style, size, etc.) can be customized.
 
     Parameters:
-        ax (matplotlib.axes.Axes): The Axes object where the vector will be plotted.
-        P0 (tuple or list): A tuple or list representing the starting point of the vector 
-            (x, y) in the 2D plane.
-        Pf (tuple or list): A tuple or list representing the endpoint of the vector 
-            (x, y) in the 2D plane.
-        c (str, optional): The color of the arrow. Default is "k" (black).
-        ls (str, optional): The line style of the arrow. Default is solid line ("-").
-        s (float, optional): Scaling factor for the vector. Default is 1.
-        lw (float, optional): Line width of the arrow. Default is 0.7.
-        hw (float, optional): The width of the arrowhead. Default is 0.1.
-        hl (float, optional): The length of the arrowhead. Default is 0.2.
-        alpha (float, optional): The transparency of the arrow, between 0 (transparent) 
-            and 1 (opaque). Default is 1.
-        zorder (int, optional): The z-order for layering the arrow on the plot. Default is 1.
+        ax (matplotlib.axes.Axes): Axes on which the vector is plotted.
+        P0 (tuple): Starting point (x, y) of the vector.
+        Pf (tuple): Ending point (x, y) of the vector.
+        c (str, optional): Arrow color. Default is "k" (black).
+        ls (str, optional): Line style. Default is "-" (solid line).
+        s (float, optional): Scale factor for vector magnitude. Default is 1.
+        lw (float, optional): Line width. Default is 0.7.
+        hw (float, optional): Arrowhead width. Default is 0.1.
+        hl (float, optional): Arrowhead length. Default is 0.2.
+        alpha (float, optional): Transparency (0 to 1). Default is 1.
+        zorder (int, optional): Z-order for layering. Default is 1.
 
     Returns:
-        matplotlib.patches.FancyArrowPatch: The arrow patch representing the 2D vector.
+        matplotlib.patches.FancyArrowPatch: The drawn vector arrow.
 
     Notes:
-        - The `length_includes_head=True` ensures the arrowhead is included in the vector's length.
-        - The function uses `ax.arrow()` to draw the arrow and returns the arrow object, 
-        allowing further modifications if needed.
+        - The arrow length includes the head by default.
+        - This function is useful for visualizing direction fields or forces.
 
     Example:
-        vector2d(ax, P0=(0, 0), Pf=(1, 2), c="red", s=2)
+        vector2d(ax, P0=(0, 0), Pf=(1, 2), c="red", s=1.5)
     """
 
     arrow_params = {
@@ -202,20 +185,23 @@ def vector2d(ax, P0, Pf, c="k", ls="-", s=1, lw=0.7, hw=0.1, hl=0.2, alpha=1, zo
 
 def zoom_range(begin, end, center, scale_factor):
     """
-    Compute a 1D range zoomed around a center.
+    Calculate a zoomed-in 1D range centered at a given point.
 
-    This function computes a zoomed range by scaling the distance between the
-    center and the range bounds. Adapted from: 
-    https://gist.github.com/dukelec/e8d4171ef4d12f9998295cfcbe3027ce.
+    This function returns a new range that zooms in or out relative to a center point 
+    by scaling the distance from the center to the range boundaries.
 
     Parameters:
-        begin (float): The starting bound of the range.
-        end (float): The ending bound of the range.
-        center (float): The center of the zoom (i.e., the invariant point).
-        scale_factor (float): The scale factor to apply to the range.
+        begin (float): Starting value of the original range.
+        end (float): Ending value of the original range.
+        center (float): The center point around which to zoom.
+        scale_factor (float): The factor by which to scale the range.
+            Values < 1 zoom in; values > 1 zoom out.
 
     Returns:
-        tuple: A tuple (min, max) representing the zoomed range.
+        tuple (float, float): The new (min, max) bounds of the zoomed range.
+
+    Reference:
+        Adapted from: https://gist.github.com/dukelec/e8d4171ef4d12f9998295cfcbe3027ce
     """
     if begin < end:
         min_, max_ = begin, end
@@ -237,28 +223,25 @@ def zoom_range(begin, end, center, scale_factor):
 
 def alpha_cmap(cmap, alpha):
     """
-    Apply alpha to the desired colormap.
+    Apply a fixed alpha (transparency) to an existing colormap.
 
-    This function modifies an existing colormap by adding an alpha channel, which can 
-    help avoid issues when using pcolormesh in Matplotlib. Directly applying alpha 
-    to pcolormesh can cause various problems. A better approach is to generate and 
-    use a pre-diluted colormap on a white background.
+    This function modifies a given Matplotlib colormap by blending its colors with a white 
+    background using a specified alpha value. This is particularly useful when using 
+    functions like `pcolormesh`, which can behave unpredictably with transparent overlays.
 
     Parameters:
-        cmap (matplotlib.colors.Colormap): The original colormap to modify.
-        alpha (float): The alpha transparency value to apply, ranging from 0 (fully 
-            transparent) to 1 (fully opaque).
+        cmap (matplotlib.colors.Colormap): The base colormap to modify.
+        alpha (float): The transparency level, ranging from 0 (fully transparent) 
+            to 1 (fully opaque).
 
     Returns:
-        matplotlib.colors.ListedColormap: A new colormap with the specified alpha 
-        transparency applied.
+        matplotlib.colors.ListedColormap: A new colormap with the alpha applied.
 
     Notes:
-        - The alpha value is applied uniformly across all colors in the colormap.
-        - The blending is done by interpolating between the colormap colors and a 
-        white background, using the alpha value.
-        - This approach ensures that the resulting colormap works seamlessly in plots 
-        like `pcolormesh`.
+        - The alpha is applied uniformly across all colors in the colormap.
+        - Blending is done with a white background.
+        - This method avoids rendering issues that can arise from applying alpha directly 
+          to plots like `pcolormesh`.
 
     Reference:
         https://stackoverflow.com/questions/37327308/add-alpha-to-an-existing-matplotlib-colormap
@@ -287,44 +270,58 @@ def alpha_cmap(cmap, alpha):
     return my_cmap
 
 
-def config_data_axis(ax, y_right = True, x_tick = True, **kwargs):
+def config_data_axis(ax, y_right = True, x_tick = True, y_tick = True, **kwargs):
     config_axis(ax, **kwargs)
     if y_right: # y-axis ticks to the right
         ax.yaxis.tick_right()
     if not x_tick: # remove x-axis tick labels
-        ax.set_xticklabels([])  # Removes all tick labels on the x-axi
+        ax.set_xticklabels([])
+    if not y_tick: # remove y-axis tick labels
+        ax.set_yticklabels([])
 
 def config_axis(ax, x_step = None, y_step = None, format_float = False, xlims = None, ylims = None,
-                **kwargs):
+                max_major_ticks=6, n_minor=4, max_major_ticks_x=None, max_major_ticks_y=None):
     """
-    Configure the data axis properties of a Matplotlib Axes object.
+    Configure the visual and tick properties of a Matplotlib Axes object.
 
-    This function customizes various aspects of a Matplotlib axis (`ax`), including 
-    tick spacing, axis limits and tick formatting. It also enables gridlines for better 
-    visualization.
+    This utility function allows fine control over the axis ticks, tick formatting, 
+    and limits for a Matplotlib plot. It automatically configures minor ticks and 
+    gridlines and adapts to the data being shown.
 
     Parameters:
-        ax (matplotlib.axes.Axes): The Axes object to configure.
-        x_step (float, optional): Step size for the major ticks on the x-axis. 
-            If provided, minor ticks are set at one-fourth of this value.
-        y_step (float, optional): Step size for the major ticks on the y-axis. 
-            If provided, minor ticks are set at one-fourth of this value.
-        y_right (bool, optional): If True, moves the y-axis ticks to the right side. 
-            Defaults to True.
-        format_float (bool, optional): If True, formats y-axis tick labels as floats 
-            with two decimal places. Defaults to False.
-        xlims (tuple, optional): A tuple (xmin, xmax) to set the x-axis limits. 
-            If None, the limits remain unchanged.
-        ylims (tuple, optional): A tuple (ymin, ymax) to set the y-axis limits. 
-            If None, the limits remain unchanged.
+        ax (matplotlib.axes.Axes): The axes object to configure.
+        x_step (float, optional): Fixed spacing between major ticks on the x-axis.
+            Minor ticks will be placed at one-fourth of this interval. If not set,
+            spacing is inferred from xlims or current axis content.
+        y_step (float, optional): Fixed spacing between major ticks on the y-axis.
+            Minor ticks will be placed at one-fourth of this interval. If not set,
+            spacing is inferred from ylims or current axis content.
+        format_float (bool, optional): If True, format y-axis tick labels as floats 
+            with two decimal places.
+        xlims (tuple[float, float], optional): If provided, sets (xmin, xmax) limits.
+        ylims (tuple[float, float], optional): If provided, sets (ymin, ymax) limits.
+        max_major_ticks (int, optional): Max number of major ticks to generate if 
+            step size is not specified. Default is 6.
+        n_minor (int, optional): Number of minor subdivisions between major ticks.
+            Default is 4.
 
     Returns:
         None
 
     Notes:
-        - Minor ticks are automatically calculated as one-fourth of the major tick step size.
-        - Gridlines are always enabled after this configuration.
+        - Automatically sets gridlines to be visible.
+        - If neither steps nor limits are set, uses current axis limits and data.
+        - Uses `get_nice_ticks()` to compute evenly spaced "nice" ticks.
     """
+
+    if max_major_ticks_x:
+        kwticksx = dict(max_major_ticks=max_major_ticks_x, n_minor=n_minor)
+    else:
+        kwticksx = dict(max_major_ticks=max_major_ticks, n_minor=n_minor)
+    if max_major_ticks_y:
+        kwticksy = dict(max_major_ticks=max_major_ticks_y, n_minor=n_minor)
+    else:
+        kwticksy = dict(max_major_ticks=max_major_ticks, n_minor=n_minor)
 
     if format_float:
         ax.yaxis.set_major_formatter(plt.FormatStrFormatter("%.2f"))
@@ -340,12 +337,12 @@ def config_axis(ax, x_step = None, y_step = None, format_float = False, xlims = 
         ax.xaxis.set_major_locator(ticker.MultipleLocator(x_step))
         ax.xaxis.set_minor_locator(ticker.MultipleLocator(x_step / 4))
     elif xlims is not None:
-        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwargs)
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwticksx)
         ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
     elif not is_empty:
         xlims = ax.get_xlim()
-        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwargs)
+        major_tiks, minor_tiks, _ = get_nice_ticks(xlims[0], xlims[1], **kwticksx)
         ax.xaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.xaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
 
@@ -353,28 +350,36 @@ def config_axis(ax, x_step = None, y_step = None, format_float = False, xlims = 
         ax.yaxis.set_major_locator(ticker.MultipleLocator(y_step))
         ax.yaxis.set_minor_locator(ticker.MultipleLocator(y_step / 4))
     elif ylims is not None:
-        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwargs)
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwticksy)
         ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
     elif not is_empty:
         ylims = ax.get_ylim()
-        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwargs)
+        major_tiks, minor_tiks, _ = get_nice_ticks(ylims[0], ylims[1], **kwticksy)
         ax.yaxis.set_major_locator(ticker.FixedLocator(major_tiks))
         ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_tiks))
-
+        
     ax.grid(True)
 
 def get_nice_ticks(vmin, vmax, max_major_ticks=6, n_minor=4):
     """
-    Dynamically pick 'nice' major tick spacing and compute minor ticks.
+    Compute 'nice' evenly spaced major and minor tick locations for a given range.
+
+    This helper function uses matplotlib's `MaxNLocator` to determine a clean and 
+    readable spacing between major ticks and then inserts minor ticks uniformly 
+    between them.
 
     Parameters:
-        vmin, vmax        -- value range
-        max_major_ticks   -- maximum number of major ticks (spacing auto-chosen)
-        n_minor           -- number of subdivisions between major levels
+        vmin (float): Minimum value of the axis range.
+        vmax (float): Maximum value of the axis range.
+        max_major_ticks (int, optional): Desired maximum number of major ticks.
+        n_minor (int, optional): Number of minor ticks between each major tick.
 
     Returns:
-        major_levels, minor_levels, major_step
+        tuple:
+            - major_levels (np.ndarray): Array of major tick positions.
+            - minor_levels (np.ndarray): Array of minor tick positions.
+            - major_step (float): Distance between major ticks.
     """
     # Use MaxNLocator to pick a good major step
     locator = ticker.MaxNLocator(nbins=max_major_ticks, steps=[1, 2, 2.5, 4, 5, 10], min_n_ticks=max_major_ticks)
