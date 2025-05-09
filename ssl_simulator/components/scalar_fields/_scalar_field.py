@@ -1,5 +1,5 @@
 """
-- Scalar field common class -
+    Scalar field base class & plotter
 """
 
 __all__ = [
@@ -8,12 +8,10 @@ __all__ = [
 ]
 
 from abc import ABC, abstractmethod
-
 import numpy as np
 from scipy.optimize import minimize
 
 # Graphic tools
-import matplotlib
 import matplotlib.pylab as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.ticker import FixedLocator, NullFormatter
@@ -38,24 +36,22 @@ class ScalarField(ABC):
 
     @abstractmethod
     def eval_value(self, X: np.ndarray) -> np.ndarray:
-        """
-        Evaluation of the scalar field for a vector of values
-        """
+        """Evaluation of the scalar field for a vector of values."""
         pass
 
     @abstractmethod
     def eval_grad(self, X: np.ndarray) -> np.ndarray:
-        """
-        Gradient vector of the scalar field for a vector of values
-        """
+        """Gradient vector of the scalar field for a vector of values."""
         pass
 
     @abstractmethod
     def eval_hessian(self, X: np.ndarray) -> np.ndarray:
-        """
-        Hessian matrix of the scalar field for a vector of values
-        """
+        """Hessian matrix of the scalar field for a vector of values."""
         pass
+
+    def get_config(self):
+        """Returns the key parameters used for reinitialization."""
+        return dict(mu=self.mu)
 
     # ------------------------------------------------------------------------
     # Evaluation #############################################################
@@ -79,7 +75,9 @@ class ScalarField(ABC):
         # X = Q_prod_xi(A, X - self.mu) + self.mu
         H = self.eval_hessian(X)
         return H
-
+    
+    # ------------------------------------------------------------------------
+    
     def L1(self, pc: np.ndarray, P: np.ndarray):
         """
         Funtion for calculating and drawing L^1
@@ -107,7 +105,7 @@ class ScalarField(ABC):
 
         l1_sigma_hat = l1_sigma_hat / (N * D_sqr)
         return l1_sigma_hat.flatten()
-
+        
     # --------------------------------------------------------------------------
     # Internal helper methods
     # --------------------------------------------------------------------------
@@ -119,13 +117,13 @@ class ScalarField(ABC):
 # -------- PLOTTER CLASS -------- #
 
 class PlotterScalarField:
-    def __init__(self, field: ScalarField):
+    def __init__(self, field: ScalarField, draw_contours = True):
         self.field = field
         self.fig = None
         self.ax = None
 
         self.xy_mesh = None
-        self.X = self.Y = None
+        self.X = self.Y = self.Z = None
         self.n = None
 
         self.color_map = None
@@ -137,37 +135,40 @@ class PlotterScalarField:
         self._colorbar = None
         self._cbar_axes = None
 
+        self.draw_contours = draw_contours
+
     def draw(self, **kwargs):
         self.fig, self.ax = kwargs.get("fig"), kwargs.get("ax")
         if self.fig is None or self.ax is None:
             self.fig, self.ax = plt.subplots(figsize=(16, 9), dpi=100)
 
         self._compute_mesh(**kwargs)
-        Z = self.field.value(self.xy_mesh).reshape(self.n, self.n)
-        self._draw_field(Z, **kwargs)
-        self._draw_contours(Z, **kwargs)
-        self._draw_center()
+        self.Z = self.field.value(self.xy_mesh).reshape(self.n, self.n)
+        self._draw_center(**kwargs)
+        self._draw_field(**kwargs)
+        self._draw_contours(**kwargs)
+        
 
-    def update(self):
-            self._update_center()
-            Z = self.field.value(self.xy_mesh).reshape(self.n, self.n)
-            self._update_field(Z)
-            self._update_contours(Z)
-            plt.draw()
-
-    def draw_grad(self, x: np.ndarray, axis: plt.Axes, ret_arr: bool = True, norm_fct=0, fct=1, **kw_arr):
+    def draw_grad(self, x, ax, ret_arr = True, norm_fct=0, fct=1, **kw_arr):
         """Draws the gradient vector at a given point."""
         x = np.array(x) if isinstance(x, list) else x
         grad_x = self.field.grad(np.array([x]))[0]
         if norm_fct:
             grad_x = unit_vec(grad_x) * norm_fct
-        quiv = vector2d(axis, x, grad_x * fct, **kw_arr)
+        quiv = vector2d(ax, x, grad_x * fct, **kw_arr)
         return quiv if ret_arr else grad_x
 
-    def draw_L1(self, x: np.ndarray, axis: plt.Axes, ret_arr: bool = True, norm_fct=0, fct=1, **kw_arr):
+    def draw_L1(self, x, ax, ret_arr = True, norm_fct=0, fct=1, **kw_arr):
         """Draws the always ascending direction L^1."""
         pass # TODO
     
+    def update(self):
+        self.Z = self.field.value(self.xy_mesh).reshape(self.n, self.n)
+        self._update_center()
+        self._update_field()
+        self._update_contours()
+        plt.draw()
+
     # --------------------------------------------------------------------------
     # Internal helper methods
     # --------------------------------------------------------------------------
@@ -198,51 +199,60 @@ class PlotterScalarField:
         self.X, self.Y = X, Y
         self.n = n
 
-    def _draw_field(self, Z, cmap=MY_CMAP, **kwargs):
-        self.color_map = self.ax.pcolormesh(self.X, self.Y, Z, cmap=cmap, shading='auto')
+    def _draw_field(self, cmap=MY_CMAP, draw=True, **kwargs):
+        if draw:
+            self.color_map = self.ax.pcolormesh(self.X, self.Y, self.Z, cmap=cmap, shading='auto')
 
-    def _draw_contours(self, Z, contour_levels=10, contour_lw=0.3, **kwargs):
-        vmin, vmax = np.nanmin(Z), np.nanmax(Z)
+    def _draw_contours(self, contour_levels=10, contour_lw=0.3, draw=True, **kwargs):
+        vmin, vmax = np.nanmin(self.Z), np.nanmax(self.Z)
         major_levels, minor_levels, _ = get_nice_ticks(vmin, vmax, contour_levels, 4)
-        opts = dict(colors='k', linestyles='-', alpha=0.2)
-
-        self.contour_map_min = self.ax.contour(self.X, self.Y, Z, minor_levels, linewidths=contour_lw, **opts)
-        self.contour_map_maj = self.ax.contour(self.X, self.Y, Z, major_levels, linewidths=contour_lw*2, **opts)
         
-        self.kw_cbar = parse_kwargs(kwargs, dict(cbar_sw=True, cbar_lab=r"$\sigma$ [u]", cbar_minor_ticks=True))
-        self._update_colorbar(major_levels, minor_levels)
+        if self.draw_contours and draw:
+            opts = dict(colors='k', linestyles='-', alpha=0.2)
+            self.contour_map_min = self.ax.contour(self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts)
+            self.contour_map_maj = self.ax.contour(self.X, self.Y, self.Z, major_levels, linewidths=contour_lw*2, **opts)
+        
+        self.kw_cbar = parse_kwargs(kwargs, dict(cbar_sw=True, cbar_ax=None, cbar_lab=r"$\sigma$ [u]", cbar_minor_ticks=True, cbar_color="black"))
+        self._update_colorbar(major_levels, minor_levels, **kwargs)
 
-    def _draw_center(self):
-        mu = self.field.mu
-        self.center_point, = self.ax.plot(mu[0], mu[1], "+k")
+    def _draw_center(self, draw=True, **kwargs):
+        if draw:
+            mu = self.field.mu
+            self.center_point, = self.ax.plot(mu[0], mu[1], "+k")
 
     def _update_center(self):
         mu = self.field.mu
         self.center_point.set_xdata([mu[0]])
         self.center_point.set_ydata([mu[1]])
 
-    def _update_field(self, Z):
-        self.color_map.set_array(Z.ravel())
+    def _update_field(self):
+        self.color_map.set_array(self.Z.ravel())
         self.color_map.autoscale()
 
-    def _update_contours(self, Z, contour_levels=10, contour_lw=0.3):
-        for coll in getattr(self.contour_map_min, "collections", []):
-            coll.remove()
-        for coll in getattr(self.contour_map_maj, "collections", []):
-            coll.remove()
+    def _update_contours(self, contour_levels=10, contour_lw=0.3):
+        if self.contour_map_min:
+            for coll in getattr(self.contour_map_min, "collections", []):
+                coll.remove()
+            self.contour_map_min.collections.clear()
+        if self.contour_map_maj:
+            for coll in getattr(self.contour_map_maj, "collections", []):
+                coll.remove()
+            self.contour_map_maj.collections.clear()
 
-        vmin, vmax = np.nanmin(Z), np.nanmax(Z)
-        major_levels, minor_levels, _ = get_nice_ticks(vmin, vmax, contour_levels, 4)
-        opts = dict(colors='k', linestyles='-', alpha=0.2)
+        if self.draw_contours:
+            vmin, vmax = np.nanmin(self.Z), np.nanmax(self.Z)
+            major_levels, minor_levels, _ = get_nice_ticks(vmin, vmax, contour_levels, 4)
 
-        self.contour_map_min = self.ax.contour(self.X, self.Y, Z, minor_levels, linewidths=contour_lw, **opts)
-        self.contour_map_maj = self.ax.contour(self.X, self.Y, Z, major_levels, linewidths=contour_lw*2, **opts)
-        #self._update_colorbar(major_levels, minor_levels)
+            opts = dict(colors='k', linestyles='-', alpha=0.2)
+            self.contour_map_min = self.ax.contour(self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts)
+            self.contour_map_maj = self.ax.contour(self.X, self.Y, self.Z, major_levels, linewidths=contour_lw*2, **opts)
+            #self._update_colorbar(major_levels, minor_levels)
 
-    def _update_colorbar(self, major_levels, minor_levels):
+    def _update_colorbar(self, major_levels, minor_levels, cbar_ax=None, **kwargs):
         cbar_sw = self.kw_cbar["cbar_sw"]
         cbar_lab = self.kw_cbar["cbar_lab"]
         cbar_minor_ticks = self.kw_cbar["cbar_minor_ticks"]
+        cbar_color = self.kw_cbar["cbar_color"]
 
         if not cbar_sw and self._colorbar is None:
             return
@@ -252,15 +262,22 @@ class PlotterScalarField:
             self._cbar_axes = None
 
         # Create new colorbar
-        divider = make_axes_locatable(self.ax)
-        self._cbar_axes = divider.append_axes("right", size="2%", pad=0.05)
+        if cbar_ax is None:
+            divider = make_axes_locatable(self.ax)
+            self._cbar_axes = divider.append_axes("right", size="2%", pad=0.05)
+        else:
+            self._cbar_axes = cbar_ax
         self._colorbar = self.fig.colorbar(self.color_map, cax=self._cbar_axes, ticks=major_levels)
-        self._colorbar.set_label(label=cbar_lab, labelpad=10)
+
+        # Set tick color
+        self._colorbar.ax.tick_params(colors=cbar_color)
 
         if cbar_minor_ticks:
             self._colorbar = self.fig.colorbar(self.color_map, cax=self._cbar_axes, ticks=major_levels)
             self._colorbar.ax.yaxis.set_minor_locator(FixedLocator(minor_levels))
             self._colorbar.ax.yaxis.set_minor_formatter(NullFormatter())
+
+        self._colorbar.set_label(label=cbar_lab, labelpad=10, color=cbar_color)
 
         # Hide the color bar if requested
         if not cbar_sw:

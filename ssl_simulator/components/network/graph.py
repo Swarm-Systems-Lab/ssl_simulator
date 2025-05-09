@@ -73,9 +73,11 @@ class Graph:
         # Generate the new Laplacian matrix
         self.gen_L()
     
+    def get_config(self):
+        return dict(N=self.N, Z=self.Z)
+    
     def __repr__(self):
         return self.descr
-        
 
 #######################################################################################
 

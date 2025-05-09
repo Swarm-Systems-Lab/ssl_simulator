@@ -14,32 +14,29 @@ from numpy.linalg import norm
 
 #######################################################################################
 
-def unit_vec(V, delta=0):
+def unit_vec(V, delta=0, axis=-1):
     """
-    Normalise a bundle of 2D vectors
+    Normalize a bundle of 2D vectors.
 
-    Parameters
-    ----------
-    v : np.ndarray
-        Input vector.
+    Parameters:
+        V : np.ndarray
+            Input array of shape (..., 2), e.g. (T, N, 2).
+        delta : float
+            Threshold below which vectors are considered zero.
+        axis : int
+            Axis along which to normalize.
 
-    Returns
-    -------
-    np.ndarray
-        Unit vector in the same direction as `v`. If `v` has zero magnitude, 
-        it is returned unchanged to avoid division by zero.
+    Returns:
+        np.ndarray
+            Array of unit vectors, same shape as V.
     """
     V = np.asarray(V)
-
-    if V.ndim == 1:
-        norm = np.linalg.norm(V)
-        return V / norm if norm > delta else V
-    else:
-        norms = np.linalg.norm(V, axis=1, keepdims=True)
-        mask = norms > delta
-        V_normalized = np.zeros_like(V)
-        V_normalized[mask[:, 0]] = V[mask[:, 0]] / norms[mask,None]
-        return V_normalized
+    norms = np.linalg.norm(V, axis=axis, keepdims=True)
+    # Avoid division by very small values
+    safe_norms = np.where(norms > delta, norms, 1.0)
+    unit = V / safe_norms
+    unit = np.where(norms > delta, unit, 0.0)  # zero out small vectors
+    return unit
 
 def adapt_to_nd(X, target_ndim, dtype=None):
     """

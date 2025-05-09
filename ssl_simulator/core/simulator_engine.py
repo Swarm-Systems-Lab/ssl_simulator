@@ -3,7 +3,7 @@
 from tqdm import tqdm
 
 from .integrators import EulerIntegrator
-from .loggers import DataLogger, RealTimeLogger
+from .loggers import DataLogger
 
 INTEGRATORS = {
     "euler": EulerIntegrator, 
@@ -14,7 +14,7 @@ INTEGRATORS = {
 
 class SimulationEngine:
     def __init__(self, robot_model, controller, time_step=0.01, integrator="euler",
-                 log_filename=None, log_time_step=None):
+                 log_filename=None, log_time_step=None, log_size=10):
         
         self.robot_model = robot_model
         self.controller = controller
@@ -34,20 +34,19 @@ class SimulationEngine:
                 f"Supported integrators are: {supported_integrators}."
             )
         
-        # Set labels of the variables to be tracked
+        # Set labels of the variables to be tracked and settings
         labels = [*self.robot_model.get_labels(), *self.controller.get_labels()]
+        settings = self.robot_model.get_settings()
+        settings.update(self.controller.get_settings())
 
         # Initialize logger
-        if log_filename is not None:
-            self.logger = DataLogger(labels, log_filename)
-        else:
-            self.logger = RealTimeLogger(labels)
+        self.logger = DataLogger(labels, log_filename, log_size, settings)
+        self.data = self.logger.data # shortcut to avoid refering to logger
         
         # Log settings and initial state 
         state = self.robot_model.get_state()
         self.controller.compute_control(self.time, state)
 
-        self._log_settings()
         self._log_data()
 
     def run(self, duration, eta=True):
@@ -67,9 +66,6 @@ class SimulationEngine:
             self.log_interval_steps = int(round(self.log_time_step / time_step))
         else:
             self.log_interval_steps = None
-
-    def _log_settings(self):
-        pass
 
     def _log_data(self):
         data = self.robot_model.get_data()

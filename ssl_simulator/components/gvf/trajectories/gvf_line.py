@@ -34,4 +34,7 @@ class GvfLine(GvfTrajectory):
         H = np.zeros((2, 2))
         return H
 
+    def get_config(self):
+        return dict(m=self.m, b=self.b, line_length=self.line_length)
+    
 #######################################################################################

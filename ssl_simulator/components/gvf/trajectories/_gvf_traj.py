@@ -83,6 +83,10 @@ class GvfTrajectory(ABC):
         """
         pass
 
+    def get_config(self):
+        """Returns the key parameters used for reinitialization."""
+        return {}
+
     # ------------------------------------------------------------------------
     # Evaluation #############################################################
     
@@ -120,88 +124,5 @@ class GvfTrajectory(ABC):
         X = np.array(X)
 
         return X
-    
-# -------------------------------------------------------------------------------------
-
-class GvfTrajectoryPlotter(Plotter):
-    def __init__(self, gvf_traj, fig = None, ax = None, **kwargs):
-        super().__init__(fig = fig, **kwargs)
-        self.gvf_traj = gvf_traj
-
-        self.XYoff = None
-        self.traj_points = None
-        self.mapgrad_pos = None
-        self.mapgrad_vec = None
-
-        if ax is None:
-            self.ax = self.fig.subplots()
-        else:
-            self.ax = ax
-
-    def _compute_vector_field(self, s, ke, pts, xlim=None, ylim=None, **kwargs):
-        """
-        Generate the vector field to be plotted.
-        """
-        # Handle xlim
-        if xlim is None:
-            xmin, xmax = self.ax.get_xlim()
-        elif isinstance(xlim, (list, tuple)) and len(xlim) == 2:
-            xmin, xmax = xlim
-        else:  # assume scalar
-            xmin, xmax = self.xy_offset[0] - xlim, self.xy_offset[0] + xlim
-
-        # Handle ylim
-        if ylim is None:
-            ymin, ymax = self.ax.get_ylim()
-        elif isinstance(ylim, (list, tuple)) and len(ylim) == 2:
-            ymin, ymax = ylim
-        else:  # assume scalar
-            ymin, ymax = self.xy_offset[1] - ylim, self.xy_offset[1] + ylim
-
-        x = np.linspace(xmin, xmax, pts)
-        y = np.linspace(ymin, ymax, pts)
-        xx, yy = np.meshgrid(x, y)
-
-        # Compute the GVF on every point of the mesh
-        pos = np.column_stack([xx.flatten(), yy.flatten()])
-        n = self.gvf_traj.grad_vec(pos)
-        t = s * (n @ E.T)
-        e = self.gvf_traj.phi_vec(pos)[:, None]
-        vec = t - ke * e * n
-
-        norm = np.linalg.norm(vec, axis=1, keepdims=True)
-        vec_normalized = vec / np.clip(norm, a_min=1e-8, a_max=None)
-
-        return pos, vec_normalized
-
-    def draw(self, draw_field=True, s=1, ke=1.0, pts=30, xy_offset=[0,0], 
-             **kwargs):
-        """
-        Plot the trajectory and the vector field.
-        """
-        self.xy_offset = xy_offset
-
-        # Config
-        kw_line = parse_kwargs(kwargs, dict(ls="--", lw=1, c="k"))
-        kw_vect = parse_kwargs(kwargs, dict(alpha=0.2, width=0.0025))
-
-        # Plot trajectory
-        traj = self.gvf_traj.gen_param_points()
-        self.ax.plot(*xy_offset, "+k", zorder=0)
-        traj_plot, = self.ax.plot(traj[0], traj[1], zorder=0, **kw_line)
-
-        # Plot vector field
-        if draw_field:
-            self.mapgrad_pos, self.mapgrad_vec = self._compute_vector_field(
-                s, ke, pts, xy_offset, **kwargs
-            )
-            vector2d(self.ax, 
-                     [self.mapgrad_pos[:, 0], self.mapgrad_pos[:, 1]], 
-                     [self.mapgrad_vec[:, 0], self.mapgrad_vec[:, 1]], **kw_vect)
-            # self.ax.quiver(self.mapgrad_pos[:, 0], self.mapgrad_pos[:, 1],
-            #           self.mapgrad_vec[:, 0], self.mapgrad_vec[:, 1],
-            #           alpha=alpha, width=width)
-
-        return traj_plot
     
 #######################################################################################
