@@ -42,6 +42,7 @@ class SimulationEngine:
         # Initialize logger
         self.logger = DataLogger(labels, log_filename, log_size, settings)
         self.data = self.logger.data # shortcut to avoid refering to logger
+        self.settings = self.logger.settings # shortcut to avoid refering to logger
         
         # Log settings and initial state 
         state = self.robot_model.get_state()

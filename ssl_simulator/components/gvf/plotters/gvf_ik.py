@@ -7,15 +7,16 @@ from ssl_simulator.visualization import PlotterVF
 
 #######################################################################################
 
-class GvfIkTrajectoryPlotter(PlotterVF):
-    def __init__(self, gvf_traj, fig = None, ax = None, **kwargs):
-        super().__init__(fig = fig, **kwargs)
+class PlotterGvfIk(PlotterVF):
+    def __init__(self, gvf_traj, ax, **kwargs):
         self.gvf_traj = gvf_traj
+        self.ax = ax
 
         self.xy_offset = None
         self.mapgrad_pos = None
         self.mapgrad_vec = None
         self.cond_xx, self.cond_yy = None, None
+        self.cond_grid = None
 
         self.speed = None
         self.gamma = None
@@ -23,11 +24,6 @@ class GvfIkTrajectoryPlotter(PlotterVF):
 
         self.quivers = None
         self.cond_map = None
-
-        if ax is None:
-            self.ax = self.fig.subplots()
-        else:
-            self.ax = ax
 
     def draw(self, draw_field=True, s=1, ke=1.0, pts=30, pts_cond=200, xy_offset=[0,0], 
              gamma=0, gamma_dot=0, speed=1, **kwargs):
@@ -55,9 +51,10 @@ class GvfIkTrajectoryPlotter(PlotterVF):
         if draw_field:
             self.mapgrad_pos = self._compute_xymesh(pts, **kwargs)
             self.cond_xx, self.cond_yy = self._compute_xymesh(pts_cond, return_mesh=True, **kwargs)
+            self.cond_grid = np.column_stack([self.cond_xx.flatten(), self.cond_yy.flatten()])
 
             self.cond_flags = self._compute_cond_flag_map()
-            self.mapgrad_vec = self._compute_vector_field(**kwargs)
+            self.mapgrad_vec = self._compute_vector_field()
 
             self.quivers = self._draw_field(self.ax)
             self.cond_map = self.ax.pcolormesh(self.cond_xx, self.cond_yy, self.cond_flags, 
@@ -65,9 +62,23 @@ class GvfIkTrajectoryPlotter(PlotterVF):
 
         return traj_plot
     
+    def update(self, gamma, gamma_dot, speed):
+        self.gamma = gamma
+        self.gamma_dot = gamma_dot
+        self.speed = speed
+
+        if self.mapgrad_pos is not None:
+            self.mapgrad_vec = self._compute_vector_field()
+            self.quivers.set_UVC(self.mapgrad_vec[:,0], self.mapgrad_vec[:,1])
+
+        if self.cond_xx is not None:
+            self.cond_flags = self._compute_cond_flag_map()
+            # self.cond_flags = self.cond_flags + 1
+            self.cond_map.set_array(self.cond_flags)
+
     # ---------------------------------------------------------------------------------
 
-    def _compute_vector_field(self, **kwargs):
+    def _compute_vector_field(self):
         """
         Generate the vector field to be plotted.
         """
@@ -120,7 +131,7 @@ class GvfIkTrajectoryPlotter(PlotterVF):
         return vec_normalized
     
     def _compute_cond_flag_map(self):
-        pos = np.column_stack([self.cond_xx.flatten(), self.cond_yy.flatten()])
+        pos = self.cond_grid
 
         phi_vals  = self.gvf_traj.phi_vec(pos)
         grads  = self.gvf_traj.grad_vec(pos)

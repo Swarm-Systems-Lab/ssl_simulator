@@ -9,21 +9,16 @@ E = np.array([[0, 1],[-1, 0]]) # -90 degree 2D rotation matrix
 
 #######################################################################################
 
-class GvfTrajectoryPlotter(PlotterVF):
-    def __init__(self, gvf_traj, fig = None, ax = None, **kwargs):
-        super().__init__(fig = fig, **kwargs)
+class PlotterGvf(PlotterVF):
+    def __init__(self, gvf_traj, ax, **kwargs):
         self.gvf_traj = gvf_traj
+        self.ax = ax
 
         self.xy_offset = None
         self.mapgrad_pos = None
         self.mapgrad_vec = None
 
         self.quivers = None
-
-        if ax is None:
-            self.ax = self.fig.subplots()
-        else:
-            self.ax = ax
 
     def draw(self, draw_field=True, s=1, ke=1.0, pts=30, xy_offset=[0,0], 
              **kwargs):

@@ -15,9 +15,6 @@ class PlotterVF(Plotter):
     kw_vect = dict(angles="xy", scale_units="xy", scale=None, width=None)
     arrow_scale_factor = 1.5
     arrow_width_factor = 0.0002
-
-    def __init__(self, fig = None, **kwargs):
-        super().__init__(fig = fig, **kwargs)
     
     # ---------------------------------------------------------------------------------
 

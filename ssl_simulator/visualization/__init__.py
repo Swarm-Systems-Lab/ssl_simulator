@@ -3,6 +3,7 @@ from .patches import *
 from .utils import *
 
 from .plotters._vector_field import PlotterVF
-from .plotters.anim_si_ss import PlotterSingIntSS
-from .plotters.anim_uny_ss import PlotterUnySS
-from .plotters.anim_uny import PlotterUny
+from .plotters.ss_si import PlotterSingIntSS
+from .plotters.ss_uny import PlotterUnySS
+from .plotters.robot_uny import PlotterUny
+from .plotters.robot_fixedwing import PlotterFixedwing
