@@ -1,0 +1,26 @@
+[project]
+name = "ssl_simulator"
+version = "0.0.1"
+description = "Swarm Systems Lab Python Simulator"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "GPL-3.0-or-later"
+authors = [
+    { name="Jesús Bautista Villar", email="jesbauti20@gmail.com" }
+]
+
+# Required dependencies
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "tqdm",
+    "pandas",
+    "scipy",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ssl_simulator"]
