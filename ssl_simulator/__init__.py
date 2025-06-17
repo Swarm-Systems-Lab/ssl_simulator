@@ -15,6 +15,6 @@ from ssl_simulator.core._robot_model import RobotModel
 from ssl_simulator.core.simulator_engine import SimulationEngine, INTEGRATORS
 
 # Submodules
-from ssl_simulator import components, controllers, math, robot_models, utils, visualization
+from ssl_simulator import components, controllers, math, robot_models, visualization
 
 del core, utils
