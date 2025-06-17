@@ -12,7 +12,7 @@ authors = [
 # Required dependencies
 dependencies = [
     "numpy",
-    "matplotlib",
+    "matplotlib~=3.6.1",
     "tqdm",
     "pandas",
     "scipy",
