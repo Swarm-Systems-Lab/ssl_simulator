@@ -107,6 +107,4 @@ def _debug_print(settings, data_dict, verbose=False):
 
     print("------------------- DATA ---------------------")
     print_dict(data_dict)
-    for k, v in data_dict.items():
-        print(f"{k}: shape {v.shape}")
     print("----------------------------------------------")

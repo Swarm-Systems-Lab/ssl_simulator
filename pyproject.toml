@@ -11,8 +11,8 @@ authors = [
 
 # Required dependencies
 dependencies = [
+    "matplotlib>=3.6.1",
     "numpy",
-    "matplotlib~=3.6.1",
     "tqdm",
     "pandas",
     "scipy",
