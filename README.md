@@ -2,10 +2,39 @@
 
 ## Installation
 
-To install the ```ssl_simulator``` package, run:
+You can install the ```ssl_simulator``` package directly from GitHub.
+
+> The ```ssl_simulator``` package provides a stable, tested set of dependencies for the following packages: ```numpy```, ```matplotlib```, ```tqdm```, ```pandas```, ```scipy```, ```ipython```. We do not recommend modifying the version ranges, as the package has been tested to work with this specific combination.
+
+1. Install the latest **development version**
 ```bash
 pip install git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@master
 ```
+Or, add it to your ```requierements.txt```:
+```txt
+git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@master
+```
+2. Install a specific **stable release**
+
+To use a stable version instead of the latest development code, replace ```@master``` with a release tag, e.g.:
+```bash
+pip install git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@v0.0.1
+```
+Or in ```requierements.txt```:
+```txt
+git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@v0.0.1
+```
+
+3. Editable **local install** for development
+   
+If you cloned the repository locally and want to test changes without reinstalling:
+```bash
+git clone https://github.com/Swarm-Systems-Lab/ssl_simulator.git
+cd ssl_simulator
+pip install -e .
+```
+> Changes to the code will be immediately reflected without reinstalling.
+
 ### Additional Dependencies
 
 1. **FFmpeg** (Required for animations)
