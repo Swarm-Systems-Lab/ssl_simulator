@@ -2,7 +2,7 @@
 
 ## Installation
 
-You can install the ```ssl_simulator``` package directly from GitHub.
+You can install the ```ssl_simulator``` package directly from GitHub. It is not and will not be available on public repositories such as PyPI.
 
 > The ```ssl_simulator``` package provides a stable, tested set of dependencies for the following packages: ```numpy```, ```matplotlib```, ```tqdm```, ```pandas```, ```scipy```, ```ipython```. We do not recommend modifying the version ranges, as the package has been tested to work with this specific combination.
 
