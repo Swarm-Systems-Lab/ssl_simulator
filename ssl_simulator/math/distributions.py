@@ -21,47 +21,60 @@ M_scale = lambda s, n=2: np.eye(n)*s
 #######################################################################################
 
 # TODO: test
-def uniform_distrib(N: int, lims: list[float], rc0: list[float] = [0, 0], seed=None):
+import numpy as np
+
+def uniform_distrib(
+    N: int,
+    lims: list[float],
+    rc0: list[float] | None = None,
+    seed: int | None = None
+) -> np.ndarray:
     """
-    Generate a uniform distribution of points within a rectangular region.
+    Generate a uniform distribution of points within a hyper-rectangular region
+    in arbitrary dimensions.
 
     Parameters
     ----------
     N : int
         Number of points to generate.
-    lims : list[float]
-        Distance limits [lim_x, lim_y] defining the size of the rectangle along each dimension.
-    rc0 : list[float], optional (default: [0, 0])
-        Coordinates [x, y] of the centroid of the distribution.
+    lims : list of float
+        Distance limits [lim_1, lim_2, ..., lim_D] defining half-size
+        of the box along each dimension. Total side length is 2 * lim_i.
+    rc0 : list of float, optional
+        Coordinates [c_1, c_2, ..., c_D] of the centroid of the distribution.
+        If None, defaults to the origin (0,...,0).
     seed : int, optional
         Random seed for reproducibility.
 
     Returns
     -------
     np.ndarray
-        Array of shape (N, 2) containing the generated points.
-    
+        Array of shape (N, D) containing the generated points.
+
     Raises
     ------
     ValueError
-        If `rc0` or `lims` do not have exactly two elements.
+        If `rc0` or `lims` lengths do not match the dimension D.
     """
+    # Fix random seed
     if seed is not None:
-        random.seed(seed)
+        np.random.seed(seed)
 
-    if len(rc0) != 2 or len(lims) != 2:
-        raise ValueError("Both 'rc0' and 'lims' must be lists of length 2.")
+    lims = np.array(lims, dtype=float)
+    D = lims.shape[0]
 
-    X0 = (np.random.rand(N, 2) - 0.5) * 2 * np.array(lims)
-    return np.array(rc0) + X0
+    if rc0 is None:
+        rc0 = np.zeros(D)
+    else:
+        rc0 = np.array(rc0, dtype=float)
 
-    # if len(rc0) + len(lims) != 2 * 2:
-    #     raise Exception("The dimension of rc0 and lims should be 2")
+    if rc0.shape[0] != D:
+        raise ValueError("'rc0' and 'lims' must have the same dimension length.")
 
-    # X0 = (np.random.rand(N, 2) - 0.5) * 2
-    # for i in range(2):
-    #     X0[:, i] = X0[:, i] * lims[i]
-    # return rc0 + X0
+    # Generate uniform samples in [-lims, lims] per dimension
+    X0 = (np.random.rand(N, D) - 0.5) * 2 * lims
+    return rc0 + X0
+
 
 # TODO: test
 def regpoly_formation(N, r, thetha0=0):
