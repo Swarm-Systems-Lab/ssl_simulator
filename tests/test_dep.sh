@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------
-# File: setup_virtualenv.sh
+# File: test_dep.sh
 #
 # Description:
 #     This script automates the process of setting up a clean Python virtual environment 
@@ -29,7 +29,7 @@ fi
 pip install $SCRIPT_DIR/../.
 
 # Run the project to test
-python3 $SCRIPT_DIR/_requirements.py
+python3 $SCRIPT_DIR/test_requirements.py
 
 # Deactivate virtual environment when done
 deactivate

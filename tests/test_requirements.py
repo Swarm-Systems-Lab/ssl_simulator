@@ -29,12 +29,14 @@ import ssl_simulator
 
 # Test some import shortcuts
 from ssl_simulator import debug_eig, create_dir, SimulationEngine
-from ssl_simulator.data_manager import load_sim
+from ssl_simulator import load_sim
 
 #######################################################################################
 
+def test_import():
+    assert ssl_simulator is not None
+
 if __name__ == "__main__":
-    
     print("\n-----------------------------------------")
     print("All dependencies are correctly installed!")
     print("-----------------------------------------\n")
