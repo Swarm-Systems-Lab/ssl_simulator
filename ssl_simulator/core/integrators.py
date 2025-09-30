@@ -1,6 +1,10 @@
 """
 """
 
+# TODO: global settings for integrators (e.g., step size for exp map)
+from numpy import pi
+from ssl_simulator.math.lie import so3_rotate_with_step
+
 #######################################################################################
 
 class EulerIntegrator:
@@ -8,8 +12,12 @@ class EulerIntegrator:
         new_state = {}
         state_dot = dynamics(state, dynamics_input)
         for key in state.keys():
-            integration = state[key] + dt * state_dot[key+"_dot"]
-            new_state.update({key: integration})
+            if key == "R":  # special case for rotation matrices
+                omega_hat = state_dot["R_dot"]
+                new_state["R"] = so3_rotate_with_step(state["R"], dt * omega_hat, step=pi/12)
+            else:
+                integration = state[key] + dt * state_dot[key + "_dot"]
+                new_state.update({key: integration})
         return new_state
 
 # class RK4Integrator: # TODO: implement properly
