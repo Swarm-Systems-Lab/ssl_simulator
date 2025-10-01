@@ -27,6 +27,7 @@ Notes:
 
 __all__ = [
     "rot_3d_matrix",
+    "gen_random_rotations",
     "orthonormal_vector_to",
     "rotation_matrix_from_vector",
     "rotation_angle_from_matrix",
@@ -91,6 +92,17 @@ def rot_3d_matrix(roll, pitch, yaw, dec=None):
 
     return R
 
+def gen_random_rotations(n, seed=None):
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    roll  = 2*(np.random.rand((n)) - 0.49) * np.pi # ROLL
+    pitch = 2*(np.random.rand((n)) - 0.49) * np.pi # PITCH
+    yaw   = 2*(np.random.rand((n)) - 0.49) * np.pi # YAW
+
+    return rot_3d_matrix(roll, pitch, yaw)
+
 def orthonormal_vector_to(v):
     """
     - Select one of the possible perpendicular vector to v ∈ R^3 -
@@ -126,8 +138,6 @@ def rotation_matrix_from_vector(v):
     R = np.array([md, md_y, md_z])
     return R / np.linalg.det(R)
 
-
-    
 def rotation_angle_from_matrix(R):
     """
     - Compute the distance in the tangent plane (theta) corresponding to a given R ∈ SO(3) -
@@ -356,10 +366,9 @@ def so3_rotate_with_step(R, omega_hat, step=np.pi/6):
 
     # --- Single-step rotations ---
     if np.any(mask_single):
-        R_rot_flat[mask_single] = np.transpose(
-            np.matmul(np.transpose(R_rot_flat[mask_single], axes=(0,2,1)),
-                      so3_exp_map(omega_hat_flat[mask_single])),
-            axes=(0,2,1)
+        R_rot_flat[mask_single] = np.matmul(
+            R_rot_flat[mask_single],
+            so3_exp_map(omega_hat_flat[mask_single])
         )
 
     # --- Multi-step rotations ---
@@ -370,9 +379,9 @@ def so3_rotate_with_step(R, omega_hat, step=np.pi/6):
             exp_step = so3_exp_map(step * omega_hat_flat[i] / theta[i])
             R_temp = R_rot_flat[i]
             for _ in range(n_steps):
-                R_temp = (R_temp.T @ exp_step).T
+                R_temp = np.matmul(R_temp, exp_step)
             if remainder > 1e-8:
-                R_temp = (R_temp.T @ so3_exp_map(remainder * omega_hat_flat[i] / theta[i])).T
+                R_temp = np.matmul(R_temp, so3_exp_map(remainder * omega_hat_flat[i] / theta[i]))
             R_rot_flat[i] = R_temp
 
     # Reshape back to original batch shape
