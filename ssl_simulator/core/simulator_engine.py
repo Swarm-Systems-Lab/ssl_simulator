@@ -48,7 +48,18 @@ class SimulationEngine:
         state = self.robot_model.get_state()
         self.controller.compute_control(self.time, state)
 
+        self._step_test()
         self._log_data()
+
+    def _log_data(self):
+        data = self.robot_model.get_data()
+        data.update(self.controller.get_data())
+        self.logger.log(self.time, data)
+
+    def _step_test(self):
+        state = self.robot_model.get_state()
+        control_input = self.controller.compute_control(self.time, state)
+        self.integrator.integrate(self.robot_model.dynamics, state, control_input, self.time_step, debug=True)
 
     def run(self, duration, eta=True):
         steps = int(duration / self.time_step)
@@ -67,11 +78,6 @@ class SimulationEngine:
             self.log_interval_steps = int(round(self.log_time_step / time_step))
         else:
             self.log_interval_steps = None
-
-    def _log_data(self):
-        data = self.robot_model.get_data()
-        data.update(self.controller.get_data())
-        self.logger.log(self.time, data)
 
     def step(self):
         # Get the actual robots' state

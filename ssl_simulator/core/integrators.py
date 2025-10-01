@@ -4,13 +4,40 @@
 # TODO: global settings for integrators (e.g., step size for exp map)
 from numpy import pi
 from ssl_simulator.math.lie import so3_rotate_with_step
+from ssl_simulator.math import check_and_parse_dimensions
 
 #######################################################################################
 
 class EulerIntegrator:
-    def integrate(self, dynamics, state, dynamics_input, dt):
-        new_state = {}
+    def integrate(self, dynamics, state, dynamics_input, dt, debug=False):
+        """
+        Perform one step of Euler integration.
+
+        Parameters:
+            dynamics (callable): Function that computes state derivatives.
+            state (dict): Current state of the system.
+            dynamics_input (dict): Input to the dynamics function.
+            dt (float): Time step for integration.
+            debug (bool): If True, perform dimension checks during integration.
+
+        Returns:
+            dict: New state after integration.
+        """
+        # Compute state derivatives
         state_dot = dynamics(state, dynamics_input)
+
+        # Perform dimension checks if debug mode is enabled
+        if debug:
+            for key in state.keys():
+                if key + "_dot" in state_dot:
+                    check_and_parse_dimensions(
+                        state_dot[key + "_dot"],
+                        expected_shape=state[key].shape,
+                        name=f"state_dot[{key}]"
+                    )
+
+        # Perform integration
+        new_state = {}
         for key in state.keys():
             if key == "R":  # special case for rotation matrices
                 omega_hat = state_dot["R_dot"]
