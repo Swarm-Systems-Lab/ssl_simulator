@@ -2,24 +2,7 @@
 This module provides functions for working with 3D rotations and the Lie algebra so(3).
 It includes utilities for generating rotation matrices, constructing orthonormal bases,
 and computing exponential and logarithmic maps between SO(3) and its Lie algebra.
-Functions:
-    rot_3d_matrix(yaw, theta, roll, dec=2):
-        Generate a 3D rotation matrix R ∈ SO(3) by composing roll (roll), pitch (theta), and yaw (yaw) rotations.
-        The result is rounded to the specified number of decimals.
-    orthonormal_vector_to(v):
-        Compute a vector that is orthonormal (perpendicular) to the given 3D vector v.
-    rotation_matrix_from_vector(v):
-        Construct an orthonormal basis from the input vector v and encode it as a rotation matrix R ∈ SO(3).
-    so3_hat(omega):
-        Convert a 3D rotation vector omega into its corresponding skew-symmetric matrix (hat operator) in so(3).
-    so3_vee(omega_hat):
-        Convert a skew-symmetric matrix in so(3) back to its corresponding 3D rotation vector (vee operator).
-    rotation_angle_from_matrix(R):
-        Compute the rotation angle (theta) corresponding to a given rotation matrix R ∈ SO(3).
-    so3_exp_map(A, n=6):
-        Compute the matrix exponential of a skew-symmetric matrix A ∈ so(3) using a truncated Taylor series.
-    so3_log_map(R, n=5):
-        Compute the matrix logarithm (logarithmic map) of a rotation matrix R ∈ SO(3), returning a skew-symmetric matrix in so(3).
+
 Notes:
     - The module assumes input vectors and matrices are NumPy arrays.
     - Some functions use approximations for small angles to improve numerical stability.

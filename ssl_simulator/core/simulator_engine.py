@@ -2,6 +2,8 @@
 """
 from tqdm import tqdm
 
+from ._controller_manager import ControllerManager
+from ._robot_model import RobotModel
 from .integrators import EulerIntegrator
 from .loggers import DataLogger
 
@@ -13,11 +15,19 @@ INTEGRATORS = {
 #######################################################################################
 
 class SimulationEngine:
-    def __init__(self, robot_model, controller, time_step=0.01, integrator="euler",
-                 log_filename=None, log_time_step=None, log_size=10):
+    def __init__(
+        self,
+        robot_model: RobotModel,
+        controller_manager: ControllerManager,
+        time_step: float = 0.01,
+        integrator: str = "euler",
+        log_filename: str = None,
+        log_time_step: float = None,
+        log_size: int = 10
+    ):
         
         self.robot_model = robot_model
-        self.controller = controller
+        self.controller_manager = controller_manager
         self.log_time_step = log_time_step
         
         self.set_time_step(time_step)
@@ -35,9 +45,9 @@ class SimulationEngine:
             )
         
         # Set labels of the variables to be tracked and settings
-        labels = [*self.robot_model.get_labels(), *self.controller.get_labels()]
+        labels = [*self.robot_model.get_labels(), *self.controller_manager.get_labels()]
         settings = self.robot_model.get_settings()
-        settings.update(self.controller.get_settings())
+        settings.update(self.controller_manager.get_settings())
 
         # Initialize logger
         self.logger = DataLogger(labels, log_filename, log_size, settings)
@@ -46,19 +56,19 @@ class SimulationEngine:
         
         # Log settings and initial state 
         state = self.robot_model.get_state()
-        self.controller.compute_control(self.time, state)
+        self.controller_manager.compute_controls(self.time, state)
 
         self._step_test()
         self._log_data()
 
     def _log_data(self):
         data = self.robot_model.get_data()
-        data.update(self.controller.get_data())
+        data.update(self.controller_manager.get_data())
         self.logger.log(self.time, data)
 
     def _step_test(self):
         state = self.robot_model.get_state()
-        control_input = self.controller.compute_control(self.time, state)
+        control_input = self.controller_manager.compute_controls(self.time, state)
         self.integrator.integrate(self.robot_model.dynamics, state, control_input, self.time_step, debug=True)
 
     def run(self, duration, eta=True):
@@ -83,8 +93,8 @@ class SimulationEngine:
         # Get the actual robots' state
         state = self.robot_model.get_state()
 
-        # Calculate the control action
-        control_input = self.controller.compute_control(self.time, state)
+        # Calculate the control action using the ControllerManager
+        control_input = self.controller_manager.compute_controls(self.time, state)
 
         # Integrate the robots' dynamics
         new_state = self.integrator.integrate(self.robot_model.dynamics, state, control_input, self.time_step)

@@ -27,8 +27,7 @@ class ConstantSignal(Controller):
         self.init_data()
     
     # ---------------------------------------------------------------------------------
-    def compute_control(self, time, state):
+    def compute_control(self, time, state, input_control_vars):
         self.control_vars["u"] = self.constant
-        return self.control_vars
 
 #######################################################################################

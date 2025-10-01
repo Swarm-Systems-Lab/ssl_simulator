@@ -32,7 +32,7 @@ class Oscillator(Controller):
         # Controller data
         self.init_data()
 
-    def compute_control(self, time, state):
+    def compute_control(self, time, state, input_control_vars):
         """
         Follow y = gamma(t) = A * sin(w t) at constant speed ||v|| = s
         """
@@ -50,5 +50,3 @@ class Oscillator(Controller):
         self.control_vars["u"] = np.zeros((N,2))
         self.control_vars["u"][:,0] = x_dot * np.ones(N)
         self.control_vars["u"][:,1] = gamma_dot * np.ones(N)
-
-        return self.control_vars

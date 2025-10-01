@@ -31,9 +31,7 @@ class Controller:
         return self.settings.copy()
     
     # Control law ---------------------------------------------------------------------
-    def compute_control(self, time, state):
+    def compute_control(self, time, state, input_control_vars):
         raise NotImplementedError("The controller have not been implemented.")
-    
-
 
 #######################################################################################
