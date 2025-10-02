@@ -8,8 +8,8 @@ import numpy as np
 from ssl_simulator import Controller
 
 class Oscillator(Controller):
-    def __init__(self, A, omega, speed):
-
+    def __init__(self, context, A, omega, speed):
+        super().__init__(context)
         # Controller settings
         self.A = A
         self.omega = omega

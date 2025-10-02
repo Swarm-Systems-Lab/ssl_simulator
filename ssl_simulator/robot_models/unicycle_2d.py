@@ -7,7 +7,8 @@ from ssl_simulator import RobotModel
 #######################################################################################
 
 class Unicycle2D(RobotModel):
-    def __init__(self, initial_state, omega_lims = None):
+    def __init__(self, context, initial_state, omega_lims = None):
+        super().__init__(context)
 
         # Robot model state
         self.state = {

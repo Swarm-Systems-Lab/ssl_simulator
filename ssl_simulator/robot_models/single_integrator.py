@@ -7,7 +7,8 @@ from ssl_simulator import RobotModel
 #######################################################################################
 
 class SingleIntegrator(RobotModel):
-    def __init__(self, initial_state):
+    def __init__(self, context, initial_state):
+        super().__init__(context)
 
         # Robot model state
         self.state = {

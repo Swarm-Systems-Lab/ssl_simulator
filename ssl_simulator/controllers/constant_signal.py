@@ -7,7 +7,8 @@ from ssl_simulator import Controller
 #######################################################################################
 
 class ConstantSignal(Controller):
-    def __init__(self, constant):
+    def __init__(self, context, constant):
+        super().__init__(context)
 
         # Controller settings
         self.constant = np.array([constant])
@@ -23,7 +24,7 @@ class ConstantSignal(Controller):
             "k": self.constant,
         }
 
-        # Controller data
+        # # Initialize logger data AFTER overwriting vars
         self.init_data()
     
     # ---------------------------------------------------------------------------------
