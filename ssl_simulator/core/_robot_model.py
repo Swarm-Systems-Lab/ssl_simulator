@@ -1,3 +1,5 @@
+from ssl_simulator import safe_update, safe_assign
+
 #######################################################################################
 
 class RobotModel:
@@ -20,21 +22,22 @@ class RobotModel:
         self.context = context
         self.state = {}
         self.state_dot = {}
+        self.control_inputs = {} # Robot control inputs (from the controllers)
         self.tracked_vars = {} # Robot model variables to be tracked by logger
         self.tracked_settings = {} # Robot model settings to be tracked by logger
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):
         self.data = self.state.copy()
-        self.data.update(self.state_dot.copy())
-        self.data.update(self.tracked_vars.copy())
+        safe_update(self.data, self.state_dot, "state_dot")
+        safe_update(self.data, self.control_inputs, "control_inputs")
+        safe_update(self.data, self.tracked_vars, "tracked_vars")
         self.settings = self.tracked_settings.copy()
 
     def update_data(self):
-        for key,value in self.state.items():
-            self.data[key] = value
-        for key,value in self.state_dot.items():
-            self.data[key] = value
+        safe_assign(self.data, self.state, "state")
+        safe_assign(self.data, self.state_dot, "state_dot")
+        safe_assign(self.data, self.control_inputs, "control_inputs")
 
     def get_labels(self):
         return self.data.keys() 
@@ -49,12 +52,15 @@ class RobotModel:
     # State ---------------------------------------------------------------------------
     def get_state(self):
         return self.state
-
+    
+    def get_state_dot(self):
+        return self.state_dot
+    
     def set_state(self, new_state):
         self.state = new_state
     
     # Dynamics  -----------------------------------------------------------------------
-    def dynamics(self, state, dynamics_input):
+    def dynamics(self, time):
         raise NotImplementedError(
             "The dynamics have not been implemented."
             )

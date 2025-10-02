@@ -22,7 +22,6 @@ class SimulationEngine:
         log_size: int = 10
     ):
         self.context = SimulationContext()
-        self.initialized = False
 
         self.log_filename = log_filename
         self.log_time_step = log_time_step
@@ -64,17 +63,16 @@ class SimulationEngine:
             self.log_interval_steps = None
 
     def _step_test(self):
-        control_input = self.context.compute_controls(self.time)
-        dynamics = self.context.get_robot_dynamics()
-        state = self.context.get_robot_state()
-        self.integrator.integrate(dynamics, state, control_input, self.time_step, debug=True)
+        self.context.compute_controls(self.time)
+        self.context.compute_robot_dynamics(self.time)
+        self.integrator.integrate(self.context, self.time_step, debug=True)
         
     def _log_data(self):
         data = self.context.get_data()
         self.logger.log(self.time, data)
 
     def run(self, duration, eta=True):
-        if not self.initialized:
+        if not self.context.initialized:
             # Initialize logger
             labels = self.context.get_labels()     # labels of the variables to be tracked
             settings = self.context.get_settings() # settings
@@ -85,20 +83,17 @@ class SimulationEngine:
             # Log settings and initial state
             self._step_test()
             self._log_data()
-            self.initialized = True
+            self.context.initialized = True
 
         steps = int(duration / self.time_step)
         for _ in tqdm(range(steps), desc="Running simulation", disable=not eta):
             self.step()
 
     def step(self):
-        # Compute the control input
-        control_input = self.context.compute_controls(self.time)
-
         # Integrate the robots' dynamics
-        dynamics = self.context.get_robot_dynamics()
-        state = self.context.get_robot_state()
-        new_state = self.integrator.integrate(dynamics, state, control_input, self.time_step)
+        self.context.compute_controls(self.time)
+        self.context.compute_robot_dynamics(self.time)
+        new_state = self.integrator.integrate(self.context, self.time_step)
         self.time += self.time_step
 
         # Update robots' state

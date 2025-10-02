@@ -1,9 +1,5 @@
-"""
-"""
-
 __all__ = ["PlotBasic"]
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 #######################################################################################
@@ -23,8 +19,8 @@ class PlotBasic:
         self.config_axes()
         
         # Extract derired data
-        x = self.data["p"][:,:,0]
-        y = self.data["p"][:,:,1]
+        x = self.data["robot.p"][:,:,0]
+        y = self.data["robot.p"][:,:,1]
 
         # Create the plot and show it
         self.ax.plot(x, y, "b")

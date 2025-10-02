@@ -24,24 +24,27 @@ class Unicycle2D(RobotModel):
         for key,value in self.state.items():
             self.state_dot.update({key+"_dot": value*0})
 
-        # Robot model data
-        self.init_data()
+        # Robot model control inputs
+        self.control_inputs = {
+            "omega": np.zeros_like(self.state["theta"])
+        }
 
     # ---------------------------------------------------------------------------------
 
-    def dynamics(self, state, control_vars):
+    def dynamics(self, time):
+        state = self.state
+        control_vars = self.control_inputs
+
         speed = state["speed"]
         theta = state["theta"]
-        omega = next(iter(control_vars.values())) * np.ones(theta.shape)
-        
+        omega = control_vars["omega"] + np.zeros_like(theta)  # broadcasts to (N,)
+
         self.state_dot["p_dot"] = (speed * np.array([np.cos(theta), np.sin(theta)])).T
 
         if self.omega_lims is not None:
             self.state_dot["theta_dot"] = np.clip(omega, self.omega_lims[0], self.omega_lims[1])
         else:
             self.state_dot["theta_dot"] = omega
-
-        #print(self.state["p"].shape, self.state_dot["p_dot"].shape)
 
         return self.state_dot
 

@@ -36,9 +36,9 @@ class PlotterSingIntSS:
     def draw(self, **kwargs):
         
         # Extract derired data
-        x = self.data["p"][:,:,0]
-        y = self.data["p"][:,:,1]
-        theta = self.data["theta"]
+        x = self.data["robot.p"][:,:,0]
+        y = self.data["robot.p"][:,:,1]
+        theta = self.data["robot.theta"]
         status = self.data["status"]
 
         sigma_grad = self.data["sigma_grad"][:,:]
@@ -75,9 +75,9 @@ class PlotterSingIntSS:
     def update(self):
 
         # Extract derired data
-        x = self.data["p"][:,:,0]
-        y = self.data["p"][:,:,1]
-        theta = self.data["theta"]
+        x = self.data["robot.p"][:,:,0]
+        y = self.data["robot.p"][:,:,1]
+        theta = self.data["robot.theta"]
         status = self.data["status"]
 
         sigma_grad = self.data["sigma_grad"][:,:]

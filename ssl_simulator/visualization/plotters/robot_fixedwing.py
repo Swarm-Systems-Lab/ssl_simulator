@@ -32,9 +32,9 @@ class PlotterFixedwing(Plotter):
         self.kw_lines_dead = parse_kwargs(dict(c="darkred"), self.kw_lines)
 
         # Extract derired data
-        x = self.data["p"][:,:,0]
-        y = self.data["p"][:,:,1]
-        theta = self.data["theta"]
+        x = self.data["robot.p"][:,:,0]
+        y = self.data["robot.p"][:,:,1]
+        theta = self.data["robot.theta"]
         
         n_robots = x.shape[1]
         
@@ -56,9 +56,9 @@ class PlotterFixedwing(Plotter):
     def update(self):
 
         # Extract derired data
-        x = self.data["p"][:,:,0]
-        y = self.data["p"][:,:,1]
-        theta = self.data["theta"]
+        x = self.data["robot.p"][:,:,0]
+        y = self.data["robot.p"][:,:,1]
+        theta = self.data["robot.theta"]
 
         n_robots = x.shape[1]
         n_steps = x.shape[0]
