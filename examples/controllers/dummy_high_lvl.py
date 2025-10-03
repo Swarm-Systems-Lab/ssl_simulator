@@ -9,5 +9,5 @@ class DummyOscillatorHL(Controller):
 
         self.oscillator_key = oscillator_key
 
-    def compute_control(self, time):
+    def compute_control(self, time, dt):
         self.context.call_interface(self.oscillator_key, "_set_osc_omega", time*np.pi/10)

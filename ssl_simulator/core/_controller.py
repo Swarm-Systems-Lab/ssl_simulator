@@ -25,13 +25,18 @@ class Controller:
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):
-        self.data = self.control_vars.copy()
-        safe_update(self.data, self.tracked_vars, "tracked_vars")
+        self.data = {}
+        resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}
+        resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}
+        safe_update(self.data, resolved_control_vars, "tracked_vars")
+        safe_update(self.data, resolved_tracked_vars, "tracked_vars")
         self.settings = self.tracked_settings.copy()
     
     def update_data(self):
-        safe_assign(self.data, self.control_vars, "control_vars")
-        safe_assign(self.data, self.tracked_vars, "tracked_vars")
+        resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}
+        resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}
+        safe_assign(self.data, resolved_control_vars, "control_vars")
+        safe_assign(self.data, resolved_tracked_vars, "tracked_vars")
     
     def get_labels(self):
         return self.data.keys()
@@ -43,6 +48,10 @@ class Controller:
     def get_settings(self):
         return self.settings.copy()
     
+    def get_control_vars(self):
+        resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}
+        return resolved_control_vars
+    
     def get_interface(self):
         return self.control_interface.copy()
     
@@ -51,7 +60,7 @@ class Controller:
         safe_update(self.control_interface, new_interfaces, "new_interfaces")
 
     # Control law ---------------------------------------------------------------------
-    def compute_control(self, time):
+    def compute_control(self, time, dt):
         raise NotImplementedError("The controller have not been implemented.")
 
 #######################################################################################

@@ -63,7 +63,7 @@ class SimulationEngine:
             self.log_interval_steps = None
 
     def _step_test(self):
-        self.context.compute_controls(self.time)
+        self.context.compute_controls(self.time, self.time_step)
         self.context.compute_robot_dynamics(self.time)
         self.integrator.integrate(self.context, self.time_step, debug=True)
         
@@ -91,7 +91,7 @@ class SimulationEngine:
 
     def step(self):
         # Integrate the robots' dynamics
-        self.context.compute_controls(self.time)
+        self.context.compute_controls(self.time, self.time_step)
         self.context.compute_robot_dynamics(self.time)
         new_state = self.integrator.integrate(self.context, self.time_step)
         self.time += self.time_step

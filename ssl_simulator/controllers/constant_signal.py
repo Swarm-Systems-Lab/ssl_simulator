@@ -10,18 +10,19 @@ class ConstantSignal(Controller):
     def __init__(self, context, signal):
         super().__init__(context)
 
-        # Controller settings
-        self.signal = np.array([signal])
+        # Controller variables
+        self.signal = np.asarray(signal)
+        self.ctrl_u = None
 
         # ---------------------------
         # Controller output variables
         self.control_vars = {
-            "u": None,
+            "u": lambda: self.ctrl_u,
         }
 
         # Controller variables to be tracked by logger
         self.tracked_vars = {
-            "k": self.signal,
+            "k": lambda: self.signal,
         }
 
         # Controller interface for other controller to interact with it
@@ -31,7 +32,7 @@ class ConstantSignal(Controller):
     def _set_signal(self, signal):
         self.signal = signal
 
-    def compute_control(self, time):
-        self.control_vars["u"] = self.signal
+    def compute_control(self, time, dt):
+        self.ctrl_u = self.signal
 
 #######################################################################################

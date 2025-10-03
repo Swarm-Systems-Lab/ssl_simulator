@@ -1,5 +1,6 @@
 import numpy as np
 from ssl_simulator import RobotModel
+from ssl_simulator.math import check_and_parse_dimensions
 
 #######################################################################################
 
@@ -9,7 +10,7 @@ class SingleIntegrator(RobotModel):
 
         # Robot model state
         self.state = {
-            "p": initial_state[0],
+            "p": check_and_parse_dimensions(initial_state[0], (None,[1,2,3]))
         }
 
         # Robot model state time variation
@@ -26,8 +27,11 @@ class SingleIntegrator(RobotModel):
     def dynamics(self, time):
         state = self.state
         ctrl_vars = self.control_inputs
+
+        # TODO: check performance. Is it better than np.atleast_2d(ctrl_vars["u"])? 
+        # with np.atleast_2d(ctrl_vars["u"]) shape becomes (1, m) if 1D
+        u = check_and_parse_dimensions(ctrl_vars["u"], (None, state["p"].shape[1]))
         
-        u = np.atleast_2d(ctrl_vars["u"]) # shape becomes (1, m) if 1D
         self.state_dot["p_dot"] = u + np.zeros_like(state["p"])  # broadcasts to (N, m)
         return self.state_dot
 

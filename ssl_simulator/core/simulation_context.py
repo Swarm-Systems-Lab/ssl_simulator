@@ -67,31 +67,56 @@ class SimulationContext:
     def connect_controller_to_robot(self, controller_key: str, mapping: dict = None):
         """
         Manually connect controller outputs to robot inputs using the controller key.
+
+        Args:
+            controller_key (str): The key identifying the controller in self.controllers.
+            mapping (dict, optional): A dictionary mapping controller variables to robot inputs.
+                Example: {"controller_var": "robot_input"}
+
+        Raises:
+            KeyError: If the controller key, controller variable, or robot input does not exist.
         """
         if controller_key not in self.controllers:
             raise KeyError(f"Controller with key '{controller_key}' not found.")
+
         controller = self.controllers[controller_key]
+        controller_vars = set(controller.get_control_vars().keys())
+        robot_inputs = set(self.robot_model.control_inputs.keys())
 
         if mapping is None:
-            mapping = {var: var for var in controller.control_vars.keys()}
+            # Default: identity mapping for all control variables
+            mapping = {var: var for var in controller_vars}
+        else:
+            # Validate mapping
+            for c_var, r_in in mapping.items():
+                if c_var not in controller_vars:
+                    raise KeyError(
+                        f"Controller var '{c_var}' not found in controller '{controller_key}'. "
+                        f"Available: {list(controller_vars)}"
+                    )
+                if r_in not in robot_inputs:
+                    raise KeyError(
+                        f"Robot input '{r_in}' not found in robot model. "
+                        f"Available: {list(robot_inputs)}"
+                    )
 
         self.connections.append((controller_key, mapping))
 
-    def compute_controls(self, time):
+    def compute_controls(self, time, dt):
         """
         Compute control signals from all controllers and propagate manual connections.
         """
         control_vars = {}
         for key, controller in reversed(list(self.controllers.items())):
-            controller.compute_control(time)
-            control_vars.update(controller.control_vars.copy())
+            controller.compute_control(time, dt)
+            control_vars.update(controller.get_control_vars().copy())
 
         if self.robot_model is not None:
             for controller_key, mapping in self.connections:
                 controller = self.controllers[controller_key]
                 for ctrl_var, robot_input in mapping.items():
-                    if ctrl_var in controller.control_vars and robot_input in self.robot_model.control_inputs:
-                        self.robot_model.control_inputs[robot_input] = controller.control_vars[ctrl_var]
+                    if ctrl_var in controller.get_control_vars() and robot_input in self.robot_model.control_inputs:
+                        self.robot_model.control_inputs[robot_input] = controller.get_control_vars()[ctrl_var]
 
         self.control_vars = control_vars
 
@@ -263,16 +288,16 @@ class SimulationContext:
             print("No controllers added to the simulation context.")
             return
 
-        self.compute_controls(0) # Run all controllers one step to update shape
+        self.compute_controls(0, 0) # Run all controllers one step to update shape
 
         print("Controllers in the simulation context:")
         for key, controller in self.controllers.items():
             print(f"  - Key: '{key}', Controller: {controller.__class__.__name__}")
             if show_outputs:
-                if not controller.control_vars:
+                if not controller.get_control_vars():
                     print("      Control outputs: None")
                 else:
-                    for var_name, value in controller.control_vars.items():
+                    for var_name, value in controller.get_control_vars().items():
                         if value is None:
                             shape = None
                         else:

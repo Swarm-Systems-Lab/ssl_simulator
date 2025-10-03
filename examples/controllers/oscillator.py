@@ -38,7 +38,7 @@ class Oscillator(Controller):
     def _set_osc_omega(self, omega):
         self.omega = omega
 
-    def compute_control(self, time):
+    def compute_control(self, time, dt):
         """
         Follow y = gamma(t) = A * sin(w t) at constant speed ||v|| = s
         """

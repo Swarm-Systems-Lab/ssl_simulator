@@ -28,16 +28,26 @@ class RobotModel:
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):
-        self.data = self.state.copy()
-        safe_update(self.data, self.state_dot, "state_dot")
-        safe_update(self.data, self.control_inputs, "control_inputs")
-        safe_update(self.data, self.tracked_vars, "tracked_vars")
+        self.data = {}
+        resolved_state     = {k: v() if callable(v) else v for k, v in self.state.items()}
+        resolved_state_dot = {k: v() if callable(v) else v for k, v in self.state_dot.items()}
+        resolved_control_inputs = {k: v() if callable(v) else v for k, v in self.control_inputs.items()}
+        resolved_tracked_vars   = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}
+        safe_update(self.data, resolved_state, "state")
+        safe_update(self.data, resolved_state_dot, "state_dot")
+        safe_update(self.data, resolved_control_inputs, "control_inputs")
+        safe_update(self.data, resolved_tracked_vars, "tracked_vars")
         self.settings = self.tracked_settings.copy()
 
     def update_data(self):
-        safe_assign(self.data, self.state, "state")
-        safe_assign(self.data, self.state_dot, "state_dot")
-        safe_assign(self.data, self.control_inputs, "control_inputs")
+        resolved_state     = {k: v() if callable(v) else v for k, v in self.state.items()}
+        resolved_state_dot = {k: v() if callable(v) else v for k, v in self.state_dot.items()}
+        resolved_control_inputs = {k: v() if callable(v) else v for k, v in self.control_inputs.items()}
+        resolved_tracked_vars   = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}
+        safe_assign(self.data, resolved_state, "state")
+        safe_assign(self.data, resolved_state_dot, "state_dot")
+        safe_assign(self.data, resolved_control_inputs, "control_inputs")
+        safe_assign(self.data, resolved_tracked_vars, "tracked_vars")
 
     def get_labels(self):
         return self.data.keys() 

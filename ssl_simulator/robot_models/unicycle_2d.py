@@ -3,6 +3,7 @@
 
 import numpy as np
 from ssl_simulator import RobotModel
+from ssl_simulator.math import check_and_parse_dimensions
 
 #######################################################################################
 
@@ -12,9 +13,9 @@ class Unicycle2D(RobotModel):
 
         # Robot model state
         self.state = {
-            "p": initial_state[0],
-            "speed": initial_state[1],
-            "theta": initial_state[2],
+            "p": check_and_parse_dimensions(initial_state[0], (None,2)),
+            "speed": check_and_parse_dimensions(initial_state[1], (None,)),
+            "theta": check_and_parse_dimensions(initial_state[2], (None,)),
         }
 
         self.omega_lims = omega_lims
@@ -38,7 +39,7 @@ class Unicycle2D(RobotModel):
         speed = state["speed"]
         theta = state["theta"]
         omega = control_vars["omega"] + np.zeros_like(theta)  # broadcasts to (N,)
-
+        
         self.state_dot["p_dot"] = (speed * np.array([np.cos(theta), np.sin(theta)])).T
 
         if self.omega_lims is not None:
