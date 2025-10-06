@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 import numpy as np
+from ssl_simulator.config import CONFIG
 
 #######################################################################################
 
@@ -81,10 +82,25 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
     array = np.asarray(array)  # Ensure the input is a NumPy array
 
     # Handle special cases for expected shapes (auto-add batch dimension)
+    # TODO: generalize this logic
+    orig_shape = array.shape
+    changed = False
+
     if len(expected_shape) == 2 and expected_shape[0] is None and array.ndim == 1:
         array = array[np.newaxis, :]
+        changed = True
     elif len(expected_shape) == 3 and expected_shape[0] is None and array.ndim == 2:
         array = array[np.newaxis, :, :]
+        changed = True
+    elif len(expected_shape) == 4 and expected_shape[0] is None and expected_shape[1] is None and array.ndim == 3:
+        array = array[:, np.newaxis, :, :]
+        changed = True
+    elif len(expected_shape) == 4 and expected_shape[0] is None and expected_shape[1] is None and array.ndim == 2:
+        array = array[np.newaxis, np.newaxis, :, :]
+        changed = True
+
+    if CONFIG["DEBUG"] and changed:
+        print(f"Shape changed: {orig_shape} -> {array.shape}")
 
     # Replace None values in expected_shape with fill_values if provided
     if fill_values is not None:

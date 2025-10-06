@@ -65,7 +65,7 @@ class SimulationEngine:
     def _step_test(self):
         self.context.compute_controls(self.time, self.time_step)
         self.context.compute_robot_dynamics(self.time)
-        self.integrator.integrate(self.context, self.time_step, debug=True)
+        self.integrator.integrate(self.context, self.time_step, test=True)
         
     def _log_data(self):
         data = self.context.get_data()

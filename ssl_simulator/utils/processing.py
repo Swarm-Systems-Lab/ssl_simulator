@@ -17,9 +17,11 @@ import importlib
 from ssl_simulator import check_file_size, json_to_dict, print_dict
 from ssl_simulator.components.scalar_fields import ScalarField
 
+from ssl_simulator.config import CONFIG
+
 #######################################################################################
 
-def load_sim(filename, debug=False, max_size_mb=100, verbose=False):
+def load_sim(filename, debug=CONFIG["DEBUG"], max_size_mb=100, verbose=CONFIG["DEBUG"]):
     check_file_size(filename, max_size_mb=max_size_mb)
 
     settings, skiprows = _load_settings_line(filename)

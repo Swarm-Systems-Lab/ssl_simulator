@@ -1,5 +1,7 @@
-"""
-"""
+# ssl_simulator/__init__.py
+
+# Configuration
+from ssl_simulator.config import CONFIG
 
 # Utils
 from ssl_simulator.utils.debug import *
