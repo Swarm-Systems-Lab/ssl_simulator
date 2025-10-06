@@ -1,15 +1,50 @@
 """
 """
 
+# TODO: global settings for integrators (e.g., step size for exp map)
+from numpy import pi
+from ssl_simulator.math.lie import so3_rotate_with_step
+from ssl_simulator.math import check_and_parse_dimensions
+
 #######################################################################################
 
 class EulerIntegrator:
-    def integrate(self, dynamics, state, dynamics_input, dt):
+    def integrate(self, context, dt, debug=False):
+        """
+        Perform one step of Euler integration.
+
+        Parameters:
+            dynamics (callable): Function that computes state derivatives.
+            state (dict): Current state of the system.
+            dynamics_input (dict): Input to the dynamics function.
+            dt (float): Time step for integration.
+            debug (bool): If True, perform dimension checks during integration.
+
+        Returns:
+            dict: New state after integration.
+        """
+        state = context.get_robot_state()
+        state_dot = context.get_robot_state_dot()
+
+        # Perform dimension checks if debug mode is enabled
+        if debug:
+            for key in state.keys():
+                if key + "_dot" in state_dot:
+                    check_and_parse_dimensions(
+                        state_dot[key + "_dot"],
+                        expected_shape=state[key].shape,
+                        name=f"state_dot[{key}]"
+                    )
+
+        # Perform integration
         new_state = {}
-        state_dot = dynamics(state, dynamics_input)
         for key in state.keys():
-            integration = state[key] + dt * state_dot[key+"_dot"]
-            new_state.update({key: integration})
+            if key == "R":  # special case for rotation matrices
+                omega_hat = state_dot["R_dot"]
+                new_state["R"] = so3_rotate_with_step(state["R"], dt * omega_hat, step=pi/12)
+            else:
+                integration = state[key] + dt * state_dot[key + "_dot"]
+                new_state.update({key: integration})
         return new_state
 
 # class RK4Integrator: # TODO: implement properly

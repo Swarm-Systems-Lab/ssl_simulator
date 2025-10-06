@@ -2,7 +2,8 @@
 """
 
 __all__ = [
-    "unit_vec", 
+    "unit_vec",
+    "check_and_parse_dimensions",
     "adapt_to_nd",
     "Q_prod_xi",
     "exp",
@@ -10,7 +11,6 @@ __all__ = [
 ]
 
 import numpy as np
-from numpy.linalg import norm
 
 #######################################################################################
 
@@ -38,52 +38,119 @@ def unit_vec(V, delta=0, axis=-1):
     unit = np.where(norms > delta, unit, 0.0)  # zero out small vectors
     return unit
 
+def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None):
+    """
+    Generic function to check and parse dimensions of an array.
+
+    Args:
+        array (np.ndarray): The input array to validate.
+        expected_shape (tuple): The expected shape of the array.
+            - Use `None` for dimensions that can vary.
+            - Use a list/tuple of ints (e.g., [2,3]) for dimensions that can take multiple values.
+        name (str, optional): The name of the variable (for error messages). If None, attempts to infer the variable name.
+        fill_values (int | list[int], optional): Value(s) to replace `None` dimensions.
+            - If an int, all None dimensions are replaced with that value.
+            - If a list, it must have as many entries as there are Nones in expected_shape.
+
+    Returns:
+        np.ndarray: The reshaped or validated array.
+
+    Raises:
+        ValueError: If the array does not match the expected shape.
+
+    Examples:
+        >>> arr = np.ones((10, 32, 64))
+        >>> check_and_parse_dimensions(arr, (None, 32, 64))
+        # passes, first dim is free (10)
+
+        >>> check_and_parse_dimensions(arr, (None, 32, 64), fill_values=10)
+        # passes only if first dim == 10
+
+        >>> arr2 = np.ones((5, 32, 7, 64))
+        >>> check_and_parse_dimensions(arr2, (None, 32, None, 64), fill_values=[5, 7])
+        # passes only if first==5 and third==7
+
+        >>> arr3 = np.ones((5, 2))
+        >>> check_and_parse_dimensions(arr3, (None, [2, 3]))
+        # passes, since second dim can be 2 or 3
+
+        >>> arr4 = np.ones((1, 3, 3))
+        >>> check_and_parse_dimensions(arr4, (5, 3, 3), fill_values=5).shape
+        # (5, 3, 3) -> broadcasted from (1, 3, 3)
+    """
+    array = np.asarray(array)  # Ensure the input is a NumPy array
+
+    # Handle special cases for expected shapes (auto-add batch dimension)
+    if len(expected_shape) == 2 and expected_shape[0] is None and array.ndim == 1:
+        array = array[np.newaxis, :]
+    elif len(expected_shape) == 3 and expected_shape[0] is None and array.ndim == 2:
+        array = array[np.newaxis, :, :]
+
+    # Replace None values in expected_shape with fill_values if provided
+    if fill_values is not None:
+        if isinstance(fill_values, int):
+            expected_shape = tuple(
+                dim if dim is not None else fill_values for dim in expected_shape
+            )
+        else:
+            fill_iter = iter(fill_values)
+            expected_shape = tuple(
+                dim if dim is not None else next(fill_iter) for dim in expected_shape
+            )
+
+    # Check shape match with broadcasting for singleton (1) dims
+    if array.ndim != len(expected_shape):
+        raise ValueError(f"'{name}' must have {len(expected_shape)} dims, got {array.ndim}")
+
+    target_shape = list(array.shape)
+    for i, s in enumerate(expected_shape):
+        if s is None:
+            continue  # free dimension
+        elif isinstance(s, (list, tuple)):
+            if array.shape[i] not in s:
+                raise ValueError(
+                    f"'{name}' dim {i} must be one of {s}, got {array.shape[i]}"
+                )
+        else:  # expected specific size
+            if array.shape[i] == s:
+                continue
+            elif array.shape[i] == 1:
+                # allow broadcast
+                target_shape[i] = s
+            else:
+                raise ValueError(
+                    f"'{name}' dim {i} must be {s}, got {array.shape[i]}"
+                )
+
+    # Broadcast if needed
+    if tuple(target_shape) != array.shape:
+        array = np.broadcast_to(array, target_shape)
+
+    return array
+
+
 def adapt_to_nd(X, target_ndim, dtype=None):
     """
-    Adapt the input to the desired number of dimensions.
-    
-    Parameters
-    ----------
-    X : any
-        Input data to be adapted to a specific number of dimensions. Can be a scalar,
-        list, tuple, generator, or array-like object.
-    target_ndim : int
-        The desired number of dimensions for the output array.
-        If the input has fewer dimensions, new axes will be prepended.
-        If the input has more dimensions, an error is raised.
-    dtype : data-type, optional
-        Desired data type for the output array. If None, the data type is inferred.
-    
-    Returns
-    -------
-    X_nd : numpy.ndarray
-        The input data converted to a numpy array with the specified number of dimensions.
-    
-    Raises
-    ------
-    ValueError
-        If the input has more than the desired number of dimensions.
-    
-    Example
-    -------
-    X = adapt_to_nd([1, 2, 3], target_ndim=2)
-    print(X.shape)  # Output: (1, 3)
-    
-    X = adapt_to_nd(5, target_ndim=3)
-    print(X.shape)  # Output: (1, 1, 1)
+    Adapt the input array to the specified number of dimensions.
+
+    Parameters:
+        X : array-like
+            Input data to adapt.
+        target_ndim : int
+            Target number of dimensions.
+        dtype : data-type, optional
+            Desired data type of the output array.
+
+    Returns:
+        np.ndarray
+            Array adapted to the specified number of dimensions.
     """
-    # Convert to numpy array
+    # Convert to numpy array with the specified dtype
     X = np.array(X, dtype=dtype)
 
-    # Adjust dimensions
-    ndim = X.ndim
-    if ndim < target_ndim:
-        for _ in range(target_ndim - ndim):
-            X = np.expand_dims(X, axis=0)
-    elif ndim > target_ndim:
-        raise ValueError(f"The dimensionality of X is greater than {target_ndim}!")
-
-    return X
+    # Use check_and_parse_dimensions to validate and adapt dimensions
+    expected_shape = tuple(None for _ in range(target_ndim))
+    return check_and_parse_dimensions(X, expected_shape, name="X")
 
 def Q_prod_xi(Q, X):
     """

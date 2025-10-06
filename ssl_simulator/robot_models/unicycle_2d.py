@@ -3,17 +3,19 @@
 
 import numpy as np
 from ssl_simulator import RobotModel
+from ssl_simulator.math import check_and_parse_dimensions
 
 #######################################################################################
 
 class Unicycle2D(RobotModel):
-    def __init__(self, initial_state, omega_lims = None):
+    def __init__(self, context, initial_state, omega_lims = None):
+        super().__init__(context)
 
         # Robot model state
         self.state = {
-            "p": initial_state[0],
-            "speed": initial_state[1],
-            "theta": initial_state[2],
+            "p": check_and_parse_dimensions(initial_state[0], (None,2)),
+            "speed": check_and_parse_dimensions(initial_state[1], (None,)),
+            "theta": check_and_parse_dimensions(initial_state[2], (None,)),
         }
 
         self.omega_lims = omega_lims
@@ -23,15 +25,20 @@ class Unicycle2D(RobotModel):
         for key,value in self.state.items():
             self.state_dot.update({key+"_dot": value*0})
 
-        # Robot model data
-        self.init_data()
+        # Robot model control inputs
+        self.control_inputs = {
+            "omega": np.zeros_like(self.state["theta"])
+        }
 
     # ---------------------------------------------------------------------------------
 
-    def dynamics(self, state, control_vars):
+    def dynamics(self, time):
+        state = self.state
+        control_vars = self.control_inputs
+
         speed = state["speed"]
         theta = state["theta"]
-        omega = next(iter(control_vars.values())) * np.ones(theta.shape)
+        omega = control_vars["omega"] + np.zeros_like(theta)  # broadcasts to (N,)
         
         self.state_dot["p_dot"] = (speed * np.array([np.cos(theta), np.sin(theta)])).T
 
@@ -39,8 +46,6 @@ class Unicycle2D(RobotModel):
             self.state_dot["theta_dot"] = np.clip(omega, self.omega_lims[0], self.omega_lims[1])
         else:
             self.state_dot["theta_dot"] = omega
-
-        #print(self.state["p"].shape, self.state_dot["p_dot"].shape)
 
         return self.state_dot
 

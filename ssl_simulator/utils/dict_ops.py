@@ -2,6 +2,8 @@
 """
 
 __all__ = [
+    "safe_assign",
+    "safe_update",
     "parse_kwargs",
     "dict_to_json",
     "json_to_dict",
@@ -12,6 +14,20 @@ import json
 import numpy as np
 
 #######################################################################################
+
+def safe_assign(target, source, source_name="dict"):
+    """Helper to check for key conflicts during dictionary assignments."""
+    for key, value in source.items():
+        if key not in target:
+            raise KeyError(f"Key '{key}' from {source_name} not found in data.")
+        target[key] = value
+
+def safe_update(target, source, source_name="dict"):
+    """Helper to check for key conflicts when updating a dictionary."""
+    conflict_keys = target.keys() & source.keys()  # intersection of keys
+    if conflict_keys:
+        raise KeyError(f"Key conflict detected when updating from {source_name}: {conflict_keys}")
+    target.update(source.copy())
 
 def parse_kwargs(kwargs_input, kwargs_default):
     """
@@ -61,7 +77,10 @@ def dict_to_json(ditc, dump=False):
     return json.dumps(result) if dump else result
 
 def json_to_dict(json_str):
-    """Recursively convert a JSON string to a Python structure with np.ndarrays where applicable."""
+    """
+    Recursively convert a JSON string to a Python structure with np.ndarrays 
+    where applicable.
+    """
     def convert(value):
         if isinstance(value, list):
             # Check if it's a list of lists (likely a 2D array)

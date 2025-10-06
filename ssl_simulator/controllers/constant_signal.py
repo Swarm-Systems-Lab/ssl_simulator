@@ -7,28 +7,32 @@ from ssl_simulator import Controller
 #######################################################################################
 
 class ConstantSignal(Controller):
-    def __init__(self, constant):
+    def __init__(self, context, signal):
+        super().__init__(context)
 
-        # Controller settings
-        self.constant = np.array([constant])
+        # Controller variables
+        self.signal = np.asarray(signal)
+        self.ctrl_u = None
 
         # ---------------------------
         # Controller output variables
         self.control_vars = {
-            "u": None,
+            "u": lambda: self.ctrl_u,
         }
 
         # Controller variables to be tracked by logger
         self.tracked_vars = {
-            "k": self.constant,
+            "k": lambda: self.signal,
         }
 
-        # Controller data
-        self.init_data()
+        # Controller interface for other controller to interact with it
+        self.register_interface(self._set_signal)
     
     # ---------------------------------------------------------------------------------
-    def compute_control(self, time, state):
-        self.control_vars["u"] = self.constant
-        return self.control_vars
+    def _set_signal(self, signal):
+        self.signal = signal
+
+    def compute_control(self, time, dt):
+        self.ctrl_u = self.signal
 
 #######################################################################################

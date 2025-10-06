@@ -17,4 +17,5 @@ def check_file_size(filename, max_size_mb=None):
                 f"File size is {file_size / (1024 * 1024):.2f} MB, which exceeds the limit of {max_size_mb} MB. "
                 f"You can increase this limit by setting the 'max_size_mb' parameter."
             )
+
 #######################################################################################
