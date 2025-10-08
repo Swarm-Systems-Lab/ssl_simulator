@@ -32,7 +32,7 @@ def load_sim(filename, debug=CONFIG["DEBUG"], max_size_mb=100, verbose=CONFIG["D
     if debug:
         _debug_print(settings, data_dict, verbose)
 
-    return (data_dict, settings) if settings else data_dict
+    return data_dict, settings
 
 def load_class(module_name: str, class_name: str, base_class=None, **init_kwargs):
     """
