@@ -10,6 +10,8 @@ import os
 import sys
 from pathlib import Path
 
+from ssl_simulator.config import CONFIG
+
 #######################################################################################
 
 def create_dir(directory: str, verbose: bool = True) -> None:
@@ -31,7 +33,7 @@ def create_dir(directory: str, verbose: bool = True) -> None:
         if verbose:
             print(f"The directory '{directory}' already exists!")
 
-def add_src_to_path(file=None, relative_path="", deep=0, debug=False):
+def add_src_to_path(file=None, relative_path="", deep=0, debug=CONFIG["DEBUG"]):
     """
     Adds the "relative_path" folder to sys.path based on the notebook's location.
     """

@@ -9,7 +9,7 @@ from ssl_simulator.math import check_and_parse_dimensions
 #######################################################################################
 
 class EulerIntegrator:
-    def integrate(self, context, dt, debug=False):
+    def integrate(self, context, dt, test=False):
         """
         Perform one step of Euler integration.
 
@@ -18,7 +18,7 @@ class EulerIntegrator:
             state (dict): Current state of the system.
             dynamics_input (dict): Input to the dynamics function.
             dt (float): Time step for integration.
-            debug (bool): If True, perform dimension checks during integration.
+            test (bool): If True, perform dimension checks during integration.
 
         Returns:
             dict: New state after integration.
@@ -26,8 +26,8 @@ class EulerIntegrator:
         state = context.get_robot_state()
         state_dot = context.get_robot_state_dot()
 
-        # Perform dimension checks if debug mode is enabled
-        if debug:
+        # Perform dimension checks if test mode is enabled
+        if test:
             for key in state.keys():
                 if key + "_dot" in state_dot:
                     check_and_parse_dimensions(

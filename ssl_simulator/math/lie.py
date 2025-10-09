@@ -12,17 +12,20 @@ __all__ = [
     "rot_3d_matrix",
     "gen_random_rotations",
     "orthonormal_vector_to",
+    "construct_attitude_basis",
     "rotation_matrix_from_vector",
     "rotation_angle_from_matrix",
     "so3_hat",
     "so3_vee",
     "so3_exp_map",
     "so3_log_map",
-    "so3_rotate_with_step"
+    "so3_rotate_with_step",
 ]
 
 import numpy as np
 import math
+
+from ssl_simulator.math import check_and_parse_dimensions, unit_vec
 
 def rot_3d_matrix(roll, pitch, yaw, dec=None):
     """
@@ -104,6 +107,24 @@ def orthonormal_vector_to(v):
     
     return n
 
+def construct_attitude_basis(heading, gravity):
+    """
+    Construct an orthonormal basis given heading and gravity vectors.
+    Handles both single vector (shape (3,) or (1,3)) and batch (shape (N,3)).
+    Returns: (3,3) or (N,3,3) basis matrix/matrices.
+    """
+    heading = check_and_parse_dimensions(heading, (None,3), "heading")
+    gravity = check_and_parse_dimensions(gravity, (None,3), "gravity", fill_values=heading.shape[0])
+
+    v1 = unit_vec(heading)
+    gravity_proj = gravity - np.sum(gravity * v1, axis=1, keepdims=True) * v1
+    v3 = -unit_vec(gravity_proj)
+    if v3.any() < 1e-8:
+        raise ValueError("Gravity is parallel to heading; cannot construct basis.")
+    v2 = -np.cross(v1, v3)
+    basis = np.stack((v1, v2, v3), axis=-1)
+    return basis
+
 def rotation_matrix_from_vector(v):
     """
     - Given the input vector v, build an orthonormal basis and codify into a rotation matrix R ∈ SO(3) -
@@ -118,7 +139,7 @@ def rotation_matrix_from_vector(v):
     md_y = np.cross(md_z, md)
 
     # Build the rotation matrix
-    R = np.array([md, md_y, md_z])
+    R = np.array([md, md_y, md_z]).T
     return R / np.linalg.det(R)
 
 def rotation_angle_from_matrix(R):
@@ -170,21 +191,13 @@ def so3_hat(omega):
 def so3_vee(omega_hat):
     """
     - Generate \omega vector from \omega_\hat ∈ so(3) -
-    Supports single matrix (3,3) or batch (N,3,3).
+    Supports batch (...,3,3).
     """
     omega_hat = np.asarray(omega_hat)
-    if omega_hat.ndim == 2:
-        wx = omega_hat[2,1]
-        wy = omega_hat[0,2]
-        wz = omega_hat[1,0]
-        return np.array([wx, wy, wz])
-    elif omega_hat.ndim == 3:
-        wx = omega_hat[:,2,1]
-        wy = omega_hat[:,0,2]
-        wz = omega_hat[:,1,0]
-        return np.stack([wx, wy, wz], axis=-1)
-    else:
-        raise ValueError("Input must be shape (3,3) or (N,3,3)")
+    wx = omega_hat[...,2,1]
+    wy = omega_hat[...,0,2]
+    wz = omega_hat[...,1,0]
+    return np.stack([wx, wy, wz], axis=-1)
 
 ###################################################################
 
@@ -323,7 +336,15 @@ def so3_rotate_with_step(R, omega_hat, step=np.pi/6):
     """
     R = np.asarray(R)
     omega_hat = np.asarray(omega_hat)
-    
+
+    # Broadcast R to match omega_hat batch size
+    if R.shape[:-2] != omega_hat.shape[:-2]:
+        if R.shape[:-2] == (1,):
+            # Broadcast R to match omega_hat batch shape
+            R = np.broadcast_to(R, omega_hat.shape)
+        else:
+            raise ValueError(f"Incompatible batch shapes: R {R.shape[:-2]} vs omega_hat {omega_hat.shape[:-2]}")
+
     # Flatten batch if necessary
     batch_shape = R.shape[:-2]
     R_flat = R.reshape(-1, 3, 3)
