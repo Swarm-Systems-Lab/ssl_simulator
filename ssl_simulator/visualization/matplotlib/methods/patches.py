@@ -1,13 +1,7 @@
-"""
-File: patches.py
-"""
-
 __all__ = [
     "unicycle_patch",
     "fixedwing_patch"
 ]
-
-# Third-party libraries -------------------
 
 # Algebra
 import numpy as np

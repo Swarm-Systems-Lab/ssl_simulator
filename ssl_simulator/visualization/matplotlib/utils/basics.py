@@ -1,19 +1,10 @@
 """
-File: utils.py
-
-Description:
-    This Python module contains a collection of utility functions designed to 
-    facilitate data visualization and Matplotlib customization. The functions in 
-    this file simplify common tasks such as plotting 2D vectors, configuring 
-    Matplotlib axes, and applying alpha blending to colormaps. These utilities are 
-    intended to enhance the visual quality and flexibility of plots, particularly 
-    for scientific and engineering applications.
-
-Usage:
-    Import this module into your script or Jupyter notebook to leverage the 
-    utilities for numerical and graphical tasks. The functions can be directly 
-    used to customize your plots and improve the appearance of your visualizations.
-
+This Python module contains a collection of utility functions designed to 
+facilitate data visualization and Matplotlib customization. The functions in 
+this file simplify common tasks such as plotting 2D vectors, configuring 
+Matplotlib axes, and applying alpha blending to colormaps. These utilities are 
+intended to enhance the visual quality and flexibility of plots, particularly 
+for scientific and engineering applications.
 """
 
 __all__ = [
@@ -41,9 +32,19 @@ import matplotlib
 import matplotlib.pylab as plt
 import matplotlib.ticker as ticker
 from matplotlib.colors import ListedColormap
+from matplotlib.gridspec import GridSpec
 
 # Interpolation
 from scipy.interpolate import interp1d, UnivariateSpline
+
+# DPI resolution dictionary
+# resolution_dic = {
+#     "480p"   : 640,
+#     "HD"     : 1280,
+#     "FullHD" : 1920,
+#     "2K"     : 2560,
+#     "4K"     : 3880
+#     }
 
 #######################################################################################
 
@@ -405,4 +406,3 @@ def get_nice_ticks(vmin, vmax, max_major_ticks=6, n_minor=4):
     return major_levels, minor_levels, major_step
 
 #######################################################################################
-    
