@@ -29,9 +29,10 @@ class ConstantSignal(Controller):
         self.register_interface(self._set_signal)
     
     # ---------------------------------------------------------------------------------
+
     def _set_signal(self, signal):
         self.signal = signal
-
+        
     def compute_control(self, time, dt):
         self.ctrl_u = self.signal
 

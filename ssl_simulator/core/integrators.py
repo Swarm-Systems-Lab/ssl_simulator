@@ -6,6 +6,8 @@ from numpy import pi
 from ssl_simulator.math.lie import so3_rotate_with_step
 from ssl_simulator.math import check_and_parse_dimensions
 
+from ssl_simulator.config import CONFIG
+
 #######################################################################################
 
 class EulerIntegrator:
@@ -27,7 +29,7 @@ class EulerIntegrator:
         state_dot = context.get_robot_state_dot()
 
         # Perform dimension checks if test mode is enabled
-        if test:
+        if not context.initialized:
             for key in state.keys():
                 if key + "_dot" in state_dot:
                     check_and_parse_dimensions(
@@ -41,7 +43,7 @@ class EulerIntegrator:
         for key in state.keys():
             if key == "R":  # special case for rotation matrices
                 omega_hat = state_dot["R_dot"]
-                new_state["R"] = so3_rotate_with_step(state["R"], dt * omega_hat, step=pi/12)
+                new_state["R"] = so3_rotate_with_step(state["R"], dt * omega_hat, step=CONFIG["SO3_STEP"])
             else:
                 integration = state[key] + dt * state_dot[key + "_dot"]
                 new_state.update({key: integration})

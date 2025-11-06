@@ -36,6 +36,8 @@ class Oscillator(Controller):
         # Controller interface for other controller to interact with it
         self.register_interface(self._set_osc_omega)
 
+    # ---------------------------------------------------------------------------------
+
     def _set_osc_omega(self, omega):
         self.omega = omega
 

@@ -21,7 +21,7 @@ from ssl_simulator.config import CONFIG
 
 #######################################################################################
 
-def load_sim(filename, debug=CONFIG["DEBUG"], max_size_mb=100, verbose=CONFIG["DEBUG"]):
+def load_sim(filename, max_size_mb=100, debug=CONFIG["DEBUG"], verbose=CONFIG["DEBUG"]):
     check_file_size(filename, max_size_mb=max_size_mb)
 
     settings, skiprows = _load_settings_line(filename)

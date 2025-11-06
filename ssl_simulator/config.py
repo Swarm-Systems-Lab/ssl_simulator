@@ -1,6 +1,7 @@
 # ssl_simulator/config.py
 
 import os
+from numpy import pi
 
 class Config(dict):
     def __setitem__(self, key, value):
@@ -15,4 +16,5 @@ class Config(dict):
 # Initialize the configuration dictionary
 CONFIG = Config({
     "DEBUG": os.getenv("SSL_SIMULATOR_DEBUG", "False").lower() in ("true", "1", "yes"),
+    "SO3_STEP": os.getenv("SSL_SIMULATOR_SO3_STEP", pi/12),
 })
