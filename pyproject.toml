@@ -11,12 +11,14 @@ authors = [
 
 # Required dependencies
 dependencies = [
-    "numpy>=1.23.5,<1.27",       # safe ABI range; 1.23–1.26 works with SciPy & PyVista# safe range, avoids ABI breaks
-    "matplotlib>=3.6.1,<3.7",
-    "tqdm>=4.64,<5.0",           # tqdm is stable, just avoid 5.x future breakage
-    "pandas>=1.5,<2.2",          # 2.x is fine, but cap <2.2 for now
-    "scipy>=1.10,<1.11",         # avoids latest refactors (_transition_to_rng removed in 1.11+)
-    "ipython>=8.0,<8.16"         # compatible with current Jupyter stack
+    "numpy>=1.21,<2.0",
+    "matplotlib>=3.4,<4.0",
+    "matplotlib-inline>=0.1.3,<0.3",
+    "tqdm>=4.50,<5.0",
+    "pandas>=1.3,<3.0",
+    "scipy>=1.5,<2.0",
+    "ipython>=7.0,<9.0",
+    "ipykernel>=6.0,<8.0"
 ]
 
 [build-system]
