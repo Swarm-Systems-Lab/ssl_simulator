@@ -20,6 +20,8 @@ __all__ = [
     "so3_exp_map",
     "so3_log_map",
     "so3_rotate_with_step",
+    "so3_right_jacobian",
+    "so3_right_jacobian_inv",
 ]
 
 import numpy as np
@@ -211,6 +213,14 @@ def so3_exp_map(A, n=6, tol=3e-6, warn=True):
         warn: whether to print a warning if rotation step is large.
     """
     A = np.asarray(A)
+    
+    # Check if A is of shape (3,)
+    if A.shape == (3,):
+        raise ValueError(
+            "Input A has shape (3,). This likely means you are providing an so(3) element in vee form. "
+            "Please use so3_hat to convert it to a skew-symmetric matrix before passing it to so3_exp_map."
+        )
+    
     batch = (A.ndim == 3)
     if not batch:
         A = A[None, ...]  # shape (1,3,3)
@@ -266,7 +276,7 @@ def so3_log_map(R, n=5, eps=1e-8): # TODO: test and revise
 
     # Masks for different regimes
     small_mask = theta < np.pi/6
-    large_mask = theta > 0.96*np.pi
+    large_mask = theta > 0.998*np.pi
     mid_mask   = ~(small_mask | large_mask)
 
     # --- SMALL ANGLES ---
@@ -391,3 +401,81 @@ def so3_rotate_with_step(R, omega_hat, step=np.pi/6):
     # Reshape back to original batch shape
     R_rot = R_rot_flat.reshape(batch_shape + (3, 3))
     return R_rot
+
+def so3_right_jacobian(phi):
+    """
+    Compute the Jacobian of the exponential map at phi ∈ so(3).
+    Supports single vector (3,) or batch (N,3).
+    """
+    phi = np.asarray(phi)
+    theta = np.linalg.norm(phi, axis=-1, keepdims=True)
+    I = np.eye(3)
+
+    if phi.ndim == 1:
+        phi_hat = so3_hat(phi)
+        if theta < 1e-8:
+            # Small-angle approximation
+            A = 0.5
+            B = 1/6
+        else:
+            A = (1 - np.cos(theta)) / (theta**2)
+            B = (theta - np.sin(theta)) / (theta**3)
+        J = I - A * phi_hat + B * phi_hat @ phi_hat
+        return J
+    
+    elif phi.ndim == 2:
+        J_list = []
+        for i in range(phi.shape[0]):
+            th = theta[i]
+            phi_hat = so3_hat(phi[i])
+            if th < 1e-8:
+                # Small-angle approximation
+                A = 0.5
+                B = 1/6
+            else:
+                A = (1 - np.cos(th)) / (th**2)
+                B = (th - np.sin(th)) / (th**3)
+            J = I - A * phi_hat + B * phi_hat @ phi_hat
+            J_list.append(J)
+        return np.array(J_list)
+    else:
+        raise ValueError("Input must be shape (3,) or (N,3)")
+
+def so3_right_jacobian_inv(phi):
+    """
+    Compute the Jacobian of the logarithmic map at phi ∈ so(3).
+    Supports single vector (3,) or batch (N,3).
+    """
+    phi = np.asarray(phi)
+    theta = np.linalg.norm(phi, axis=-1, keepdims=True)
+    I = np.eye(3)
+
+    if phi.ndim == 1:
+        phi_hat = so3_hat(phi)
+        if theta < 1e-8:
+            # Small-angle approximation
+            A = 0.5
+            B = 1/12
+        else:
+            A = 0.5
+            B = (1/theta**2) - (1 + np.cos(theta)) / (2 * theta * np.sin(theta))
+        J_inv = I + A * phi_hat + B * np.matmul(phi_hat, phi_hat)
+        return J_inv
+    
+    elif phi.ndim == 2:
+        J_inv_list = []
+        for i in range(phi.shape[0]):
+            th = theta[i]
+            phi_hat = so3_hat(phi[i])
+            if th < 1e-8:
+                # Use series expansion for small angles
+                A = 0.5
+                B = 1/12
+            else:
+                A = 0.5
+                B = (1/th**2) - (1 + np.cos(th)) / (2 * th * np.sin(th))
+            J_inv = I + A * phi_hat + B * np.matmul(phi_hat, phi_hat)
+            J_inv_list.append(J_inv)
+        return np.array(J_inv_list)
+    else:
+        raise ValueError("Input must be shape (3,) or (N,3)")
