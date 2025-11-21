@@ -39,7 +39,7 @@ def unit_vec(V, delta=0, axis=-1):
     unit = np.where(norms > delta, unit, 0.0)  # zero out small vectors
     return unit
 
-def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None):
+def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None, dtype=float):
     """
     Generic function to check and parse dimensions of an array.
 
@@ -79,7 +79,7 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
         >>> check_and_parse_dimensions(arr4, (5, 3, 3), fill_values=5).shape
         # (5, 3, 3) -> broadcasted from (1, 3, 3)
     """
-    array = np.asarray(array)  # Ensure the input is a NumPy array
+    array = np.asarray(array, dtype=dtype)  # Ensure the input is a NumPy array
 
     # Handle special cases for expected shapes (auto-add batch dimension)
     # TODO: generalize this logic
