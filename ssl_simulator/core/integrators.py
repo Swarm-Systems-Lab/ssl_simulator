@@ -1,8 +1,6 @@
-"""
-"""
+import numpy as np
+import lieplusplus as lpp
 
-# TODO: global settings for integrators (e.g., step size for exp map)
-from numpy import pi
 from ssl_simulator.math.lie import so3_rotate_with_step
 from ssl_simulator.math import check_and_parse_dimensions
 
@@ -32,18 +30,21 @@ class EulerIntegrator:
         if not context.initialized:
             for key in state.keys():
                 if key + "_dot" in state_dot:
-                    check_and_parse_dimensions(
-                        state_dot[key + "_dot"],
-                        expected_shape=state[key].shape,
-                        name=f"state_dot[{key}]"
-                    )
+                    if isinstance(state[key], np.ndarray):
+                        check_and_parse_dimensions(
+                            state_dot[key + "_dot"],
+                            expected_shape=state[key].shape,
+                            name=f"state_dot[{key}]"
+                        )
 
         # Perform integration
         new_state = {}
         for key in state.keys():
-            if key == "R":  # special case for rotation matrices
-                omega_hat = state_dot["R_dot"]
-                new_state["R"] = so3_rotate_with_step(state["R"], dt * omega_hat, step=CONFIG["SO3_STEP"])
+            if isinstance(state[key], lpp.SO3):
+                if isinstance(state_dot[key + "_dot"], np.ndarray) and state_dot[key + "_dot"].shape == (3, 3):
+                    raise ValueError(f"state_dot[{key + '_dot'}] is a 3x3 matrix, which is not allowed for integration.")
+                new_state[key] = state[key] * lpp.SO3.exp(dt * state_dot[key + "_dot"])
+                # so3_rotate_with_step(state["R"], dt * omega_hat, step=CONFIG["SO3_STEP"])
             else:
                 integration = state[key] + dt * state_dot[key + "_dot"]
                 new_state.update({key: integration})

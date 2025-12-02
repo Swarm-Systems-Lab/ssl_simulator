@@ -3,24 +3,31 @@ name = "ssl_simulator"
 version = "0.0.3"
 description = "Swarm Systems Lab Python Simulator"
 readme = "README.md"
-requires-python = ">=3.8, <3.12"
+requires-python = ">=3.8"
 license = "GPL-3.0-or-later"
 authors = [
     { name="Jesús Bautista Villar", email="jesbauti20@gmail.com" }
 ]
 
-# Required dependencies
 dependencies = [
     "numpy>=1.23",
+    "tqdm>=4.50",
+    "pandas>=1.5",
+    "scipy>=1.5"
+    "git+https://github.com/Swarm-Systems-Lab/lieplusplus_py",
+]
+
+[project.optional-dependencies]
+examples = [
     "matplotlib>=3.7",
     "matplotlib-inline>=0.1.6,<0.3",
-    "tqdm>=4.50,<5.0",
-    "pandas>=1.5",
-    "scipy>=1.5,<2.1"
 ]
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = [
+    "setuptools>=61.0", 
+    "wheel"
+]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
