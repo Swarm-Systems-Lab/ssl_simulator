@@ -13,8 +13,8 @@ dependencies = [
     "numpy>=1.23",
     "tqdm>=4.50",
     "pandas>=1.5",
-    "scipy>=1.5"
-    "git+https://github.com/Swarm-Systems-Lab/lieplusplus_py",
+    "scipy>=1.5",
+    "lieplusplus_py @ git+https://github.com/Swarm-Systems-Lab/lieplusplus_py.git@master"
 ]
 
 [project.optional-dependencies]
