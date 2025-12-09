@@ -4,6 +4,7 @@ from ._robot_model import RobotModel
 from ._controller import Controller
 
 from ssl_simulator import safe_update
+from ssl_simulator.exceptions import InitializationError
 
 #######################################################################################
 
@@ -19,7 +20,7 @@ class SimulationContext:
 
         self.ctrl_interfaces: dict[str, dict[str]] = {}
         self.initialized = False
-
+        
     # -------------------------------------------------------------------------
     # Robot model
     # -------------------------------------------------------------------------
@@ -31,8 +32,11 @@ class SimulationContext:
         to this context during initialization.
         """
         self.robot_model = robot_model_class(self, *args, **kwargs)
-        self.robot_model.init_data()
-        return self.robot_model
+        try:
+            self.robot_model.init_data()
+            return self.robot_model
+        except Exception as e:
+            raise InitializationError(str(e)) from None
 
     def compute_robot_dynamics(self, time):
         """Compute the robot model dynamics."""
@@ -60,9 +64,12 @@ class SimulationContext:
         if key in self.controllers:
             raise KeyError(f"A controller with key '{key}' already exists.")
         controller = controller_class(self, *args, **kwargs)
-        controller.init_data()
-        self.controllers[key] = controller
-        self.ctrl_interfaces[key] = controller.control_interface
+        try:
+            controller.init_data()
+            self.controllers[key] = controller
+            self.ctrl_interfaces[key] = controller.control_interface
+        except Exception as e:
+            raise InitializationError(str(e)) from None
 
     def connect_controller_to_robot(self, controller_key: str, mapping: dict = None):
         """

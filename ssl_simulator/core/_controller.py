@@ -1,3 +1,4 @@
+from ssl_simulator import validate_dict_attributes
 from ssl_simulator import safe_update, safe_assign
 
 #######################################################################################
@@ -25,6 +26,12 @@ class Controller:
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):
+        # Validate that all required attributes are dictionaries
+        validate_dict_attributes(
+            self, 
+            ["control_vars", "tracked_vars"]
+        )
+
         self.data = {}
         resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}
         resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}

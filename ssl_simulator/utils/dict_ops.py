@@ -4,6 +4,7 @@
 __all__ = [
     "safe_assign",
     "safe_update",
+    "validate_dict_attributes",
     "parse_kwargs",
     "dict_to_json",
     "json_to_dict",
@@ -29,6 +30,62 @@ def safe_update(target, source, source_name="dict"):
         raise KeyError(f"Key conflict detected when updating from {source_name}: {conflict_keys}")
     target.update(source.copy())
 
+def validate_dict_attributes(obj, attr_names):
+    """
+    Validate that specified attributes are dictionaries and that callable items have __call__ method.
+    
+    Parameters
+    ----------
+    obj : object
+        The object whose attributes should be validated
+    attr_names : list of str
+        Names of attributes to validate
+        
+    Raises
+    ------
+    TypeError
+        If any attribute is not a dict or if callable items lack __call__ method
+    """
+    attrs_to_check = {name: getattr(obj, name) for name in attr_names}
+    
+    for attr_name, attr_value in attrs_to_check.items():
+        if not isinstance(attr_value, dict):
+            raise TypeError(
+                f"{obj.__class__.__name__}.{attr_name} must be a dict, "
+                f"but got {type(attr_value).__name__} instead."
+            )
+        
+        # Validate that custom class instances have __call__ method
+        # (exclude built-in types and numpy arrays/matrices)
+        for key, value in attr_value.items():
+            value_type = type(value)
+            # Check if it's a custom class (not built-in, not numpy)
+            is_custom_class = (
+                not isinstance(value, (int, float, str, bool, list, dict, tuple, set, type(None)))
+                and value_type.__module__ not in ["builtins", "numpy"]
+            )
+            
+            if is_custom_class:
+                if not hasattr(value, '__call__'):
+                    raise TypeError(
+                        f"\n{'='*80}\n"
+                        f"VALIDATION ERROR in {obj.__class__.__name__}.{attr_name}\n"
+                        f"{'='*80}\n"
+                        f"Key: '{key}'\n"
+                        f"Type: {value_type.__name__} (from module: {value_type.__module__})\n"
+                        f"Value: {value}\n\n"
+                        f"Problem: Custom class instances in '{attr_name}' must be callable or use a lambda.\n\n"
+                        f"Solutions:\n"
+                        f"  1. Wrap the value in a lambda:\n"
+                        f"     self.{attr_name}['{key}'] = lambda: {value}\n\n"
+                        f"  2. Make the class callable by adding a __call__ method:\n"
+                        f"     class {value_type.__name__}:\n"
+                        f"         def __call__(self):\n"
+                        f"             return # return appropriate value\n\n"
+                        f"  3. Store it as a direct value (if it's numpy-compatible or built-in type)\n"
+                        f"{'='*80}\n"
+                    )
+                
 def parse_kwargs(kwargs_input, kwargs_default):
     """
     Merge user-provided keyword arguments with default values.

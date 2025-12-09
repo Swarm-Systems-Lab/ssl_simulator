@@ -1,3 +1,4 @@
+from ssl_simulator import validate_dict_attributes
 from ssl_simulator import safe_update, safe_assign
 
 #######################################################################################
@@ -28,6 +29,12 @@ class RobotModel:
 
     # Data ----------------------------------------------------------------------------
     def init_data(self):
+        # Validate that all required attributes are dictionaries
+        validate_dict_attributes(
+            self, 
+            ["state", "state_dot", "control_inputs", "tracked_vars"]
+        )
+        
         self.data = {}
         resolved_state     = {k: v() if callable(v) else v for k, v in self.state.items()}
         resolved_state_dot = {k: v() if callable(v) else v for k, v in self.state_dot.items()}

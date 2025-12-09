@@ -1,5 +1,8 @@
 # ssl_simulator/__init__.py
 
+# Exceptions
+from ssl_simulator.exceptions import *
+
 # Configuration
 from ssl_simulator.config import CONFIG
 
