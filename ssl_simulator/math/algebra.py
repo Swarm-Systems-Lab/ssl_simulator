@@ -1,15 +1,11 @@
-"""
-"""
+""" """
 
-__all__ = [
-    "R_2D_matrix",
-    "norm_2",
-    "cov_matrix"
-]
+__all__ = ["R_2D_matrix", "cov_matrix", "norm_2"]
 
 import numpy as np
 
 #######################################################################################
+
 
 def R_2D_matrix(angle):
     """
@@ -25,10 +21,8 @@ def R_2D_matrix(angle):
     np.ndarray
         2x2 rotation matrix that rotates vectors counterclockwise by `angle` radians.
     """
-    return np.array([
-        [np.cos(angle), -np.sin(angle)], 
-        [np.sin(angle), np.cos(angle)]
-    ])
+    return np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+
 
 def norm_2(A: np.ndarray) -> float:
     """
@@ -49,6 +43,7 @@ def norm_2(A: np.ndarray) -> float:
     """
     # Compute largest eigenvalue of AᵀA, then take square root
     return np.sqrt(np.max(np.linalg.eigvals(A.T @ A)))
+
 
 def cov_matrix(X: np.ndarray, sample: bool = False) -> np.ndarray:
     """
@@ -82,13 +77,13 @@ def cov_matrix(X: np.ndarray, sample: bool = False) -> np.ndarray:
     if X.ndim == 2:
         X = X[None, ...]  # shape (1, N, D)
 
-    K, N, D = X.shape
+    _K, N, _D = X.shape
     if N < 2:
         raise ValueError("Need at least 2 samples per dataset to compute covariance")
 
     # Center data along N
     mean = np.mean(X, axis=1, keepdims=True)  # shape (K, 1, D)
-    X_centered = X - mean                     # shape (K, N, D)
+    X_centered = X - mean  # shape (K, N, D)
 
     # Choose denominator
     denom = N - 1 if sample else N
@@ -98,5 +93,6 @@ def cov_matrix(X: np.ndarray, sample: bool = False) -> np.ndarray:
 
     # Return (D, D) if single dataset
     return cov[0] if cov.shape[0] == 1 else cov
+
 
 #######################################################################################

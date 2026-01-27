@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 __all__ = ["GvfLine"]
 
@@ -8,6 +7,7 @@ import numpy as np
 from ._gvf_traj import GvfTrajectory
 
 #######################################################################################
+
 
 class GvfLine(GvfTrajectory):
     def __init__(self, m, b, line_length=30):
@@ -35,6 +35,7 @@ class GvfLine(GvfTrajectory):
         return H
 
     def get_config(self):
-        return dict(m=self.m, b=self.b, line_length=self.line_length)
-    
+        return {"m": self.m, "b": self.b, "line_length": self.line_length}
+
+
 #######################################################################################

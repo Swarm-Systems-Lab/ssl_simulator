@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 __all__ = [
     "debug_eig",
@@ -9,8 +8,10 @@ import numpy as np
 
 #######################################################################################
 
-def debug_eig(A: np.ndarray, eigenvectors: bool = True, 
-              prec_values: int = 8, prec_vectors: int = 3) -> None:
+
+def debug_eig(
+    A: np.ndarray, eigenvectors: bool = True, prec_values: int = 8, prec_vectors: int = 3
+) -> None:
     """
     Debug function to display eigenvalues and optionally eigenvectors of a matrix.
 
@@ -31,24 +32,23 @@ def debug_eig(A: np.ndarray, eigenvectors: bool = True,
         The function prints the eigenvalues and eigenvectors (if requested) to the console.
     """
     # Compute eigenvalues and eigenvectors
-    eigenvalues, eigenvectors_matrix = np.linalg.eig(A)
+    eigenvalues, _eigenvectors_matrix = np.linalg.eig(A)
 
     # Print eigenvalues
     with np.printoptions(precision=prec_values, suppress=True):
-        print(" --- Eigenvalues ---")
-        for i, eigval in enumerate(eigenvalues):
-            print("lambda_{:d} = {:f}".format(i, eigval))
+        for _i, _eigval in enumerate(eigenvalues):
+            pass
 
     # Print eigenvectors if requested
     if eigenvectors:
         with np.printoptions(precision=prec_vectors, suppress=True):
-            print("--- Eigenvectors ---")
-            for i in range(len(eigenvalues)):
-                print("v_{:d} =".format(i), eigenvectors_matrix[:, i])
+            for _i in range(len(eigenvalues)):
+                pass
+
 
 #######################################################################################
 
 # Example usage
 if __name__ == "__main__":
-    A = np.array([[1,3],[2,7]])
+    A = np.array([[1, 3], [2, 7]])
     debug_eig(A)

@@ -1,16 +1,13 @@
-from .matplotlib.utils.basics import *
-from .matplotlib.utils.figure_tools import *
-from .matplotlib.utils.anim import *
-
 from .matplotlib.methods.patches import *
 from .matplotlib.methods.plot_3d import *
-
 from .matplotlib.plots._plot import PlotBase
 from .matplotlib.plots.so3 import *
-
 from .matplotlib.plotters._plotter import Plotter
 from .matplotlib.plotters._vector_field import PlotterVF
+from .matplotlib.plotters.robot_fixedwing import PlotterFixedwing
+from .matplotlib.plotters.robot_uny import PlotterUny
 from .matplotlib.plotters.ss_si import PlotterSingIntSS
 from .matplotlib.plotters.ss_uny import PlotterUnySS
-from .matplotlib.plotters.robot_uny import PlotterUny
-from .matplotlib.plotters.robot_fixedwing import PlotterFixedwing
+from .matplotlib.utils.anim import *
+from .matplotlib.utils.basics import *
+from .matplotlib.utils.figure_tools import *

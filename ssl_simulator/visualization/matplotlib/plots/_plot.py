@@ -1,19 +1,19 @@
 import os
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from IPython.display import HTML
+from matplotlib.animation import FuncAnimation, PillowWriter
 from tqdm import tqdm
 
-from matplotlib.animation import FuncAnimation, PillowWriter
-from IPython.display import HTML
-
 from ssl_simulator.config import CONFIG
-from ssl_simulator import create_dir
+from ssl_simulator.utils.path_ops import create_dir
+
 
 class PlotBase:
     """
     Generic base class for all plot types.
-    
+
     Subclasses should:
         - define self.axes_config: dict specifying axes
         - implement init_artists(self)
@@ -21,7 +21,7 @@ class PlotBase:
         - override compute_frame(self, frame_idx) if needed for large logs
     """
 
-    def __init__(self, figsize=(8,6), dpi=100):
+    def __init__(self, figsize=(8, 6), dpi=100):
         self.fig = plt.figure(figsize=figsize, dpi=dpi)
         self.axes = {}
         self.artists = {}
@@ -31,7 +31,7 @@ class PlotBase:
         self.dpi = dpi
 
         # To be defined by subclass
-        self.axes_config = {} # e.g., {"main": {"positions":[0,0,1,1], "projection":"3d"}}
+        self.axes_config = {}  # e.g., {"main": {"positions":[0,0,1,1], "projection":"3d"}}
         self.n_frames = 0  # total number of frames
 
     # ---------------------------------------------------------------
@@ -58,7 +58,7 @@ class PlotBase:
             self.artists[key] = {}
 
             if CONFIG.get("DEBUG", False):
-                print(f"[DEBUG] Created axis '{key}' with rect={rect} and kwargs={cfg_copy}")
+                pass
 
     def init_artists(self):
         """Initialize all plot elements. Must be implemented by subclass."""
@@ -84,9 +84,9 @@ class PlotBase:
                         yield item
                 else:
                     yield group
-            
+
             self.artists_list = list(flatten_artists(self.artists))
-            self.fig.canvas.draw_count = 0 # reset draw count
+            self.fig.canvas.draw_count = 0  # reset draw count
 
     # ---------------------------------------------------------------
     # UPDATE + ANIMATION CORE
@@ -94,10 +94,9 @@ class PlotBase:
     def update_artists(self, frame_data):
         """Update plot elements for a new frame. Must be implemented by subclass."""
         raise NotImplementedError
-    
+
     def update(self, frame_data):
         """Wrapper called by FuncAnimation or manual updates."""
-
         self.update_artists(frame_data)
         self.anim_progress.update(1)
         # return list of all artists for blitting
@@ -114,16 +113,19 @@ class PlotBase:
         Args:
             precompute (bool): If True, precompute all frames and store in memory.
                             If False, generate frames on-the-fly.
-        Yields:
+
+        Yields
+        ------
             frame data (could be index or actual frame content depending on `compute_frame`)
         """
         if precompute:
             # Precompute all frames and store in a list
-            frames = [self.compute_frame(i) for i in tqdm(range(self.n_frames),
-                                                        desc="Precomputing frames")]
+            frames = [
+                self.compute_frame(i)
+                for i in tqdm(range(self.n_frames), desc="Precomputing frames")
+            ]
             # Use a separate progress bar for playback
-            for frame in tqdm(frames, desc="Animating frames"):
-                yield frame
+            yield from tqdm(frames, desc="Animating frames")
         else:
             # Generate frames one by one
             for i in tqdm(range(self.n_frames), desc="Generating frames on-the-fly"):
@@ -138,12 +140,12 @@ class PlotBase:
             self.fig,
             self.update,
             frames=frames,
-            interval=interval, # 1/fps*1000/4
+            interval=interval,  # 1/fps*1000/4
             blit=blit,
-            repeat=repeat
+            repeat=repeat,
         )
         return ani
-    
+
     # ---------------------------------------------------------------
     # VISUALIZATION AND EXPORT
     # ---------------------------------------------------------------
@@ -165,24 +167,20 @@ class PlotBase:
 
     def save_gif(self, output_dir, filename="animation.gif", fps=30, interval=100, repeat=False):
         """Render animation and save as GIF."""
-        create_dir(output_dir) # ensure directory exists
+        create_dir(output_dir)  # ensure directory exists
         filepath = os.path.join(output_dir, filename)
 
         ani = self.animate(interval=interval, repeat=repeat)
         writer = PillowWriter(fps=fps)
-        print(f"[INFO] Saving GIF to {filename} ...")
         ani.save(filepath, writer=writer)
-        print("[INFO] GIF saved successfully.")
 
     def save_mp4(self, output_dir, filename="animation.mp4", fps=30, interval=100, repeat=False):
         """Render animation and save as MP4 (requires ffmpeg)."""
-        create_dir(output_dir) # ensure directory exists
+        create_dir(output_dir)  # ensure directory exists
         filepath = os.path.join(output_dir, filename)
 
         ani = self.animate(interval=interval, repeat=repeat)
-        print(f"[INFO] Saving MP4 to {filename} ...")
         ani.save(filepath, writer="ffmpeg", fps=fps)
-        print("[INFO] MP4 saved successfully.")
 
     # ---------------------------------------------------------------
     # DEBUG UTILITIES
@@ -192,7 +190,6 @@ class PlotBase:
         Print all artists in each axis with their key and type.
         Useful to inspect plot elements during development.
         """
-        print("----- PlotBase Artists Debug -----")
         total_count = 0
 
         def count_and_print(artist, prefix=""):
@@ -205,19 +202,12 @@ class PlotBase:
                 for i, a in enumerate(artist):
                     count_and_print(a, prefix=f"{prefix}[{i}]")
             elif isinstance(artist, np.ndarray):
-                print(f"{prefix} np.ndarray shape={artist.shape}, dtype={type(artist.flat[0]).__name__}")
                 total_count += artist.size
             else:
-                print(f"{prefix} {type(artist).__name__}: {artist}")
                 total_count += 1
 
-        for ax_key, ax in self.axes.items():
-            print(f"Axis '{ax_key}' ({type(ax).__name__}):")
+        for ax_key, _ax in self.axes.items():
             group = self.artists.get(ax_key, None)
             if not group:
-                print(f"    [!] No artists in axis '{ax_key}'")
                 continue
             count_and_print(group, prefix="    ")
-
-        print(f"Total artists: {total_count}")
-        print("---------------------------------")

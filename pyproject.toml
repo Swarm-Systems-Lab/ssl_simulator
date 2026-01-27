@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "ssl_simulator"
 version = "0.0.3"
@@ -8,7 +12,6 @@ license = "GPL-3.0-or-later"
 authors = [
     { name="Jesús Bautista Villar", email="jesbauti20@gmail.com" }
 ]
-
 dependencies = [
     "numpy>=1.23",
     "tqdm>=4.50",
@@ -18,21 +21,110 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+    "matplotlib>=3.7",
+    "matplotlib-inline>=0.1.6,<0.3"
+]
 examples = [
     "matplotlib>=3.7",
-    "matplotlib-inline>=0.1.6,<0.3",
+    "matplotlib-inline>=0.1.6,<0.3"
 ]
 
-[build-system]
-requires = [
-    "setuptools>=61.0", 
-    "wheel"
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = ["ssl_simulator/**", "README.md", "LICENSE"]
+exclude = ["tests/**", "examples/**", "output/**"]
+
+[tool.hatch.build.targets.wheel]
+include = ["ssl_simulator/**", "README.md", "LICENSE"]
+exclude = ["tests/**", "examples/**", "output/**"]
+
+# Hatch environments
+[tool.hatch.envs.default]
+dependencies = [
+    "ruff>=0.1.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "matplotlib>=3.7",
+    "IPython>=9.8",
 ]
-build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["."]
-exclude = ["tests", "examples"]
+[tool.hatch.envs.default.scripts]
+format = "ruff format ."
+lint = "ruff check --fix ."
+check = "ruff check ."
+test = "pytest {args:tests}"
+test-cov = "pytest --cov=ssl_simulator --cov-report=term-missing {args:tests}"
+type-check = "mypy ssl_simulator"
+all = ["format", "lint", "type-check", "test"]
 
+[tool.hatch.envs.examples]
+dependencies = [
+    "matplotlib>=3.7",
+    "matplotlib-inline>=0.1.6,<0.3"
+]
+
+# Ruff configuration
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "env",
+    "build",
+    "dist",
+    "output",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "C90", "UP", "B", "A", "C4", "T20", "SIM", "Q", "RUF"]
+ignore = [
+    "D100",  # Missing docstring in public module (adjust as needed)
+    "D104",  # Missing docstring in public package
+    "F403",  # TODO check not ignoring
+    "F401",  # TODO check not ignoring
+    "E501"
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"  # or "google" or "pep257"
+
+# Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Set to true when you're ready
+ignore_missing_imports = true
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["ssl_simulator"]
+omit = ["tests/*", "examples/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

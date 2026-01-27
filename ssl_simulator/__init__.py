@@ -1,10 +1,18 @@
 # ssl_simulator/__init__.py
 
 # Exceptions
-from ssl_simulator.exceptions import *
+# Submodules
+from ssl_simulator import components, controllers, math, robot_models, visualization
 
 # Configuration
 from ssl_simulator.config import CONFIG
+
+# Core
+from ssl_simulator.core._controller import Controller
+from ssl_simulator.core._robot_model import RobotModel
+from ssl_simulator.core.simulation_context import SimulationContext
+from ssl_simulator.core.simulation_engine import INTEGRATORS, SimulationEngine
+from ssl_simulator.exceptions import *
 
 # Utils
 from ssl_simulator.utils.debug import *
@@ -13,12 +21,3 @@ from ssl_simulator.utils.file_ops import *
 from ssl_simulator.utils.path_ops import *
 from ssl_simulator.utils.pprz import *
 from ssl_simulator.utils.processing import *
-
-# Core
-from ssl_simulator.core._controller import Controller
-from ssl_simulator.core._robot_model import RobotModel
-from ssl_simulator.core.simulation_engine import SimulationEngine, INTEGRATORS
-from ssl_simulator.core.simulation_context import SimulationContext
-
-# Submodules
-from ssl_simulator import components, controllers, math, robot_models, visualization

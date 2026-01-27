@@ -1,21 +1,23 @@
-"""
-"""
+""" """
+
+import typing
 
 import numpy as np
-from ssl_simulator import parse_kwargs
+
 from ssl_simulator.visualization import Plotter
 
 #######################################################################################
 
-class PlotterVF(Plotter):
-    traj_points = None
-    mapgrad_pos = None
-    mapgrad_vec = None
 
-    kw_vect = dict(angles="xy", scale_units="xy", scale=None, width=None)
-    arrow_scale_factor = 1.5
-    arrow_width_factor = 0.0002
-    
+class PlotterVF(Plotter):
+    traj_points: typing.ClassVar = None
+    mapgrad_pos: typing.ClassVar = None
+    mapgrad_vec: typing.ClassVar = None
+
+    kw_vect: typing.ClassVar = {"angles": "xy", "scale_units": "xy", "scale": None, "width": None}
+    arrow_scale_factor: typing.ClassVar = 1.5
+    arrow_width_factor: typing.ClassVar = 0.0002
+
     # ---------------------------------------------------------------------------------
 
     def _compute_xymesh(self, pts, xlim=None, ylim=None, return_mesh=False, **kwargs):
@@ -44,19 +46,20 @@ class PlotterVF(Plotter):
         else:
             pos = np.column_stack([xx.flatten(), yy.flatten()])
             return pos
-    
+
     def _draw_field(self, ax):
         self._adjust_vec_scale()
         quivers = ax.quiver(
-            self.mapgrad_pos[:,0], self.mapgrad_pos[:,1], 
-            self.mapgrad_vec[:,0], self.mapgrad_vec[:,1], **self.kw_vect
+            self.mapgrad_pos[:, 0],
+            self.mapgrad_pos[:, 1],
+            self.mapgrad_vec[:, 0],
+            self.mapgrad_vec[:, 1],
+            **self.kw_vect,
         )
         return quivers
 
     def _adjust_vec_scale(self):
-        """
-        Dynamically adjust vector field scale and width
-        """
+        """Dynamically adjust vector field scale and width."""
         x_spacing = np.mean(np.diff(np.unique(self.mapgrad_pos[:, 0])))
         y_spacing = np.mean(np.diff(np.unique(self.mapgrad_pos[:, 1])))
         avg_spacing = np.sqrt(x_spacing**2 + y_spacing**2)
@@ -66,5 +69,6 @@ class PlotterVF(Plotter):
 
         # Set width in axis-relative units (smaller spacing -> thinner arrows)
         self.kw_vect["width"] = self.arrow_width_factor * avg_spacing
-    
+
+
 #######################################################################################

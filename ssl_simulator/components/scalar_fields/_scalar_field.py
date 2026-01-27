@@ -1,30 +1,27 @@
-"""
-    Scalar field base class & plotter
-"""
+"""Scalar field base class & plotter."""
 
-__all__ = [
-    "ScalarField",
-    "PlotterScalarField"
-]
+__all__ = ["PlotterScalarField", "ScalarField"]
 
 from abc import ABC, abstractmethod
-import numpy as np
-from scipy.optimize import minimize
 
 # Graphic tools
 import matplotlib.pylab as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+import numpy as np
 from matplotlib.ticker import FixedLocator, NullFormatter
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from scipy.optimize import minimize
+
+from ssl_simulator.math import Q_prod_xi, R_2D_matrix, unit_vec
 
 # Our utils
-from ssl_simulator import parse_kwargs
-from ssl_simulator.math import unit_vec, Q_prod_xi, R_2D_matrix
-from ssl_simulator.visualization import vector2d, alpha_cmap, get_nice_ticks
+from ssl_simulator.utils.dict_ops import parse_kwargs
+from ssl_simulator.visualization import alpha_cmap, get_nice_ticks, vector2d
 
 MY_CMAP = alpha_cmap(plt.cm.jet, 0.3)
 
 #######################################################################################
 # -------- SCALAR FIELD ABSTRACT BASE CLASS -------- #
+
 
 class ScalarField(ABC):
     mu = np.array([0, 0])
@@ -51,7 +48,7 @@ class ScalarField(ABC):
 
     def get_config(self):
         """Returns the key parameters used for reinitialization."""
-        return dict(mu=self.mu)
+        return {"mu": self.mu}
 
     # ------------------------------------------------------------------------
     # Evaluation #############################################################
@@ -69,18 +66,18 @@ class ScalarField(ABC):
         grad = self.eval_grad(X)
         return Q_prod_xi(A.T, grad)
 
-    def hessian(self, X: np.ndarray) -> np.ndarray: # TODO: fix for affine transformations
+    def hessian(self, X: np.ndarray) -> np.ndarray:  # TODO: fix for affine transformations
         # R = R_2D_matrix(self.transf_w)
         # A = (np.eye(2) * self.transf_a) @ R
         # X = Q_prod_xi(A, X - self.mu) + self.mu
         H = self.eval_hessian(X)
         return H
-    
+
     # ------------------------------------------------------------------------
-    
+
     def L1(self, pc: np.ndarray, P: np.ndarray):
         """
-        Funtion for calculating and drawing L^1
+        Funtion for calculating and drawing L^1.
 
         Attributes
         ----------
@@ -98,26 +95,28 @@ class ScalarField(ABC):
         grad_pc = self.grad(pc)[0]
         l1_sigma_hat = (grad_pc[:, None].T @ X.T) @ X
 
-        x_norms = np.zeros((N))
+        x_norms = np.zeros(N)
         for i in range(N):
             x_norms[i] = (X[i, :]) @ X[i, :].T
             D_sqr = np.max(x_norms)
 
         l1_sigma_hat = l1_sigma_hat / (N * D_sqr)
         return l1_sigma_hat.flatten()
-        
+
     # --------------------------------------------------------------------------
     # Internal helper methods
     # --------------------------------------------------------------------------
 
     def _find_max(self, x0: np.ndarray) -> np.ndarray:
         return minimize(lambda x: -self.value(np.array([x])), x0).x
-    
+
+
 #######################################################################################
 # -------- PLOTTER CLASS -------- #
 
+
 class PlotterScalarField:
-    def __init__(self, field: ScalarField, draw_contours = True):
+    def __init__(self, field: ScalarField, draw_contours=True):
         self.field = field
         self.fig = None
         self.ax = None
@@ -147,9 +146,8 @@ class PlotterScalarField:
         self._draw_center(**kwargs)
         self._draw_field(**kwargs)
         self._draw_contours(**kwargs)
-        
 
-    def draw_grad(self, x, ax, ret_arr = True, norm_fct=0, fct=1, **kw_arr):
+    def draw_grad(self, x, ax, ret_arr=True, norm_fct=0, fct=1, **kw_arr):
         """Draws the gradient vector at a given point."""
         x = np.array(x) if isinstance(x, list) else x
         grad_x = self.field.grad(np.array([x]))[0]
@@ -158,10 +156,10 @@ class PlotterScalarField:
         quiv = vector2d(ax, x, grad_x * fct, **kw_arr)
         return quiv if ret_arr else grad_x
 
-    def draw_L1(self, x, ax, ret_arr = True, norm_fct=0, fct=1, **kw_arr):
+    def draw_L1(self, x, ax, ret_arr=True, norm_fct=0, fct=1, **kw_arr):
         """Draws the always ascending direction L^1."""
-        pass # TODO
-    
+        pass  # TODO
+
     def update(self):
         self.Z = self.field.value(self.xy_mesh).reshape(self.n, self.n)
         self._update_center()
@@ -191,7 +189,7 @@ class PlotterScalarField:
             ymin, ymax = ylim
         else:  # assume scalar
             ymin, ymax = mu[1] - ylim, mu[1] + ylim
-        
+
         x = np.linspace(xmin, xmax, n)
         y = np.linspace(ymin, ymax, n)
         X, Y = np.meshgrid(x, y)
@@ -201,24 +199,37 @@ class PlotterScalarField:
 
     def _draw_field(self, cmap=MY_CMAP, draw=True, **kwargs):
         if draw:
-            self.color_map = self.ax.pcolormesh(self.X, self.Y, self.Z, cmap=cmap, shading='auto')
+            self.color_map = self.ax.pcolormesh(self.X, self.Y, self.Z, cmap=cmap, shading="auto")
 
     def _draw_contours(self, contour_levels=10, contour_lw=0.3, draw=True, **kwargs):
         vmin, vmax = np.nanmin(self.Z), np.nanmax(self.Z)
         major_levels, minor_levels, _ = get_nice_ticks(vmin, vmax, contour_levels, 4)
-        
+
         if self.draw_contours and draw:
-            opts = dict(colors='k', linestyles='-', alpha=0.2)
-            self.contour_map_min = self.ax.contour(self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts)
-            self.contour_map_maj = self.ax.contour(self.X, self.Y, self.Z, major_levels, linewidths=contour_lw*2, **opts)
-        
-        self.kw_cbar = parse_kwargs(kwargs, dict(cbar_sw=True, cbar_ax=None, cbar_lab=r"$\sigma$ [u]", cbar_minor_ticks=True, cbar_color="black"))
+            opts = {"colors": "k", "linestyles": "-", "alpha": 0.2}
+            self.contour_map_min = self.ax.contour(
+                self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts
+            )
+            self.contour_map_maj = self.ax.contour(
+                self.X, self.Y, self.Z, major_levels, linewidths=contour_lw * 2, **opts
+            )
+
+        self.kw_cbar = parse_kwargs(
+            kwargs,
+            {
+                "cbar_sw": True,
+                "cbar_ax": None,
+                "cbar_lab": r"$\sigma$ [u]",
+                "cbar_minor_ticks": True,
+                "cbar_color": "black",
+            },
+        )
         self._update_colorbar(major_levels, minor_levels, **kwargs)
 
     def _draw_center(self, draw=True, **kwargs):
         if draw:
             mu = self.field.mu
-            self.center_point, = self.ax.plot(mu[0], mu[1], "+k")
+            (self.center_point,) = self.ax.plot(mu[0], mu[1], "+k")
 
     def _update_center(self):
         mu = self.field.mu
@@ -243,10 +254,14 @@ class PlotterScalarField:
             vmin, vmax = np.nanmin(self.Z), np.nanmax(self.Z)
             major_levels, minor_levels, _ = get_nice_ticks(vmin, vmax, contour_levels, 4)
 
-            opts = dict(colors='k', linestyles='-', alpha=0.2)
-            self.contour_map_min = self.ax.contour(self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts)
-            self.contour_map_maj = self.ax.contour(self.X, self.Y, self.Z, major_levels, linewidths=contour_lw*2, **opts)
-            #self._update_colorbar(major_levels, minor_levels)
+            opts = {"colors": "k", "linestyles": "-", "alpha": 0.2}
+            self.contour_map_min = self.ax.contour(
+                self.X, self.Y, self.Z, minor_levels, linewidths=contour_lw, **opts
+            )
+            self.contour_map_maj = self.ax.contour(
+                self.X, self.Y, self.Z, major_levels, linewidths=contour_lw * 2, **opts
+            )
+            # self._update_colorbar(major_levels, minor_levels)
 
     def _update_colorbar(self, major_levels, minor_levels, cbar_ax=None, **kwargs):
         cbar_sw = self.kw_cbar["cbar_sw"]
@@ -273,7 +288,9 @@ class PlotterScalarField:
         self._colorbar.ax.tick_params(colors=cbar_color)
 
         if cbar_minor_ticks:
-            self._colorbar = self.fig.colorbar(self.color_map, cax=self._cbar_axes, ticks=major_levels)
+            self._colorbar = self.fig.colorbar(
+                self.color_map, cax=self._cbar_axes, ticks=major_levels
+            )
             self._colorbar.ax.yaxis.set_minor_locator(FixedLocator(minor_levels))
             self._colorbar.ax.yaxis.set_minor_formatter(NullFormatter())
 
@@ -282,5 +299,6 @@ class PlotterScalarField:
         # Hide the color bar if requested
         if not cbar_sw:
             self._colorbar.set_visible(False)
-        
+
+
 #######################################################################################

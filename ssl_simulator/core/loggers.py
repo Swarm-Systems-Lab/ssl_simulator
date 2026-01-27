@@ -1,13 +1,16 @@
-import os
 import csv
+import os
 
 import numpy as np
-from ssl_simulator import create_dir, dict_to_json
+
+from ssl_simulator.utils.dict_ops import json_to_dict as dict_to_json
+from ssl_simulator.utils.path_ops import create_dir
 
 #######################################################################################
 
+
 class DataLogger:
-    def __init__(self, labels, filename, log_size=None, settings={}):
+    def __init__(self, labels, filename, log_size=None, settings=None):
         """
         Flexible logger for in-memory and/or file-based logging.
 
@@ -22,16 +25,18 @@ class DataLogger:
         settings : dict
             Dictionary of settings to store in the file header (if filename is used).
         """
+        if settings is None:
+            settings = {}
         self.filename = filename
-        self.labels = ["time"] + labels
+        self.labels = ["time", *labels]
         self.log_size = log_size
-        self.data = {label: None for label in self.labels}
+        self.data = dict.fromkeys(self.labels)
         self.settings = settings
 
         if self.filename:
             create_dir(os.path.dirname(filename), verbose=False)
 
-            with open(self.filename, mode='w', newline='') as file:
+            with open(self.filename, mode="w", newline="") as file:
                 file.write(f"# SETTINGS: {dict_to_json(self.settings, dump=True)}\n")
                 writer = csv.DictWriter(file, fieldnames=self.labels)
                 writer.writeheader()
@@ -57,17 +62,18 @@ class DataLogger:
             else:
                 self.data[label] = np.concatenate([self.data[label], value[None, ...]], axis=0)
                 if self.log_size and len(self.data[label]) > self.log_size:
-                    self.data[label] = self.data[label][-self.log_size:]
+                    self.data[label] = self.data[label][-self.log_size :]
 
                     # Remove oldest entry if size exceeded
                     if len(self.data[label]) > self.log_size:
-                        self.data[label] = self.data[label][-self.log_size:]
+                        self.data[label] = self.data[label][-self.log_size :]
 
         # File logging
         if self.filename:
             row = dict_to_json(sim_data)
-            with open(self.filename, mode='a', newline='') as file:
+            with open(self.filename, mode="a", newline="") as file:
                 writer = csv.DictWriter(file, fieldnames=self.labels)
                 writer.writerow(row)
+
 
 #######################################################################################

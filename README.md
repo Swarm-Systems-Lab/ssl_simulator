@@ -1,8 +1,53 @@
 # Swarm Systems Lab Python Simulator
 
-## Installation
 
-You can install the ```ssl_simulator``` package directly from GitHub. It is not and will not be available on public repositories such as PyPI.
+## Modernized Development Workflow
+
+### Build & Install (with Hatch)
+
+This project now uses [Hatch](https://hatch.pypa.io/) for building and packaging. To install dependencies and develop locally:
+
+```bash
+pip install hatch
+hatch env create
+hatch shell
+```
+To build a wheel or sdist:
+```bash
+hatch build
+```
+
+### Linting & Formatting
+
+We use [Ruff](https://docs.astral.sh/ruff/) for linting and [Black](https://black.readthedocs.io/) for code formatting. To check code style:
+```bash
+ruff check .
+black --check .
+```
+To auto-format:
+```bash
+black .
+```
+
+### Testing
+
+Run tests with [pytest](https://docs.pytest.org/):
+```bash
+pytest
+```
+
+### Pre-commit Hooks
+
+Install [pre-commit](https://pre-commit.com/) hooks to enforce code quality automatically:
+```bash
+pre-commit install
+```
+Hooks will run automatically on git commit.
+
+---
+
+
+You can still install the ```ssl_simulator``` package directly from GitHub. It is not and will not be available on public repositories such as PyPI.
 
 > The ```ssl_simulator``` package provides a stable, tested set of dependencies for the following packages: ```numpy```, ```matplotlib```, ```tqdm```, ```pandas```, ```scipy```, ```ipython```. We do not recommend modifying the version ranges, as the package has been tested to work with this specific combination.
 
@@ -25,14 +70,14 @@ Or in ```requierements.txt```:
 git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@v0.0.1
 ```
 
-Option 3. Editable **local install** for development
-   
-If you cloned the repository locally and want changes to the code to be immediately reflected without reinstalling:
+
+Option 3. Editable **local install** for development (legacy):
 ```bash
 git clone https://github.com/Swarm-Systems-Lab/ssl_simulator.git
 cd ssl_simulator
 pip install -e .
 ```
+We recommend using Hatch for development (see above).
 
 ### Additional Dependencies
 
@@ -55,7 +100,7 @@ pip install -e .
     ```
     sudo apt-get update && sudo apt-get install -y texlive texlive-latex-extra texlive-fonts-recommended dvipng cm-super
     ```
-    
+
     * MacOS (via MacTeX):
     ```
     brew install mactex

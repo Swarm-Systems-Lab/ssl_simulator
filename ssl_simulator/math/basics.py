@@ -1,25 +1,27 @@
-"""
-"""
+""" """
 
 __all__ = [
-    "unit_vec",
-    "check_and_parse_dimensions",
-    "adapt_to_nd",
     "Q_prod_xi",
+    "adapt_to_nd",
+    "angle_of_vectors",
+    "check_and_parse_dimensions",
     "exp",
-    "angle_of_vectors"
+    "unit_vec",
 ]
 
 import numpy as np
+
 from ssl_simulator.config import CONFIG
 
 #######################################################################################
+
 
 def unit_vec(V, delta=0, axis=-1):
     """
     Normalize a bundle of 2D vectors.
 
-    Parameters:
+    Parameters
+    ----------
         V : np.ndarray
             Input array of shape (..., 2), e.g. (T, N, 2).
         delta : float
@@ -27,7 +29,8 @@ def unit_vec(V, delta=0, axis=-1):
         axis : int
             Axis along which to normalize.
 
-    Returns:
+    Returns
+    -------
         np.ndarray
             Array of unit vectors, same shape as V.
     """
@@ -39,7 +42,8 @@ def unit_vec(V, delta=0, axis=-1):
     unit = np.where(norms > delta, unit, 0.0)  # zero out small vectors
     return unit
 
-def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None, dtype=float):
+
+def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None, dtype=float):  # noqa: C901
     """
     Generic function to check and parse dimensions of an array.
 
@@ -53,13 +57,16 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
             - If an int, all None dimensions are replaced with that value.
             - If a list, it must have as many entries as there are Nones in expected_shape.
 
-    Returns:
+    Returns
+    -------
         np.ndarray: The reshaped or validated array.
 
-    Raises:
+    Raises
+    ------
         ValueError: If the array does not match the expected shape.
 
-    Examples:
+    Examples
+    --------
         >>> arr = np.ones((10, 32, 64))
         >>> check_and_parse_dimensions(arr, (None, 32, 64))
         # passes, first dim is free (10)
@@ -83,7 +90,6 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
 
     # Handle special cases for expected shapes (auto-add batch dimension)
     # TODO: generalize this logic
-    orig_shape = array.shape
     changed = False
 
     if len(expected_shape) == 2 and expected_shape[0] is None and array.ndim == 1:
@@ -92,15 +98,25 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
     elif len(expected_shape) == 3 and expected_shape[0] is None and array.ndim == 2:
         array = array[np.newaxis, :, :]
         changed = True
-    elif len(expected_shape) == 4 and expected_shape[0] is None and expected_shape[1] is None and array.ndim == 3:
+    elif (
+        len(expected_shape) == 4
+        and expected_shape[0] is None
+        and expected_shape[1] is None
+        and array.ndim == 3
+    ):
         array = array[:, np.newaxis, :, :]
         changed = True
-    elif len(expected_shape) == 4 and expected_shape[0] is None and expected_shape[1] is None and array.ndim == 2:
+    elif (
+        len(expected_shape) == 4
+        and expected_shape[0] is None
+        and expected_shape[1] is None
+        and array.ndim == 2
+    ):
         array = array[np.newaxis, np.newaxis, :, :]
         changed = True
 
     if CONFIG["DEBUG"] and changed:
-        print(f"Shape changed: {orig_shape} -> {array.shape}")
+        pass
 
     # Replace None values in expected_shape with fill_values if provided
     if fill_values is not None:
@@ -124,9 +140,7 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
             continue  # free dimension
         elif isinstance(s, (list, tuple)):
             if array.shape[i] not in s:
-                raise ValueError(
-                    f"'{name}' dim {i} must be one of {s}, got {array.shape[i]}"
-                )
+                raise ValueError(f"'{name}' dim {i} must be one of {s}, got {array.shape[i]}")
         else:  # expected specific size
             if array.shape[i] == s:
                 continue
@@ -134,9 +148,7 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
                 # allow broadcast
                 target_shape[i] = s
             else:
-                raise ValueError(
-                    f"'{name}' dim {i} must be {s}, got {array.shape[i]}"
-                )
+                raise ValueError(f"'{name}' dim {i} must be {s}, got {array.shape[i]}")
 
     # Broadcast if needed
     if tuple(target_shape) != array.shape:
@@ -149,7 +161,8 @@ def adapt_to_nd(X, target_ndim, dtype=None):
     """
     Adapt the input array to the specified number of dimensions.
 
-    Parameters:
+    Parameters
+    ----------
         X : array-like
             Input data to adapt.
         target_ndim : int
@@ -157,7 +170,8 @@ def adapt_to_nd(X, target_ndim, dtype=None):
         dtype : data-type, optional
             Desired data type of the output array.
 
-    Returns:
+    Returns
+    -------
         np.ndarray
             Array adapted to the specified number of dimensions.
     """
@@ -168,22 +182,23 @@ def adapt_to_nd(X, target_ndim, dtype=None):
     expected_shape = tuple(None for _ in range(target_ndim))
     return check_and_parse_dimensions(X, expected_shape, name="X")
 
+
 def Q_prod_xi(Q, X):
     """
     Apply matrix Q to each row of X.
-    
+
     Parameters
     ----------
     Q : ndarray of shape (D, D)
         Transformation matrix.
     X : ndarray of shape (N, D)
         Input data where each row is a vector to be transformed.
-    
+
     Returns
     -------
     X_transformed : ndarray of shape (N, D)
         Result of applying Q to each row of X.
-    
+
     Example
     -------
     X = np.random.randn(10, 5)
@@ -192,12 +207,13 @@ def Q_prod_xi(Q, X):
     """
     return X @ Q.T
 
+
 def exp(X, Q, x0):
     """
     Compute the exponential of a quadratic form:
-    
+
         exp(X) = exp((X - x0)^T @ Q @ (X - x0))
-    
+
     Parameters
     ----------
     X : array-like of shape (N, D)
@@ -206,17 +222,18 @@ def exp(X, Q, x0):
         Quadratic form matrix.
     x0 : array-like of shape (D,)
         Center of the Gaussian (mean).
-    
+
     Returns
     -------
     result : ndarray of shape (N,)
         Result of applying the exponential quadratic form to each point in X.
     """
     X = adapt_to_nd(X, target_ndim=2)
-    delta = X - x0                          # (N, D)
-    quad_form = Q_prod_xi(Q, delta)         # (N, D)
+    delta = X - x0  # (N, D)
+    quad_form = Q_prod_xi(Q, delta)  # (N, D)
     exponent = np.sum(delta * quad_form, axis=1)  # (N,)
     return np.exp(exponent)
+
 
 def angle_of_vectors(A, B):
     """
@@ -238,5 +255,6 @@ def angle_of_vectors(A, B):
     cross_product = np.cross(A, B, axis=1)
     theta = np.arctan2(cross_product, dot_product)
     return theta
+
 
 #######################################################################################

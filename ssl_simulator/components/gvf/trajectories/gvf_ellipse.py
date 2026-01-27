@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 __all__ = ["GvfEllipse"]
 
@@ -55,9 +54,9 @@ class GvfEllipse(GvfTrajectory):
         H[1, 0] = H[0, 1]
         H[1, 1] = 2 * (self.sina**2 / self.a**2 + self.cosa**2 / self.b**2)
         return H
-    
+
     def get_config(self):
-        return dict(XYoff=self.XYoff, alpha=self.alpha, a=self.a, b=self.b)
+        return {"XYoff": self.XYoff, "alpha": self.alpha, "a": self.a, "b": self.b}
 
 
 #######################################################################################

@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 __all__ = ["Graph"]
 
@@ -8,6 +7,7 @@ import numpy as np
 from ssl_simulator.math import build_B, build_L_from_B
 
 #######################################################################################
+
 
 class Graph:
     def __init__(self, N, Z):
@@ -19,9 +19,7 @@ class Graph:
         self.set_Z(Z)
 
     def set_Z(self, Z):
-        """
-        Set the new Z and build the Laplacian matrix
-        """
+        """Set the new Z and build the Laplacian matrix."""
         self.Z = Z
         self.B = build_B(Z, self.N)
         self.gen_L()
@@ -36,11 +34,9 @@ class Graph:
         self.descr = descr
 
     def gen_L(self):
-        """
-        Generate the Laplacian matrix considering agent status.
-        """
+        """Generate the Laplacian matrix considering agent status."""
         B_kill = np.copy(self.B)
-        
+
         # Zero out columns in B corresponding to inactive (dead) agents
         for i in np.where(self.agents_status == 0)[0]:
             for j in range(B_kill.shape[1]):
@@ -61,7 +57,7 @@ class Graph:
     def kill_agents(self, agents_index):
         """
         Update the Lalplacian matrix to kill the connections of the
-        specified agents, and update their status to (0)-"non-active"
+        specified agents, and update their status to (0)-"non-active".
         """
         if not isinstance(agents_index, list):
             agents_index = [agents_index]
@@ -72,17 +68,16 @@ class Graph:
 
         # Generate the new Laplacian matrix
         self.gen_L()
-    
+
     def get_config(self):
-        return dict(N=self.N, Z=self.Z)
-    
+        return {"N": self.N, "Z": self.Z}
+
     def __repr__(self):
         return self.descr
+
 
 #######################################################################################
 
 # Example usage
 if __name__ == "__main__":
-    graph = Graph(10, ((0,1),(1,2)))
-    print(graph.B)
-    print(graph.L)
+    graph = Graph(10, ((0, 1), (1, 2)))

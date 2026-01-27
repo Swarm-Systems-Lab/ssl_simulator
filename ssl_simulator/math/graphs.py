@@ -1,17 +1,18 @@
-"""
-"""
+""" """
 
 __all__ = [
-    "build_B", 
+    "build_B",
     "build_L_from_B",
-    "gen_Z_random", 
-    "gen_Z_distance", 
-    "gen_Z_split", 
+    "gen_Z_distance",
+    "gen_Z_random",
     "gen_Z_ring",
-    ]
+    "gen_Z_split",
+]
+
+import random
+from typing import Optional
 
 import numpy as np
-import random
 
 #######################################################################################
 # Laplacian matrix
@@ -32,7 +33,7 @@ def build_B(list_edges: list[tuple[int, int]], N: int) -> np.ndarray:
     -------
     np.ndarray
         Incidence matrix of shape (N, E), where E is the number of edges.
-    
+
     Note
     ----
     This definition of the incidence matrix is for computing z = sum(x_i - x_j).
@@ -45,7 +46,7 @@ def build_B(list_edges: list[tuple[int, int]], N: int) -> np.ndarray:
     return B
 
 
-def build_L_from_B(B: np.ndarray, W : np.ndarray = None) -> np.ndarray:
+def build_L_from_B(B: np.ndarray, W: np.ndarray = None) -> np.ndarray:
     """
     Compute the Laplacian matrix from the incidence matrix.
 
@@ -54,12 +55,12 @@ def build_L_from_B(B: np.ndarray, W : np.ndarray = None) -> np.ndarray:
     Parameters
     ----------
     B : np.ndarray
-        Incidence matrix of shape (N, E), where N is the number of nodes 
+        Incidence matrix of shape (N, E), where N is the number of nodes
         and E is the number of edges.
     W : np.ndarray, optional
-        Diagonal weight matrix of shape (E, E), where each diagonal entry 
+        Diagonal weight matrix of shape (E, E), where each diagonal entry
         corresponds to the weight of an edge. If None, assumes uniform weights.
-        
+
     Returns
     -------
     np.ndarray
@@ -79,11 +80,11 @@ def build_L_from_B(B: np.ndarray, W : np.ndarray = None) -> np.ndarray:
 # Graph generators
 
 
-def gen_Z_random(N: int, rounds: int = 1, seed: int = None) -> list[tuple[int, int]]:
+def gen_Z_random(N: int, rounds: int = 1, seed: Optional[int] = None) -> list[tuple[int, int]]:
     """
     Generate a random connected undirected graph using a heuristic.
 
-    This function ensures that the generated graph is connected by iteratively 
+    This function ensures that the generated graph is connected by iteratively
     selecting edges between visited and non-visited nodes.
 
     Parameters
@@ -128,16 +129,16 @@ def gen_Z_distance(P: np.ndarray, dist_thr: float) -> list[tuple[int, int]]:
     """
     Generate a graph based on a distance threshold heuristic.
 
-    For each pair of nodes (i, j), if the distance between them (d_ij) is less than 
+    For each pair of nodes (i, j), if the distance between them (d_ij) is less than
     or equal to the given threshold (dist_thr), an edge (i, j) is added to the graph.
 
     Parameters
     ----------
     P : np.ndarray
-        An array of shape (N, D), where N is the number of nodes and D is the number 
+        An array of shape (N, D), where N is the number of nodes and D is the number
         of dimensions. Each row represents the coordinates of a node in the space.
     dist_thr : float
-        The distance threshold. If the distance between two nodes is less than or 
+        The distance threshold. If the distance between two nodes is less than or
         equal to this value, an edge will be created between them.
 
     Returns
@@ -158,7 +159,7 @@ def gen_Z_split(N: int, order: int, n_breaks: int = 0) -> list[tuple[int, int]]:
     """
     Split a fully connected graph into `n_breaks` smaller fully connected graphs.
 
-    The graph is initially divided into `order` subgraphs. Afterward, a number of edges 
+    The graph is initially divided into `order` subgraphs. Afterward, a number of edges
     (based on `n_breaks`) are removed from the generated graph to split it into disconnected subgraphs.
 
     Parameters
@@ -208,7 +209,7 @@ def gen_Z_ring(N: int) -> list[tuple[int, int]]:
     """
     Generate a ring-shaped graph where each node is connected to its two neighbors.
 
-    The graph consists of N nodes arranged in a ring structure, where node i is connected 
+    The graph consists of N nodes arranged in a ring structure, where node i is connected
     to node i+1, and node N-1 is connected to node 0 to form the ring.
 
     Parameters
@@ -219,7 +220,7 @@ def gen_Z_ring(N: int) -> list[tuple[int, int]]:
     Returns
     -------
     list of tuple[int, int]
-        List of edges, where each edge is represented as a tuple (i, j), 
+        List of edges, where each edge is represented as a tuple (i, j),
         forming a closed ring graph.
     """
     Z = [(i, i + 1) for i in range(N - 1)]

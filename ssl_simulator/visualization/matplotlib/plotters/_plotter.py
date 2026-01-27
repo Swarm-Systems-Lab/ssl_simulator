@@ -1,17 +1,17 @@
-"""
-    PLOTTER ABSTRACT BASE CLASS
-"""
+"""PLOTTER ABSTRACT BASE CLASS."""
 
-from ssl_simulator import parse_kwargs
 from matplotlib.pyplot import figure
 
+from ssl_simulator.utils.dict_ops import parse_kwargs
+
 #######################################################################################
+
 
 class Plotter:
     fig = None
 
     def __init__(self, **kwargs):
-        kw_fig = dict(dpi=None, figsize=None)
+        kw_fig = {"dpi": None, "figsize": None}
         self.kw_fig = parse_kwargs(kwargs, kw_fig)
         self.fig = figure(**self.kw_fig)
 
@@ -26,10 +26,11 @@ class Plotter:
 
     def update(self, **kwargs):
         pass
-    
+
     # ------------------------------------------------------------------------
 
     def save(self, filename, dpi=100, **kwargs):
         self.fig.savefig(filename, dpi=dpi, **kwargs)
+
 
 #######################################################################################

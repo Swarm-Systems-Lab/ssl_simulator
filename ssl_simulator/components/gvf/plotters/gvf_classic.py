@@ -1,13 +1,14 @@
-"""
-"""
+""" """
 
 import numpy as np
-from ssl_simulator import parse_kwargs
+
+from ssl_simulator.utils.dict_ops import parse_kwargs
 from ssl_simulator.visualization import PlotterVF
 
-E = np.array([[0, 1],[-1, 0]]) # -90 degree 2D rotation matrix
+E = np.array([[0, 1], [-1, 0]])  # -90 degree 2D rotation matrix
 
 #######################################################################################
+
 
 class PlotterGvf(PlotterVF):
     def __init__(self, gvf_traj, ax, **kwargs):
@@ -20,18 +21,17 @@ class PlotterGvf(PlotterVF):
 
         self.quivers = None
 
-    def draw(self, draw_field=True, s=1, ke=1.0, pts=30, xy_offset=[0,0], 
-             **kwargs):
-        """
-        Plot the trajectory and the vector field.
-        """
+    def draw(self, draw_field=True, s=1, ke=1.0, pts=30, xy_offset=None, **kwargs):
+        """Plot the trajectory and the vector field."""
+        if xy_offset is None:
+            xy_offset = [0, 0]
         self.s = s
         self.ke = ke
         self.xy_offset = xy_offset
 
         # Config
-        self.kw_line = parse_kwargs(kwargs, dict(ls="--", lw=1, c="k"))
-        self.kw_vect.update(dict(lw=1, zorder=4, alpha=0.2, color="black"))
+        self.kw_line = parse_kwargs(kwargs, {"ls": "--", "lw": 1, "c": "k"})
+        self.kw_vect.update({"lw": 1, "zorder": 4, "alpha": 0.2, "color": "black"})
         self.kw_vect = parse_kwargs(kwargs, self.kw_vect)
 
         # Plot trajectory
@@ -46,11 +46,9 @@ class PlotterGvf(PlotterVF):
             self.quivers = self._draw_field(self.ax)
 
     # ---------------------------------------------------------------------------------
-    
+
     def _compute_vector_field(self, **kwargs):
-        """
-        Generate the vector field to be plotted.
-        """
+        """Generate the vector field to be plotted."""
         pos = self.mapgrad_pos
 
         # Compute the GVF on every point of the mesh
@@ -63,5 +61,6 @@ class PlotterGvf(PlotterVF):
         vec_normalized = vec / np.clip(norm, a_min=1e-8, a_max=None)
 
         return vec_normalized
-    
+
+
 #######################################################################################

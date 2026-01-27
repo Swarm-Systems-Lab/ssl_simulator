@@ -1,11 +1,11 @@
-"""
-"""
+""" """
 
 __all__ = ["Oscillator"]
 
 import numpy as np
 
-from ssl_simulator import Controller
+from ssl_simulator.core._controller import Controller
+
 
 class Oscillator(Controller):
     def __init__(self, context, A, omega, speed):
@@ -19,7 +19,7 @@ class Oscillator(Controller):
         self.speed = speed
         self.gamma = None
 
-        # ---------------------------        
+        # ---------------------------
         # Controller output variables
         self.control_vars = {
             "u": None,
@@ -42,17 +42,14 @@ class Oscillator(Controller):
         self.omega = omega
 
     def compute_control(self, time, dt):
-        """
-        Follow y = gamma(t) = A * sin(w t) at constant speed ||v|| = s
-        """
-
+        """Follow y = gamma(t) = A * sin(w t) at constant speed ||v|| = s."""
         if (self.A * self.omega > self.speed).any():
             raise ValueError("A * omega should be <= speed!")
-    
+
         self.gamma = self.A * np.sin(self.omega * time)
-        gamma_dot = self.A*self.omega * np.cos(self.omega * time) 
+        gamma_dot = self.A * self.omega * np.cos(self.omega * time)
         x_dot = np.sqrt(self.speed**2 - gamma_dot**2)
 
-        self.ctrl_u = np.zeros((self.n_agents,2))
-        self.ctrl_u[:,0] = x_dot
-        self.ctrl_u[:,1] = gamma_dot
+        self.ctrl_u = np.zeros((self.n_agents, 2))
+        self.ctrl_u[:, 0] = x_dot
+        self.ctrl_u[:, 1] = gamma_dot

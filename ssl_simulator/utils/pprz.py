@@ -1,20 +1,22 @@
-"""
-"""
+""" """
 
 __all__ = [
-    "pprz_angle",
-    "load_pprz_data", 
     "get_pprz_idx",
+    "load_pprz_data",
+    "pprz_angle",
 ]
+
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 
 #######################################################################################
 
+
 def pprz_angle(theta_array):
     """
-    Convert an angle from standard mathematical coordinates to 
+    Convert an angle from standard mathematical coordinates to
     Paparazzi UAV convention.
 
     Parameters
@@ -26,7 +28,7 @@ def pprz_angle(theta_array):
     -------
     np.ndarray
         Converted angles in radians.
-    
+
     Notes
     -----
     - The Paparazzi UAV convention defines 0 radians as pointing north (upward),
@@ -35,8 +37,10 @@ def pprz_angle(theta_array):
     """
     return -theta_array + np.pi / 2
 
-def load_pprz_data(filename: str, t0: float, tf: float = None, sep: str = "\t", 
-              time_label: str = "Time") -> pd.DataFrame:
+
+def load_pprz_data(
+    filename: str, t0: float, tf: Optional[float] = None, sep: str = "\t", time_label: str = "Time"
+) -> pd.DataFrame:
     """
     Load data from a Paparazzi .csv file, filtering it based on time range.
 
@@ -47,7 +51,7 @@ def load_pprz_data(filename: str, t0: float, tf: float = None, sep: str = "\t",
     t0 : float
         The start time for the data filter.
     tf : float, optional
-        The end time for the data filter (default is None, which means no upper 
+        The end time for the data filter (default is None, which means no upper
         time filter).
     sep : str, optional
         The delimiter used in the CSV file (default is tab-separated).
@@ -65,6 +69,7 @@ def load_pprz_data(filename: str, t0: float, tf: float = None, sep: str = "\t",
     else:
         data = data.loc[(data[time_label] >= t0) & (data[time_label] <= tf)]
     return data
+
 
 def get_pprz_idx(data: pd.DataFrame, t: float, time_label: str = "Time") -> int:
     """
@@ -104,10 +109,11 @@ def get_pprz_idx(data: pd.DataFrame, t: float, time_label: str = "Time") -> int:
         raise ValueError("The DataFrame is empty.")
 
     filtered_data = data[data[time_label] >= t]
-    
+
     if filtered_data.empty:
         raise ValueError(f"No index found where '{time_label}' >= {t}.")
 
     return filtered_data.index[0]
+
 
 #######################################################################################

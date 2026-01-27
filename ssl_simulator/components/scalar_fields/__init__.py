@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from ._scalar_field import *
 from .sigma_fract import *

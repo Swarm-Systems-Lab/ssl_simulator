@@ -1,16 +1,14 @@
-"""
-Matplotlib Animation Utilities
-"""
+"""Matplotlib Animation Utilities."""
 
 __all__ = [
     "update_quivers",
     "update_scatters",
-    ]
+]
 
 import numpy as np
-import matplotlib.pylab as plt
 
 #######################################################################################
+
 
 def update_scatters(scatter_list, p_frame):
     """
@@ -32,6 +30,7 @@ def update_scatters(scatter_list, p_frame):
         x, y, z = p_frame[n]
         # Matplotlib expects 1-element arrays
         sc._offsets3d = (np.array([x]), np.array([y]), np.array([z]))
+
 
 def update_quivers(quivers_array, p_frame, R_frame, arr_len=1.0):
     """

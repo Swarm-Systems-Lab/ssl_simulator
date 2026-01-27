@@ -1,25 +1,24 @@
-"""
-"""
+""" """
 
 from abc import ABC, abstractmethod
+
 import numpy as np
 
-from ssl_simulator import parse_kwargs
-from ssl_simulator.visualization import Plotter, vector2d
-
-E = np.array([[0, 1],[-1, 0]]) # -90 degree 2D rotation matrix
+E = np.array([[0, 1], [-1, 0]])  # -90 degree 2D rotation matrix
 
 #######################################################################################
+
 
 class GvfTrajectory(ABC):
     """
     Abstract base class for generating and visualizing a GVF trajectory.
-    
+
     This class provides methods for:
     - Generating parametric trajectory points.
     - Computing the trajectory's parametric equation (`phi`), igs gradient and its Hessian.
     - Creating and visualizing the corresponding vector field.
     """
+
     def __init__(self):
         self.vec_phi = True
         self.vec_grad = True
@@ -35,12 +34,13 @@ class GvfTrajectory(ABC):
         Args:
             pts (int): Number of points to generate.
 
-        Returns:
-            np.ndarray: A 2D array of shape (2, pts), where each column represents 
+        Returns
+        -------
+            np.ndarray: A 2D array of shape (2, pts), where each column represents
                         a point [x, y] along the trajectory.
         """
         pass
-    
+
     @abstractmethod
     def phi(self, p: np.ndarray) -> float:
         """
@@ -49,7 +49,8 @@ class GvfTrajectory(ABC):
         Args:
             p (np.ndarray): A 1D NumPy array of shape (2,), representing a position [x, y].
 
-        Returns:
+        Returns
+        -------
             float: The scalar field value at the given position.
         """
         pass
@@ -62,8 +63,9 @@ class GvfTrajectory(ABC):
         Args:
             p (np.ndarray): A 1D NumPy array of shape (2,), representing a position [x, y].
 
-        Returns:
-            np.ndarray: A 1D array of shape (2,) representing the gradient vector 
+        Returns
+        -------
+            np.ndarray: A 1D array of shape (2,) representing the gradient vector
                         [∂phi/∂x, ∂phi/∂y].
         """
         pass
@@ -76,7 +78,8 @@ class GvfTrajectory(ABC):
         Args:
             p (np.ndarray): A 1D NumPy array of shape (2,), representing a position [x, y].
 
-        Returns:
+        Returns
+        -------
             np.ndarray: A 2D array of shape (2, 2), representing the Hessian matrix:
                         [[∂²phi/∂x², ∂²phi/∂x∂y],
                         [∂²phi/∂y∂x, ∂²phi/∂y²]].
@@ -89,7 +92,7 @@ class GvfTrajectory(ABC):
 
     # ------------------------------------------------------------------------
     # Evaluation #############################################################
-    
+
     def phi_vec(self, p):
         return self._vectorial_comp(p, self.phi, self.vec_phi)
 
@@ -108,11 +111,11 @@ class GvfTrajectory(ABC):
 
         if len(p.shape) == 1:
             return func(p)
-        
+
         # If the Hessian is the same for every p just repeat it
         if not vec_flag:
             X = self.hess_phi(p)
-            if  N > 1:
+            if N > 1:
                 X = np.array([X])
                 X = np.repeat(X, N, axis=0)
             return X
@@ -124,5 +127,6 @@ class GvfTrajectory(ABC):
         X = np.array(X)
 
         return X
-    
+
+
 #######################################################################################
