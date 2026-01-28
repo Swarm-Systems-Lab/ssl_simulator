@@ -57,6 +57,7 @@ dependencies = [
     "mypy>=1.0",
     "matplotlib>=3.7",
     "IPython>=9.8",
+    "ipykernel",
 ]
 
 [tool.hatch.envs.default.scripts]
