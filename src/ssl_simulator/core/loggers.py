@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-from ssl_simulator.utils.dict_ops import json_to_dict as dict_to_json
+from ssl_simulator.utils.dict_ops import dict_to_json
 from ssl_simulator.utils.path_ops import create_dir
 
 #######################################################################################

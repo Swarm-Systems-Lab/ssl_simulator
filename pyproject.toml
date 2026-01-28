@@ -4,19 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ssl_simulator"
-version = "0.0.3"
+dynamic = ["version"]
 description = "Swarm Systems Lab Python Simulator"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "GPL-3.0-or-later"
+license = { text = "GPL-3.0-or-later" }
 authors = [
-    { name="Jesús Bautista Villar", email="jesbauti20@gmail.com" }
+    { name = "Jesús Bautista Villar", email = "jesbauti20@gmail.com" }
 ]
 dependencies = [
     "numpy>=1.23",
     "tqdm>=4.50",
     "pandas>=1.5",
     "scipy>=1.5",
+    # Note: Direct git references prevent uploading to PyPI
     "lieplusplus_py @ git+https://github.com/Swarm-Systems-Lab/lieplusplus_py.git@master"
 ]
 
@@ -28,7 +29,9 @@ dev = [
     "mypy>=1.0",
     "pre-commit>=3.0",
     "matplotlib>=3.7",
-    "matplotlib-inline>=0.1.6,<0.3"
+    "matplotlib-inline>=0.1.6,<0.3",
+    "IPython>=8.0",
+    "ipykernel",
 ]
 examples = [
     "matplotlib>=3.7",
@@ -38,28 +41,18 @@ examples = [
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.hatch.build.targets.sdist]
-packages = ["src/ssl_simulator"]
-include = ["src/ssl_simulator/**", "README.md", "LICENSE"]
-exclude = ["tests/**", "examples/**", "output/**"]
+[tool.hatch.version]
+path = "src/ssl_simulator/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ssl_simulator"]
-include = ["src/ssl_simulator/**", "README.md", "LICENSE"]
-exclude = ["tests/**", "examples/**", "output/**"]
 
-# Hatch environments
+[tool.hatch.build.targets.sdist]
+include = ["src", "README.md", "LICENSE"]
+exclude = ["tests", "examples", "output"]
+
 [tool.hatch.envs.default]
-dependencies = [
-    "ruff>=0.1.0",
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "mypy>=1.0",
-    "matplotlib>=3.7",
-    "IPython>=9.8",
-    "ipykernel",
-]
-
+features = ["dev"]
 [tool.hatch.envs.default.scripts]
 format = "ruff format ."
 lint = "ruff check --fix ."
@@ -70,55 +63,31 @@ type-check = "mypy src/ssl_simulator"
 all = ["format", "lint", "type-check", "test"]
 
 [tool.hatch.envs.examples]
-dependencies = [
-    "matplotlib>=3.7",
-    "matplotlib-inline>=0.1.6,<0.3"
-]
+features = ["examples"]
 
-# Ruff configuration
 [tool.ruff]
 line-length = 100
-target-version = "py38"
-exclude = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "env",
-    "build",
-    "dist",
-    "output",
-]
+exclude = ["output"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "C90", "UP", "B", "A", "C4", "T20", "SIM", "Q", "RUF"]
-ignore = [
-    "D100",  # Missing docstring in public module (adjust as needed)
-    "D104",  # Missing docstring in public package
-    "F403",  # TODO check not ignoring
-    "F401",  # TODO check not ignoring
-    "E501"
-]
+ignore = ["D100", "D104", "F403", "F401", "E501"]
 
 [tool.ruff.lint.pydocstyle]
-convention = "numpy"  # or "google" or "pep257"
+convention = "numpy"
 
-# Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
 addopts = "-v --strict-markers"
 
-# MyPy configuration
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = false  # Set to true when you're ready
 ignore_missing_imports = true
+check_untyped_defs = true # Better than disallow_untyped_defs = false
 
-# Coverage configuration
 [tool.coverage.run]
 source = ["src/ssl_simulator"]
 omit = ["tests/*", "examples/*"]

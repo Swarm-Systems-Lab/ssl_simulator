@@ -1,5 +1,7 @@
 # ssl_simulator/__init__.py
 
+__version__ = "0.0.4"
+
 # Exceptions
 # Submodules
 from ssl_simulator import components, controllers, math, robot_models, visualization
