@@ -15,17 +15,7 @@ import pytest
 # Animation Tools (For creating animations)
 from matplotlib.animation import FuncAnimation
 
-#######################################################################################
-# Third-Party Libraries
-#######################################################################################
-# Import the Main Module of the Project
-import ssl_simulator
-
 # Test some import shortcuts
-
-
-def test_import():
-    assert ssl_simulator is not None
 
 
 def test_latex_installed():

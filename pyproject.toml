@@ -39,11 +39,13 @@ examples = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
-include = ["ssl_simulator/**", "README.md", "LICENSE"]
+packages = ["src/ssl_simulator"]
+include = ["src/ssl_simulator/**", "README.md", "LICENSE"]
 exclude = ["tests/**", "examples/**", "output/**"]
 
 [tool.hatch.build.targets.wheel]
-include = ["ssl_simulator/**", "README.md", "LICENSE"]
+packages = ["src/ssl_simulator"]
+include = ["src/ssl_simulator/**", "README.md", "LICENSE"]
 exclude = ["tests/**", "examples/**", "output/**"]
 
 # Hatch environments
@@ -62,8 +64,8 @@ format = "ruff format ."
 lint = "ruff check --fix ."
 check = "ruff check ."
 test = "pytest {args:tests}"
-test-cov = "pytest --cov=ssl_simulator --cov-report=term-missing {args:tests}"
-type-check = "mypy ssl_simulator"
+test-cov = "pytest --cov=src/ssl_simulator --cov-report=term-missing {args:tests}"
+type-check = "mypy src/ssl_simulator"
 all = ["format", "lint", "type-check", "test"]
 
 [tool.hatch.envs.examples]
@@ -117,7 +119,7 @@ ignore_missing_imports = true
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["ssl_simulator"]
+source = ["src/ssl_simulator"]
 omit = ["tests/*", "examples/*"]
 
 [tool.coverage.report]
