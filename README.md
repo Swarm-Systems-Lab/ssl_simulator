@@ -8,7 +8,6 @@
 This project now uses [Hatch](https://hatch.pypa.io/) for building and packaging. To install dependencies and develop locally:
 
 ```bash
-pip install hatch
 hatch env create
 hatch shell
 ```
@@ -19,21 +18,20 @@ hatch build
 
 ### Linting & Formatting
 
-We use [Ruff](https://docs.astral.sh/ruff/) for linting and [Black](https://black.readthedocs.io/) for code formatting. To check code style:
+To lint code
 ```bash
-ruff check .
-black --check .
+hatch run lint
 ```
 To auto-format:
 ```bash
-black .
+hatch run format
 ```
 
 ### Testing
 
 Run tests with [pytest](https://docs.pytest.org/):
 ```bash
-pytest
+hatch run tests
 ```
 
 ### Pre-commit Hooks
