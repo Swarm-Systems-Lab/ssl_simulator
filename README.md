@@ -16,6 +16,11 @@ To build a wheel or sdist:
 hatch build
 ```
 
+To print env path (ex: for jupyter notebooks)
+```bash
+hatch env find default
+```
+
 ### Linting & Formatting
 
 To lint code
@@ -31,7 +36,7 @@ hatch run format
 
 Run tests with [pytest](https://docs.pytest.org/):
 ```bash
-hatch run tests
+hatch run test
 ```
 
 ### Pre-commit Hooks
