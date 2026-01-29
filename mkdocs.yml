@@ -1,0 +1,32 @@
+site_name: SSL Simulator
+site_description: Swarm Systems Lab Python Simulator
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google  # or numpy, sphinx
+            show_source: true
+            show_root_heading: true
+            heading_level: 2
+            show_submodules: true
+            show_root_toc_entry: true
+            allow_inspection: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - API Reference: api.md
+  - Contributing: contributing.md

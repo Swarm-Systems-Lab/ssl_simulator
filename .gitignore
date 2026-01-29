@@ -45,3 +45,6 @@ venv/
 # Custom folders
 output/
 tmp/
+
+# Docs
+site/*
