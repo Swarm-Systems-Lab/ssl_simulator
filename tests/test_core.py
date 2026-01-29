@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_controller_import():
     from ssl_simulator.core import _controller
 

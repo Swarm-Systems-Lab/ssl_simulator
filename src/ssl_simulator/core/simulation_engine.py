@@ -1,5 +1,3 @@
-from typing import Optional
-
 from tqdm import tqdm
 
 from .integrators import EulerIntegrator
@@ -19,8 +17,8 @@ class SimulationEngine:
         self,
         time_step: float = 0.01,
         integrator: str = "euler",
-        log_filename: Optional[str] = None,
-        log_time_step: Optional[float] = None,
+        log_filename: str | None = None,
+        log_time_step: float | None = None,
         log_size: int = 10,
     ):
         self.context = SimulationContext()

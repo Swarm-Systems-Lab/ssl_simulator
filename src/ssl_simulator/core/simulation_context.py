@@ -1,6 +1,5 @@
 import contextlib
 import inspect
-from typing import Optional
 
 from ssl_simulator.exceptions import InitializationError
 
@@ -69,7 +68,7 @@ class SimulationContext:
         except Exception as e:
             raise InitializationError(str(e)) from None
 
-    def connect_controller_to_robot(self, controller_key: str, mapping: Optional[dict] = None):
+    def connect_controller_to_robot(self, controller_key: str, mapping: dict | None = None):
         """
         Manually connect controller outputs to robot inputs using the controller key.
 
@@ -130,7 +129,7 @@ class SimulationContext:
         self.control_vars = control_vars
 
     # Interfaces
-    def call_interface(self, ctrl_key, method, *args, **kwargs):  # noqa: C901
+    def call_interface(self, ctrl_key, method, *args, **kwargs):
         """
         Call an exposed control interface method from a specific controller.
 

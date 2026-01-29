@@ -6,7 +6,6 @@ __all__ = [
     "pprz_angle",
 ]
 
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -39,7 +38,7 @@ def pprz_angle(theta_array):
 
 
 def load_pprz_data(
-    filename: str, t0: float, tf: Optional[float] = None, sep: str = "\t", time_label: str = "Time"
+    filename: str, t0: float, tf: float | None = None, sep: str = "\t", time_label: str = "Time"
 ) -> pd.DataFrame:
     """
     Load data from a Paparazzi .csv file, filtering it based on time range.

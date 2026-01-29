@@ -25,7 +25,6 @@ __all__ = [
     "so3_vee",
 ]
 
-import contextlib
 import math
 
 import numpy as np

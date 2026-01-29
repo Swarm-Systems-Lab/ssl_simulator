@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_utils_debug_import():
     from ssl_simulator.utils import debug
 

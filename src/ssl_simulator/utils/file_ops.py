@@ -5,12 +5,11 @@ __all__ = ["check_file_size", "load_class_from_file"]
 import importlib.util
 import os
 from pathlib import Path
-from typing import Optional
 
 #######################################################################################
 
 
-def check_file_size(filename: str, max_size_mb: Optional[int] = None):
+def check_file_size(filename: str, max_size_mb: int | None = None):
     file_size = os.path.getsize(filename)
     if max_size_mb is not None and file_size > max_size_mb * 1024 * 1024:
         raise ValueError(

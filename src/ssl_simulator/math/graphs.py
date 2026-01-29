@@ -10,7 +10,6 @@ __all__ = [
 ]
 
 import random
-from typing import Optional
 
 import numpy as np
 
@@ -80,7 +79,7 @@ def build_L_from_B(B: np.ndarray, W: np.ndarray = None) -> np.ndarray:
 # Graph generators
 
 
-def gen_Z_random(N: int, rounds: int = 1, seed: Optional[int] = None) -> list[tuple[int, int]]:
+def gen_Z_random(N: int, rounds: int = 1, seed: int | None = None) -> list[tuple[int, int]]:
     """
     Generate a random connected undirected graph using a heuristic.
 
@@ -151,7 +150,7 @@ def gen_Z_distance(P: np.ndarray, dist_thr: float) -> list[tuple[int, int]]:
     dist = np.sqrt(x2 - 2 * P @ P.T + y2)
 
     mask = dist + 2 * np.eye(dist.shape[0]) * dist_thr <= dist_thr
-    Z = [(i, j) for i, j in zip(*np.where(mask))]
+    Z = [(i, j) for i, j in zip(*np.where(mask), strict=False)]
     return Z
 
 
@@ -190,7 +189,7 @@ def gen_Z_split(N: int, order: int, n_breaks: int = 0) -> list[tuple[int, int]]:
     dist_thr = 0.1
     mask = dist + 2 * np.eye(dist.shape[0]) * dist_thr <= dist_thr
 
-    Z = [(i, j) for i, j in zip(*np.where(mask))]
+    Z = [(i, j) for i, j in zip(*np.where(mask), strict=False)]
 
     # Remove some conections
     N_subgraph = int(N / order)

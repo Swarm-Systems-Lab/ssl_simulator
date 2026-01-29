@@ -7,7 +7,7 @@ name = "ssl_simulator"
 dynamic = ["version"]
 description = "Swarm Systems Lab Python Simulator"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { text = "GPL-3.0-or-later" }
 authors = [
     { name = "Jesús Bautista Villar", email = "jesbauti20@gmail.com" }
@@ -22,27 +22,38 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "ruff>=0.1.0",
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "mypy>=1.0",
-    "pre-commit>=3.0",
+# Only include things here that an END USER might want to install.
+examples = [
     "matplotlib>=3.7",
     "matplotlib-inline>=0.1.6,<0.3",
     "IPython>=8.0",
     "ipykernel",
 ]
-examples = [
-    "matplotlib>=3.7",
-    "matplotlib-inline>=0.1.6,<0.3"
+
+# --- PEP 735: Dependency Groups (The Modern Standard) ---
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "ty>=0.0.14",
+    "pre-commit>=3.0",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
 ]
 docs = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.24.0",
 ]
+examples = [
+    "matplotlib>=3.7",
+    "matplotlib-inline>=0.1.6,<0.3",
+    "IPython>=8.0",
+    "ipykernel",
+]
 
+# --- Hatch Configuration ---
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -56,50 +67,74 @@ packages = ["src/ssl_simulator"]
 include = ["src", "README.md", "LICENSE"]
 exclude = ["tests", "examples", "output"]
 
+# --- Environment Management ---
 [tool.hatch.envs.default]
-features = ["dev"]
+# This pulls in the 'dev' and 'test' groups automatically
+dependencies = [
+    { include-group = "dev" },
+    { include-group = "test" }
+]
+features = ["examples"] # Includes the matplotlib stuff for local dev
+
 [tool.hatch.envs.default.scripts]
 format = "ruff format ."
 lint = "ruff check --fix ."
 check = "ruff check ."
 test = "pytest {args:tests}"
 test-cov = "pytest --cov=src/ssl_simulator --cov-report=term-missing {args:tests}"
-type-check = "mypy src/ssl_simulator"
+type-check = "ty check src/ssl_simulator"
 all = ["format", "lint", "type-check", "test"]
 
-[tool.hatch.envs.examples]
-features = ["examples"]
-
 [tool.hatch.envs.docs]
-features = ["docs"]
+dependencies = [
+    { include-group = "docs" }
+]
 
 [tool.hatch.envs.docs.scripts]
 build = "mkdocs build --clean --strict"
 serve = "mkdocs serve"
 deploy = "mkdocs gh-deploy --force"
 
+# --- Tool Configuration ---
 [tool.ruff]
 line-length = 100
 exclude = ["output"]
+target-version = "py310" # Updated to match project version
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "C90", "UP", "B", "A", "C4", "T20", "SIM", "Q", "RUF"]
-ignore = ["D100", "D104", "F403", "F401", "E501"]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "W",      # pycodestyle warnings
+    "I",      # isort (Import sorting)
+    "UP",     # pyupgrade (Modernizes syntax automatically)
+    "B",      # flake8-bugbear (Catches common bugs)
+    "A",      # flake8-builtins
+    "C4",     # flake8-comprehensions
+    "T20",    # flake8-print (Warns about print statements)
+    "SIM",    # flake8-simplify
+    "RUF",    # ruff-specific rules
+]
+ignore = [
+    "D100",   # Missing docstring in public module
+    "D104",   # Missing docstring in public package
+    "E501",   # Line too long (handled by formatter)
+    "F403",
+    "F401",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-v --strict-markers"
-
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-check_untyped_defs = true # Better than disallow_untyped_defs = false
+pythonpath = ["src", "."]
 
 [tool.coverage.run]
 source = ["src/ssl_simulator"]

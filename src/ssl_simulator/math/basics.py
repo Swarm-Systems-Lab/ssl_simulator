@@ -43,7 +43,7 @@ def unit_vec(V, delta=0, axis=-1):
     return unit
 
 
-def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None, dtype=float):  # noqa: C901
+def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=None, dtype=float):
     """
     Generic function to check and parse dimensions of an array.
 

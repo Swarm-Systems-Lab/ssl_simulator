@@ -282,7 +282,7 @@ def config_data_axis(ax, y_right=True, x_tick=True, y_tick=True, **kwargs):
         ax.set_yticklabels([])
 
 
-def config_axis(  # noqa: C901
+def config_axis(
     ax,
     x_step=None,
     y_step=None,
