@@ -27,7 +27,10 @@ def M_scale(s, n=2):
 
 
 def uniform_distrib(
-    N: int, lims: list[float], rc0: list[float] | None = None, seed: int | None = None
+    N: int,
+    lims: list[float] | tuple[float, ...] | np.ndarray,
+    rc0: list[float] | tuple[float, ...] | np.ndarray | None = None,
+    seed: int | None = None,
 ) -> np.ndarray:
     """
     Generate a uniform distribution of points within a hyper-rectangular region
@@ -60,17 +63,17 @@ def uniform_distrib(
     if seed is not None:
         np.random.seed(seed)
 
-    lims = np.array(lims, dtype=float)
-    D = lims.shape[0]
+    lims_arr = np.asarray(lims, dtype=float)
+    D = lims_arr.shape[0]
 
-    rc0 = np.zeros(D) if rc0 is None else np.array(rc0, dtype=float)
+    rc0_arr = np.zeros(D, dtype=float) if rc0 is None else np.asarray(rc0, dtype=float)
 
-    if rc0.shape[0] != D:
+    if rc0_arr.shape[0] != D:
         raise ValueError("'rc0' and 'lims' must have the same dimension length.")
 
     # Generate uniform samples in [-lims, lims] per dimension
-    X0 = (np.random.rand(N, D) - 0.5) * 2 * lims
-    return rc0 + X0
+    X0 = (np.random.rand(N, D) - 0.5) * 2 * lims_arr
+    return rc0_arr + X0
 
 
 # TODO: test

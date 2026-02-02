@@ -54,10 +54,8 @@ class SigmaFract(ScalarField):
     """
 
     def __init__(self, k, mu=None, dev=None, a=default_a, b=default_b, Qa=None, Qb=None):
-        if dev is None:
-            dev = [1, 1]
-        if mu is None:
-            mu = [0, 0]
+        dev = np.array([1.0, 1.0], dtype=float) if dev is None else np.asarray(dev, dtype=float)
+        mu = np.array([0.0, 0.0], dtype=float) if mu is None else np.asarray(mu, dtype=float)
         super().__init__()
 
         self.x0 = mu
@@ -66,14 +64,14 @@ class SigmaFract(ScalarField):
 
         # Set default Qa and Qb if not provided
         self.Qa = Qa if Qa is not None else create_Qa()
-        self.Qb = Qa if Qa is not None else create_Qb()
+        self.Qb = Qb if Qb is not None else create_Qb()
 
         # Convert a and b to numpy arrays if they are lists
         self.a = np.array(a) if isinstance(a, list) else a
         self.b = np.array(b) if isinstance(b, list) else b
 
         self.mu = mu
-        self.mu = self._find_max(mu)
+        self.mu = self._find_max(self.mu)
 
     def eval_value(self, X):
         X = adapt_to_nd(X, target_ndim=2)

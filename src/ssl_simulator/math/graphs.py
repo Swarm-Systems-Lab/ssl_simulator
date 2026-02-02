@@ -45,7 +45,7 @@ def build_B(list_edges: list[tuple[int, int]], N: int) -> np.ndarray:
     return B
 
 
-def build_L_from_B(B: np.ndarray, W: np.ndarray = None) -> np.ndarray:
+def build_L_from_B(B: np.ndarray, W: np.ndarray | None = None) -> np.ndarray:
     """
     Compute the Laplacian matrix from the incidence matrix.
 

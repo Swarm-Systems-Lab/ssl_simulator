@@ -30,15 +30,14 @@ class SigmaGauss(ScalarField):
     """
 
     def __init__(self, mu=None, max_intensity=100, dev=10):
-        if mu is None:
-            mu = [0, 0]
+        mu = np.array([0.0, 0.0], dtype=float) if mu is None else np.asarray(mu, dtype=float)
         self.x0 = mu
         self.max_intensity = max_intensity
         self.dev = dev
         self.Q = -np.eye(2) / (2 * self.dev**2)
 
         self.mu = mu
-        self.mu = self._find_max(mu)
+        self.mu = self._find_max(self.mu)
 
     def eval_value(self, X):
         X = adapt_to_nd(X, target_ndim=2)

@@ -11,16 +11,23 @@ from ssl_simulator.visualization import Plotter
 
 class PlotterVF(Plotter):
     traj_points: typing.ClassVar = None
-    mapgrad_pos: typing.ClassVar = None
-    mapgrad_vec: typing.ClassVar = None
 
     kw_vect: typing.ClassVar = {"angles": "xy", "scale_units": "xy", "scale": None, "width": None}
     arrow_scale_factor: typing.ClassVar = 1.5
     arrow_width_factor: typing.ClassVar = 0.0002
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ax = None
+        self.xy_offset = np.array([0.0, 0.0])
+        self.mapgrad_pos: np.ndarray = np.empty((0, 2))
+        self.mapgrad_vec: np.ndarray = np.empty((0, 2))
+
     # ---------------------------------------------------------------------------------
 
     def _compute_xymesh(self, pts, xlim=None, ylim=None, return_mesh=False, **kwargs):
+        if self.ax is None:
+            raise RuntimeError("Plotter axis is not initialized.")
         # Handle xlim
         if xlim is None:
             xmin, xmax = self.ax.get_xlim()
@@ -48,6 +55,8 @@ class PlotterVF(Plotter):
             return pos
 
     def _draw_field(self, ax):
+        if self.mapgrad_pos.size == 0 or self.mapgrad_vec.size == 0:
+            raise RuntimeError("Vector field data is not initialized.")
         self._adjust_vec_scale()
         quivers = ax.quiver(
             self.mapgrad_pos[:, 0],

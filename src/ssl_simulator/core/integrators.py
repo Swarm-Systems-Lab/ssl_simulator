@@ -1,9 +1,14 @@
+from typing import Any
+
 import lieplusplus as lpp
 import numpy as np
 
 from ssl_simulator.math import check_and_parse_dimensions
 
 #######################################################################################
+
+
+SO3 = getattr(lpp, "SO3", None)
 
 
 class EulerIntegrator:
@@ -39,14 +44,14 @@ class EulerIntegrator:
         # Perform integration
         new_state = {}
         for key in state:
-            if isinstance(state[key], lpp.SO3):
+            if SO3 is not None and isinstance(state[key], SO3):
                 if isinstance(state_dot[key + "_dot"], np.ndarray) and state_dot[
                     key + "_dot"
                 ].shape == (3, 3):
                     raise ValueError(
                         f"state_dot[{key + '_dot'}] is a 3x3 matrix, which is not allowed for integration."
                     )
-                new_state[key] = state[key] * lpp.SO3.exp(dt * state_dot[key + "_dot"])
+                new_state[key] = state[key] * SO3.exp(dt * state_dot[key + "_dot"])
                 # so3_rotate_with_step(state["R"], dt * omega_hat, step=CONFIG["SO3_STEP"])
             else:
                 integration = state[key] + dt * state_dot[key + "_dot"]

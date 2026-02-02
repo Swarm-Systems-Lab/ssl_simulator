@@ -20,16 +20,19 @@ def check_file_size(filename: str, max_size_mb: int | None = None):
 
 def load_class_from_file(module_path: str, class_name: str):
     """Dynamically load a class from a given .py file."""
-    module_path = Path(module_path).resolve()
-    if not module_path.exists():
-        raise FileNotFoundError(f"Module file not found: {module_path}")
+    module_path_obj = Path(module_path).resolve()
+    if not module_path_obj.exists():
+        raise FileNotFoundError(f"Module file not found: {module_path_obj}")
 
-    spec = importlib.util.spec_from_file_location(module_path.stem, module_path)
+    spec = importlib.util.spec_from_file_location(module_path_obj.stem, module_path_obj)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load module spec for: {module_path_obj}")
+
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
     if not hasattr(module, class_name):
-        raise AttributeError(f"Class '{class_name}' not found in {module_path}")
+        raise AttributeError(f"Class '{class_name}' not found in {module_path_obj}")
 
     return getattr(module, class_name)
 

@@ -53,8 +53,7 @@ class SigmaNonconvex(ScalarField):
     """
 
     def __init__(self, k, mu=None, dev=1, a=default_a, b=default_b, Qa=None, Qb=None):
-        if mu is None:
-            mu = [0, 0]
+        mu = np.array([0.0, 0.0], dtype=float) if mu is None else np.asarray(mu, dtype=float)
         self.k = k
         self.mu = mu
         self.dev = dev
@@ -67,9 +66,9 @@ class SigmaNonconvex(ScalarField):
         self.a = np.array(a) if isinstance(a, list) else a
         self.b = np.array(b) if isinstance(b, list) else b
 
-        self.mu_x0 = 0
-        self.mu = self._find_max(mu)
-        self.mu_x0 = mu - self.mu
+        self.mu_x0 = np.zeros_like(self.mu)
+        self.mu = self._find_max(self.mu)
+        self.mu_x0 = self.mu_x0 + (mu - self.mu)
 
     def eval_value(self, X):
         x0 = np.array(self.mu) + self.mu_x0

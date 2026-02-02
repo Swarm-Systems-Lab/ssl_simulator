@@ -44,7 +44,8 @@ class SO3Plot(PlotBase):
         # artists_omega = plot_so3_omega_traj(self.R_data, ax=ax2)
         # self.artists["omega"].update(artists_omega)
 
-    def update_artists(self, frame_idx):
+    def update_artists(self, frame_data):
+        frame_idx = int(frame_data)
         R_frame = self.R_data[frame_idx, ...]
         p_frame = self.p_data[frame_idx, ...] if self.p_data is not None else np.zeros((1, 3))
 

@@ -52,7 +52,7 @@ class PlotterFixedwing(Plotter):
             (line,) = self.ax.plot(x[0, i], y[0, i], **self.kw_lines)
             self.tails.append(line)
 
-    def update(self):
+    def update(self, **kwargs):
         # Extract derired data
         x = self.data["robot.p"][:, :, 0]
         y = self.data["robot.p"][:, :, 1]

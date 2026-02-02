@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+from collections.abc import Callable
 
 from ssl_simulator.exceptions import InitializationError
 
@@ -13,17 +14,17 @@ class SimulationContext:
     """Central context for managing a robot model and its controllers during a simulation."""
 
     def __init__(self):
-        self.robot_model: RobotModel = None
+        self.robot_model: RobotModel | None = None
         self.controllers: dict[str, Controller] = {}  # keyed controllers
         self.connections: list[tuple[str, dict]] = []  # controller_key -> mapping to robot inputs
 
-        self.ctrl_interfaces: dict[str, dict[str]] = {}
+        self.ctrl_interfaces: dict[str, dict[str, Callable[..., object]]] = {}
         self.initialized = False
 
     # -------------------------------------------------------------------------
     # Robot model
     # -------------------------------------------------------------------------
-    def set_robot_model(self, robot_model_class: RobotModel, *args, **kwargs):
+    def set_robot_model(self, robot_model_class: type[RobotModel], *args, **kwargs):
         """
         Set the robot model for this simulation context.
 
@@ -56,7 +57,7 @@ class SimulationContext:
     # -------------------------------------------------------------------------
     # Controllers
     # -------------------------------------------------------------------------
-    def add_controller(self, key: str, controller_class: Controller, *args, **kwargs):
+    def add_controller(self, key: str, controller_class: type[Controller], *args, **kwargs):
         """Add a controller to this simulation context with a unique key."""
         if key in self.controllers:
             raise KeyError(f"A controller with key '{key}' already exists.")
@@ -163,6 +164,9 @@ class SimulationContext:
                 if ctrl is caller_self:
                     caller_key = key
                     break
+
+            if caller_key is None:
+                raise RuntimeError("Cannot detect the calling controller key automatically.")
 
             # Check execution order
             controller_keys = list(self.controllers.keys())[::-1]  # reversed execution order

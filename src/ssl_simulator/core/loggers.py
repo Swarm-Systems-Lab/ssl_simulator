@@ -1,5 +1,6 @@
 import csv
 import os
+from typing import Any
 
 import numpy as np
 
@@ -27,11 +28,11 @@ class DataLogger:
         """
         if settings is None:
             settings = {}
-        self.filename = filename
-        self.labels = ["time", *labels]
-        self.log_size = log_size
-        self.data = dict.fromkeys(self.labels)
-        self.settings = settings
+        self.filename: str | None = filename
+        self.labels: list[str] = ["time", *labels]
+        self.log_size: int | None = log_size
+        self.data: dict[str, np.ndarray | None] = dict.fromkeys(self.labels)
+        self.settings: dict[str, Any] = settings
 
         if self.filename:
             create_dir(os.path.dirname(filename), verbose=False)
@@ -57,16 +58,14 @@ class DataLogger:
         # In-memory logging
         for label in self.labels:
             value = np.atleast_1d(sim_data[label])
-            if self.data[label] is None:
-                self.data[label] = value[None, ...]
+            current = self.data[label]
+            if current is None:
+                current = value[None, ...]
             else:
-                self.data[label] = np.concatenate([self.data[label], value[None, ...]], axis=0)
-                if self.log_size and len(self.data[label]) > self.log_size:
-                    self.data[label] = self.data[label][-self.log_size :]
-
-                    # Remove oldest entry if size exceeded
-                    if len(self.data[label]) > self.log_size:
-                        self.data[label] = self.data[label][-self.log_size :]
+                current = np.concatenate([current, value[None, ...]], axis=0)
+                if self.log_size is not None and current.shape[0] > self.log_size:
+                    current = current[-self.log_size :]
+            self.data[label] = current
 
         # File logging
         if self.filename:
