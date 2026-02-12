@@ -1482,7 +1482,7 @@ wheels = [
 [[package]]
 name = "lieplusplus-py"
 version = "0.4.0"
-source = { registry = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/simple/" }
+source = { registry = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -3713,7 +3713,7 @@ requires-dist = [
     { name = "ipykernel", marker = "extra == 'examples'" },
     { name = "ipython", marker = "extra == 'examples'", specifier = ">=8.0" },
     { name = "ipython", marker = "extra == 'tests'", specifier = ">=8.0" },
-    { name = "lieplusplus-py", specifier = ">=0.3", index = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/simple/" },
+    { name = "lieplusplus-py", specifier = ">=0.3", index = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" },
     { name = "matplotlib", marker = "extra == 'examples'", specifier = ">=3.7" },
     { name = "matplotlib", marker = "extra == 'tests'", specifier = ">=3.7" },
     { name = "matplotlib-inline", marker = "extra == 'examples'", specifier = ">=0.1.6,<0.3" },
