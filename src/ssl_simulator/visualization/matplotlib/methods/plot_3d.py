@@ -1,6 +1,9 @@
 __all__ = ["plot_so3_attitude_vectors", "plot_so3_heading_traj", "plot_so3_omega_traj"]
 
+from typing import Any, cast
+
 import numpy as np
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 from ssl_simulator.math import check_and_parse_dimensions, so3_log_map, so3_vee
 from ssl_simulator.visualization.matplotlib.utils.figure_tools import initialize_plot
@@ -8,10 +11,13 @@ from ssl_simulator.visualization.matplotlib.utils.figure_tools import initialize
 #######################################################################################
 
 
-def plot_3d_sphere_wf(ax, radius, projections=False, surface=False):
+def plot_3d_sphere_wf(ax: Axes3D, radius: float, projections: bool = False, surface: bool = False):
     # Creating a 3D wireframe sphere with highlighted meridians (0° and 90° longitude)
     # and the equator (0° latitude) using matplotlib.
     artists = {}
+
+    if ax is None:
+        raise ValueError("An axis must be provided to plot_3d_sphere_wf")
 
     # Sphere parameters
     N_lon = 73
@@ -317,10 +323,10 @@ def plot_so3_omega_traj(R_data, ax=None):
                 omega[-1, n, 0], omega[-1, n, 1], omega[-1, n, 2], "og", markersize=3, alpha=0.9
             )
 
-        # Get actual axis limits for projections
-        xlim = ax.get_xlim()
-        ylim = ax.get_ylim()
-        zlim = ax.get_zlim()
+        # Get actual axis limits for projections (use main_ax)
+        xlim = main_ax.get_xlim()
+        ylim = main_ax.get_ylim()
+        zlim = main_ax.get_zlim()
 
         # 2D SO(3) projection plots
         main_ax.plot(

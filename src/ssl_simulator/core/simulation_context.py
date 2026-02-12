@@ -40,18 +40,26 @@ class SimulationContext:
 
     def compute_robot_dynamics(self, time):
         """Compute the robot model dynamics."""
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.dynamics(time)
 
     def get_robot_state(self):
         """Return the current state of the robot model."""
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.get_state()
 
     def get_robot_state_dot(self):
         """Return the current state variation from the robot model dynamics."""
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.get_state_dot()
 
     def set_robot_state(self, state):
         """Set the state of the robot model."""
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         self.robot_model.set_state(state)
 
     # -------------------------------------------------------------------------
@@ -205,6 +213,8 @@ class SimulationContext:
         """
         labels = []
         # Robot variables
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         for var in self.robot_model.get_labels():
             labels.append(f"robot.{var}")
 
@@ -222,6 +232,8 @@ class SimulationContext:
         """
         data = {}
         # Robot variables
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         robot_data = self.robot_model.get_data()
         for var, value in robot_data.items():
             data[f"robot.{var}"] = value
@@ -241,6 +253,8 @@ class SimulationContext:
         """
         settings = {}
         # Robot settings
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         robot_settings = self.robot_model.get_settings()
         for var, value in robot_settings.items():
             settings[f"robot.{var}"] = value

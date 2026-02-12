@@ -1,5 +1,7 @@
 """Unicycle robot plotter for Swarm Systems Lab Simulator."""
 
+from typing import Any
+
 import numpy as np
 
 # Import visualization tools from the Swarm Systems Lab Simulator
@@ -28,8 +30,8 @@ class PlotterUnySS:
         self.tails = []
         self.icons = []
         self.centroid = None
-        self.vector_grad = None
-        self.vector_mu = None
+        self.vector_grad: Any = None
+        self.vector_mu: Any = None
 
         # Default visual properties
         kw_patch = {"size": 2, "fc": "royalblue", "ec": "k", "lw": 0.5, "zorder": 3}

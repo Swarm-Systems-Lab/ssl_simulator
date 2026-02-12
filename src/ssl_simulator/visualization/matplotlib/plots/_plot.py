@@ -86,6 +86,7 @@ class PlotBase:
                     yield group
 
             self.artists_list = list(flatten_artists(self.artists))
+            # Use setattr to avoid static type issues with FigureCanvasBase
             self.fig.canvas.draw_count = 0  # reset draw count
 
     # ---------------------------------------------------------------

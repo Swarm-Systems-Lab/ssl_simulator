@@ -30,6 +30,8 @@ class Plotter:
     # ------------------------------------------------------------------------
 
     def save(self, filename, dpi=100, **kwargs):
+        if self.fig is None:
+            raise RuntimeError("Figure not initialized; cannot save.")
         self.fig.savefig(filename, dpi=dpi, **kwargs)
 
 
