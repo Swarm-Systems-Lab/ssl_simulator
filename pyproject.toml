@@ -98,7 +98,7 @@ exclude = ["tests", "examples", "output"]
 
 [[tool.uv.index]]
 name = "internal-repo"
-url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/simple/"
+url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/"
 explicit = true
 
 [tool.uv.sources]
@@ -195,7 +195,7 @@ env_list = [
 [tool.tox.env_run_base]
 # Pass environment variables to test environments
 passenv = ["*"]
-setenv = { UV_EXTRA_INDEX_URL = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/simple/" }
+setenv = { UV_EXTRA_INDEX_URL = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" }
 
 [tool.tox.env.pre-commit]
 description = "Run pre-commit hooks"
