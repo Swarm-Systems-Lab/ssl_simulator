@@ -1487,14 +1487,14 @@ dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0.tar.gz", hash = "sha256:6bfaebc6f78189c1ce00bcb2ac55bdb807f70df78b7d40207a894576c3334399" }
+sdist = { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0.tar.gz", hash = "sha256:6bfaebc6f78189c1ce00bcb2ac55bdb807f70df78b7d40207a894576c3334399" }
 wheels = [
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:14c849eef357a875e1220d73565ed0fb6770cc0fdbdd3c187543236a345e7450" },
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:37951a47c2077b3135f795c9c6b30700f495834e659b9c582f80a9703a78ae63" },
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e6a85db2a3641127e7389d7285e1458b8e8f32ba4e5b7c5ad7c703f61bac9a60" },
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:50083f65f38c9c604115f4db8b27e524fdc59293d5a7db83b2c05e301ca4d84c" },
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp314-cp314-linux_x86_64.whl", hash = "sha256:456d87c8c19ffc13a73e88dd4f29a1e9366b8d0dd9aca71ab41583081b85faf5" },
-    { url = "http://192.168.88.250:3000/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:94b5f939c66b66e631f042496d17f8cb1bb3a4634b03415cdb30a973ae531a31" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:14c849eef357a875e1220d73565ed0fb6770cc0fdbdd3c187543236a345e7450" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:37951a47c2077b3135f795c9c6b30700f495834e659b9c582f80a9703a78ae63" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e6a85db2a3641127e7389d7285e1458b8e8f32ba4e5b7c5ad7c703f61bac9a60" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:50083f65f38c9c604115f4db8b27e524fdc59293d5a7db83b2c05e301ca4d84c" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp314-cp314-linux_x86_64.whl", hash = "sha256:456d87c8c19ffc13a73e88dd4f29a1e9366b8d0dd9aca71ab41583081b85faf5" },
+    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.0/lieplusplus_py-0.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:94b5f939c66b66e631f042496d17f8cb1bb3a4634b03415cdb30a973ae531a31" },
 ]
 
 [[package]]
