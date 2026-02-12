@@ -1,13 +1,31 @@
-site_name: SSL Simulator
-site_description: Swarm Systems Lab Python Simulator
+site_name: ssl_simulator
+site_description: "⚠️ Warning: This project is a work in progress and uses Generative AI for both documentation and code generation. Swarm Systems Lab Python Simulator"
+site_author: Jesús Bautista Villar
+copyright: Copyright &copy; 2024 Jesús Bautista Villar
+
+repo_url: https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
 
 theme:
   name: material
-  features:
-    - navigation.sections
-    - navigation.expand
-    - search.highlight
-    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 
 plugins:
   - search
@@ -16,8 +34,8 @@ plugins:
         python:
           paths: [src]
           options:
-            docstring_style: google  # or numpy, sphinx
-            show_source: true
+            docstring_style: google
+            show_source: false
             show_root_heading: true
             heading_level: 2
             show_submodules: true
@@ -26,7 +44,8 @@ plugins:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - Architecture: architecture.md
+  - Usage: usage.md
   - API Reference: api.md
+  - Golden path: golden-path.md
   - Contributing: contributing.md
+  - Troubleshooting: troubleshooting.md

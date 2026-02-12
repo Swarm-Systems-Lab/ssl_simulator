@@ -1,50 +1,84 @@
-# Compiled source #
-###################
-*.pyc
-*.pyd
-*.so
+## C-specific ignores
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
 *.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# debug information files
+*.dwo
+
+## Python-specific ignores
 __pycache__/
-
-# Pip generated folders #
-#########################
-*.egg/
+*.py[cod]
+*$py.class
+*.so
+*.egg
 *.egg-info/
-build/
 dist/
-
-# OS generated files #
-######################
-.fuse_hidden*
-*~
-
-# Windows
-test.bat
-
-# Mac
-.DS_Store
-**/.DS_Store
-
-
-##########
-
-# Virtual environments
-venv/
+build/
+*.whl
 .venv/
 
-# VSCode
-.vscode/
-
-# Jupyter notebook cache
-**/.ipynb_checkpoints
-
-# Testing coverage and cache
+# Development tools
 .pytest_cache/
-.tox
+.coverage
+htmlcov/
+cov.xml
+.mypy_cache/
+.vscode/
+.idea/
 
-# Custom folders
-output/
-tmp/
+# External dependencies
+external/
 
-# Docs
-site/*
+# Temporary files
+*.tmp
+*.temp
+*~
+.DS_Store
+
+## Others
+/tmp
+/otuput
+
+_version.py
+
+# Doc site
+site
+
+# Security scan results
+semgrep-results.json

@@ -1,35 +1,8 @@
 # API Reference
 
-## Core Module
+This section provides detailed API documentation for all classes and functions in ssl_simulator.
 
-::: ssl_simulator.core
-    options:
-      show_root_heading: true
-      show_source: false
-      inherited_members: true
-      show_submodules: true
-
-## Components Module
-
-::: ssl_simulator.components
-    options:
-      show_root_heading: true
-      show_source: false
-      inherited_members: true
-      show_submodules: true
-
-## Controllers Module
-
-::: ssl_simulator.controllers
-    options:
-      show_root_heading: true
-      show_source: false
-      inherited_members: true
-      show_submodules: true
-
-## Utils Module
-
-::: ssl_simulator.utils
+::: ssl_simulator
     options:
       show_root_heading: true
       show_source: false

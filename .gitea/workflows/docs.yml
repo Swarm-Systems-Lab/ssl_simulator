@@ -1,0 +1,22 @@
+name: Docs
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  docs:
+    name: Build docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup system and python environment
+        uses: ./.gitea/workflows/_env_setup
+
+      - name: Build documentation
+        run: just docs-build

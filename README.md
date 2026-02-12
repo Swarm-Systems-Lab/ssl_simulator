@@ -1,123 +1,132 @@
-# Swarm Systems Lab Python Simulator
+# ssl_simulator
 
+Swarm Systems Lab Python Simulator
 
-## Modernized Development Workflow
+⚠️ **Warning:** This project is a work in progress and uses Generative AI for both documentation and code generation.
 
-### Build & Install (with Hatch)
-
-This project now uses [Hatch](https://hatch.pypa.io/) for building and packaging. To install dependencies and develop locally:
+## Installation
 
 ```bash
-hatch env create
-hatch shell
+pip install ssl_simulator
 ```
-To build a wheel or sdist:
+
+## Usage
+
+```python
+import ssl_simulator
+
+# Example usage
+result = ssl_simulator.hello()
+print(result)
+```
+
+## Development
+
+This project follows the **SSL Golden Path** for streamlined Python development.
+
+### Quick Setup
+
 ```bash
-hatch build
-```
-
-To print env path (ex: for jupyter notebooks)
-```bash
-hatch env find default
-```
-
-### Linting & Formatting
-
-To lint code
-```bash
-hatch run lint
-```
-To auto-format:
-```bash
-hatch run format
-```
-
-### Testing
-
-Run tests with [pytest](https://docs.pytest.org/):
-```bash
-hatch run test
-```
-
-### Pre-commit Hooks
-
-Install [pre-commit](https://pre-commit.com/) hooks to enforce code quality automatically:
-```bash
-pre-commit install
-```
-Hooks will run automatically on git commit.
-
----
-
-
-You can still install the ```ssl_simulator``` package directly from GitHub. It is not and will not be available on public repositories such as PyPI.
-
-> The ```ssl_simulator``` package provides a stable, tested set of dependencies for the following packages: ```numpy```, ```matplotlib```, ```tqdm```, ```pandas```, ```scipy```, ```ipython```. We do not recommend modifying the version ranges, as the package has been tested to work with this specific combination.
-
-Option 1. Install the latest **development version**
-```bash
-pip install git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@master
-```
-Or, add it to your ```requierements.txt```:
-```txt
-git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@master
-```
-Option 2. Install a specific **stable release**
-
-To use a stable version instead of the latest development code, replace ```@master``` with a release tag, e.g.:
-```bash
-pip install git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@v0.0.1
-```
-Or in ```requierements.txt```:
-```txt
-git+https://github.com/Swarm-Systems-Lab/ssl_simulator.git@v0.0.1
-```
-
-
-Option 3. Editable **local install** for development (legacy):
-```bash
-git clone https://github.com/Swarm-Systems-Lab/ssl_simulator.git
+# Clone the repository
+git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
-pip install -e .
+
+# One-command setup (installs uv, creates .venv, installs dependencies)
+just setup
+
+# Verify everything works
+just test
 ```
-We recommend using Hatch for development (see above).
 
-### Additional Dependencies
+### Common Commands
 
-1. **FFmpeg** (Required for animations)
+All project tasks are managed via `just`. Run `just --list` to see all available commands.
 
-    * Linux (Debian/Ubuntu-based distributions):
-    ```
-    sudo apt-get update && sudo apt-get -y install ffmpeg
-    ```
-    * MacOS (via Homebrew):
-    ```
-    brew install ffmpeg
-    ```
-    * Windows: Download and install FFmpeg from https://ffmpeg.org/download.html and ensure it is added to your system's PATH.
+**Essential commands:**
+```bash
+just setup          # Initial environment setup
+just test           # Run full test suite (what CI runs)
+just test-fast      # Quick parallel tests (skip slow tests)
+just lint           # Check code style
+just typecheck      # Check types
+just security       # Run security scans
+just check-all      # Full CI simulation (run before pushing!)
+just build          # Build package
+
+just docs           # Start documentation server
+
+```
+
+**Testing workflows:**
+```bash
+just test-one test_name      # Run specific test
+just test-multi-py           # Test on Python 3.10-3.14
+uv run pytest -vv            # Verbose output
+uv run pytest --pdb          # Debug on failure
+```
+
+### Development Tools
+
+- **Package Manager**: [`uv`](https://github.com/astral-sh/uv) - Fast Rust-based Python package manager
+- **Task Runner**: [`just`](https://github.com/casey/just) - Command runner for project tasks
+- **Linting**: [`ruff`](https://github.com/astral-sh/ruff) - Fast linter and formatter
+- **Type Checking**: `ty` (mypy wrapper) - Static type analysis
+- **Testing**: `pytest` with coverage and parallel execution
+- **Security**: `semgrep` - Security vulnerability scanning
+
+### Project Structure
+
+```
+ssl_simulator/
+├── src/ssl_simulator/     # Source code (importable package)
+├── tests/                      # Test files (mirrors src structure)
+
+├── docs/                       # Documentation (MkDocs)
 
 
-2. **LaTeX Fonts** (Required for some visualization tools)
+├── examples/                   # Usage examples
 
-    * Linux (Debian/Ubuntu-based distributions):
-    ```
-    sudo apt-get update && sudo apt-get install -y texlive texlive-latex-extra texlive-fonts-recommended dvipng cm-super
-    ```
-
-    * MacOS (via MacTeX):
-    ```
-    brew install mactex
-    ```
-
-    * Windows: Install [MiKTeX](https://miktex.org/) or TeX Live.
-
-## 🚧 Documentation in Progress 🚧
-
-⚠️ **Warning:** The documentation section of this repository is currently a **work in progress**. Some details may be missing, incomplete, or subject to change. We are actively working to improve and expand the README to provide clear instructions, examples, and usage guidelines.
-
-In the meantime, feel free to explore the code and contribute with suggestions. If you have any questions, open an issue or reach out to the maintainers:
-
-- **[Jesús Bautista Villar](https://sites.google.com/view/jbautista-research)** (<jesbauti20@gmail.com>) – Main Developer
+├── pyproject.toml              # Project metadata and dependencies
+├── justfile                    # Task definitions
+└── uv.lock                     # Locked dependencies
+```
 
 
-Thanks for your patience! 🚀
+## Documentation
+
+
+Full documentation is available at [https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/blob/main/docs](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/blob/main/docs)
+
+
+**Build locally:**
+```bash
+just docs        # Start server at http://localhost:8000 with live reload
+just docs-build  # Build static documentation
+```
+
+
+
+## Examples
+
+See the [examples/](examples/) directory for usage examples.
+
+**Run the basic example:**
+```bash
+just example
+# Or directly:
+uv run python examples/basic_usage.py
+```
+
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](docs/contributing.md) for guidelines.
+
+**Before submitting a PR:**
+```bash
+just check-all  # Runs lint, security, test, typecheck, pre-commit
+```
+
+## License
+
+MIT
