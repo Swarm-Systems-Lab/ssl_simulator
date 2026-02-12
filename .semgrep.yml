@@ -1,0 +1,69 @@
+rules:
+  - id: python.aws-access-key-id
+    patterns:
+      - pattern-regex: 'AKIA[0-9A-Z]{16}'
+    message: 'Possible AWS Access Key ID.'
+    severity: ERROR
+    languages:
+      - python
+
+  - id: possible-private-key
+    patterns:
+      - pattern: '-----BEGIN PRIVATE KEY-----'
+      - pattern: '-----BEGIN RSA PRIVATE KEY-----'
+    message: 'Potential private key in repository.'
+    severity: ERROR
+    languages:
+      - yaml
+      - python
+
+  - id: long-hex-secret
+    patterns:
+      - pattern-regex: '[0-9a-fA-F]{30,}'
+    message: 'Long hex-like string; check for secrets.'
+    severity: WARNING
+    languages:
+      - python
+
+  - id: generic-api-key
+    patterns:
+      - pattern-regex: "(?i)(api[_-]?key|apikey)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_-]{20,})[\"']?"
+    message: 'Potential API key assignment.'
+    severity: WARNING
+    languages:
+      - python
+      - yaml
+
+  - id: jwt-token
+    patterns:
+      - pattern-regex: 'eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+'
+    message: 'Potential JWT token.'
+    severity: WARNING
+    languages:
+      - python
+      - yaml
+
+  - id: slack-token
+    patterns:
+      - pattern-regex: 'xox[baprs]-[0-9]+-[0-9]+-[0-9a-zA-Z]+'
+    message: 'Potential Slack token.'
+    severity: ERROR
+    languages:
+      - python
+      - yaml
+
+  - id: github-token
+    patterns:
+      - pattern-regex: 'ghp_[a-zA-Z0-9]{36}'
+    message: 'Potential GitHub personal access token.'
+    severity: ERROR
+    languages:
+      - python
+      - yaml
+
+exclude:
+  - path: tests/
+  - path: site/
+  - path: examples/
+
+# Note: This file complements registry packs (p/ci). Tweak rules as needed to reduce false positives.

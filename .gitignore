@@ -1,46 +1,84 @@
-# Tmp, output and model folders
-output/
-tmp/
+## C-specific ignores
+# Prerequisites
+*.d
 
-# --------------------------------------
-.pytest_cache
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-# Byte-compiled / optimized / DLL files
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# debug information files
+*.dwo
+
+## Python-specific ignores
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
+*.egg-info/
+dist/
+build/
+*.whl
+.venv/
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Development tools
+.pytest_cache/
+.coverage
+htmlcov/
+cov.xml
+.mypy_cache/
+.vscode/
+.idea/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# External dependencies
+external/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+.DS_Store
+
+## Others
+/tmp
+/otuput
+
+_version.py
+
+# Doc site
+site
+
+# Security scan results
+semgrep-results.json
