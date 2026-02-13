@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 14e401b
+_src_path: ../ssl_py_template
+author_email: jesbauti20@gmail.com
+author_name: Jesús Bautista Villar
+description: Swarm Systems Lab Python Simulator
+include_docs: true
+include_examples: true
+license: MIT
+package_name: ssl_simulator
+project_name: ssl_simulator
+repo_url: https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+use_docker: true

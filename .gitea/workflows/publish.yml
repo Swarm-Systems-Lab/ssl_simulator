@@ -1,0 +1,43 @@
+name: Publish Python package
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          REF="${GITEA_REF:-$GITHUB_REF}"
+          OUTPUT="${GITEA_OUTPUT:-$GITHUB_OUTPUT}"
+          echo "version=${REF#refs/tags/v}" >> "$OUTPUT"
+
+      - name: Setup system and python environment
+        uses: ./.gitea/workflows/_env_setup
+
+      - name: Unit tests (gate)
+        run: just test-multi-py
+
+      - name: Build package (publish build)
+        run: ./scripts/release/build.sh
+
+      - name: Verify dist artifacts
+        run: |
+          . .venv/bin/activate
+          python -m twine check dist/*
+
+      - name: Publish to internal PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_REPOSITORY_URL: ${{ secrets.PYPI_REPOSITORY_URL }}
+        run: ./scripts/release/publish_ci.sh
