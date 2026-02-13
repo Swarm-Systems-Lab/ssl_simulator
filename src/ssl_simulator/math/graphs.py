@@ -111,8 +111,8 @@ def gen_Z_random(N: int, rounds: int = 1, seed: int | None = None) -> list[tuple
         visited_nd = {0}
 
         while len(non_visited_nd) != 0:
-            i = random.choice(list(visited_nd))
-            j = random.choice(list(non_visited_nd))
+            i = random.choice(list(visited_nd))  # noqa: S311
+            j = random.choice(list(non_visited_nd))  # noqa: S311
             visited_nd.add(j)
             non_visited_nd.remove(j)
 

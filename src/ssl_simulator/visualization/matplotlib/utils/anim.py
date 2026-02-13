@@ -21,9 +21,8 @@ def update_scatters(scatter_list, p_frame):
             Updated positions.
     """
     n_agents = len(scatter_list)
-    assert n_agents == p_frame.shape[0], (
-        f"Expected {n_agents} scatter artists, got {p_frame.shape[0]} positions."
-    )
+    if n_agents != p_frame.shape[0]:
+        raise ValueError(f"Expected {n_agents} scatter artists, got {p_frame.shape[0]} positions.")
 
     for n in range(n_agents):
         sc = scatter_list[n]
@@ -42,9 +41,10 @@ def update_quivers(quivers_array, p_frame, R_frame, arr_len=1.0):
     arr_len: length scaling for quivers
     """
     n_agents = p_frame.shape[0]
-    assert quivers_array.shape == (n_agents, 3), (
-        f"Expected quivers_array shape ({n_agents}, 3), got {quivers_array.shape}."
-    )
+    if quivers_array.shape != (n_agents, 3):
+        raise ValueError(
+            f"Expected quivers_array shape ({n_agents}, 3), got {quivers_array.shape}."
+        )
 
     for n in range(n_agents):
         base = np.asarray(p_frame[n], dtype=float)
