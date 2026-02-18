@@ -1,11 +1,12 @@
 import contextlib
 import inspect
-from collections.abc import Callable
+from collections.abc import Callable, MutableMapping
 
 from ssl_simulator.exceptions import InitializationError
 
 from ._controller import Controller
 from ._robot_model import RobotModel
+from .types import ControllerProtocol, ControlMap, MutableStateMap, RobotModelProtocol
 
 #######################################################################################
 
@@ -18,13 +19,16 @@ class SimulationContext:
         self.controllers: dict[str, Controller] = {}  # keyed controllers
         self.connections: list[tuple[str, dict]] = []  # controller_key -> mapping to robot inputs
 
+        # Last computed control vars aggregated from controllers
+        self.control_vars: dict[str, object] = {}
+
         self.ctrl_interfaces: dict[str, dict[str, Callable[..., object]]] = {}
         self.initialized = False
 
     # -------------------------------------------------------------------------
     # Robot model
     # -------------------------------------------------------------------------
-    def set_robot_model(self, robot_model_class: type[RobotModel], *args, **kwargs):
+    def set_robot_model(self, robot_model_class: type[RobotModel], *args, **kwargs) -> RobotModel:
         """
         Set the robot model for this simulation context.
 
@@ -38,25 +42,25 @@ class SimulationContext:
         except Exception as e:
             raise InitializationError(str(e)) from None
 
-    def compute_robot_dynamics(self, time):
+    def compute_robot_dynamics(self, time: float) -> MutableStateMap:
         """Compute the robot model dynamics."""
         if self.robot_model is None:
             raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.dynamics(time)
 
-    def get_robot_state(self):
+    def get_robot_state(self) -> MutableStateMap:
         """Return the current state of the robot model."""
         if self.robot_model is None:
             raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.get_state()
 
-    def get_robot_state_dot(self):
+    def get_robot_state_dot(self) -> MutableStateMap:
         """Return the current state variation from the robot model dynamics."""
         if self.robot_model is None:
             raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         return self.robot_model.get_state_dot()
 
-    def set_robot_state(self, state):
+    def set_robot_state(self, state: MutableStateMap) -> None:
         """Set the state of the robot model."""
         if self.robot_model is None:
             raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
@@ -65,7 +69,9 @@ class SimulationContext:
     # -------------------------------------------------------------------------
     # Controllers
     # -------------------------------------------------------------------------
-    def add_controller(self, key: str, controller_class: type[Controller], *args, **kwargs):
+    def add_controller(
+        self, key: str, controller_class: type[Controller], *args, **kwargs
+    ) -> Controller:
         """Add a controller to this simulation context with a unique key."""
         if key in self.controllers:
             raise KeyError(f"A controller with key '{key}' already exists.")
@@ -74,10 +80,13 @@ class SimulationContext:
             controller.init_data()
             self.controllers[key] = controller
             self.ctrl_interfaces[key] = controller.control_interface
+            return controller
         except Exception as e:
             raise InitializationError(str(e)) from None
 
-    def connect_controller_to_robot(self, controller_key: str, mapping: dict | None = None):
+    def connect_controller_to_robot(
+        self, controller_key: str, mapping: dict[str, str] | None = None
+    ) -> None:
         """
         Manually connect controller outputs to robot inputs using the controller key.
 
@@ -92,6 +101,8 @@ class SimulationContext:
         """
         if controller_key not in self.controllers:
             raise KeyError(f"Controller with key '{controller_key}' not found.")
+        if self.robot_model is None:
+            raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
 
         controller = self.controllers[controller_key]
         controller_vars = set(controller.get_control_vars().keys())
@@ -116,7 +127,7 @@ class SimulationContext:
 
         self.connections.append((controller_key, mapping))
 
-    def compute_controls(self, time, dt):
+    def compute_controls(self, time: float, dt: float) -> None:
         """Compute control signals from all controllers and propagate manual connections."""
         control_vars = {}
         for _key, controller in reversed(list(self.controllers.items())):
@@ -138,64 +149,60 @@ class SimulationContext:
         self.control_vars = control_vars
 
     # Interfaces
-    def call_interface(self, ctrl_key, method, *args, **kwargs):
+    def call_interface(self, ctrl_key: str, method: str, *args, **kwargs) -> object:
         """
         Call an exposed control interface method from a specific controller.
 
         Automatically detects the calling controller to check execution order.
         """
-        if not self.initialized:
-            if ctrl_key not in self.ctrl_interfaces:
-                raise KeyError(f"Controller '{ctrl_key}' not found in ctrl_interfaces.")
+        if ctrl_key not in self.ctrl_interfaces:
+            raise KeyError(f"Controller '{ctrl_key}' not found in ctrl_interfaces.")
 
-            if method not in self.ctrl_interfaces[ctrl_key]:
-                raise KeyError(f"Method '{method}' not found in controller '{ctrl_key}'.")
+        if method not in self.ctrl_interfaces[ctrl_key]:
+            raise KeyError(f"Method '{method}' not found in controller '{ctrl_key}'.")
 
-            # Attempt to automatically detect the caller object
-            stack = inspect.stack()
-            caller_self = None
+        # Attempt to automatically detect the caller object. This may fail for
+        # non-controller callers (e.g. user code), which is a valid use case.
+        stack = inspect.stack()
+        caller_self = None
+        with contextlib.suppress(Exception):
             for frame_info in stack:
-                # Look for a frame that has 'self' in local variables
                 if "self" in frame_info.frame.f_locals:
                     candidate = frame_info.frame.f_locals["self"]
-                    # Check if the candidate object is one of the controllers
                     if candidate in self.controllers.values():
                         caller_self = candidate
                         break
 
-            if caller_self is None:
-                raise RuntimeError("Cannot detect the calling controller automatically.")
-
-            # Identify the key of the calling controller
+        # If called from within a controller, enforce execution-order safety.
+        if caller_self is not None:
             caller_key = None
             for key, ctrl in self.controllers.items():
                 if ctrl is caller_self:
                     caller_key = key
                     break
 
-            if caller_key is None:
-                raise RuntimeError("Cannot detect the calling controller key automatically.")
+            if caller_key is not None:
+                controller_keys = list(self.controllers.keys())[::-1]  # reversed execution order
+                caller_index = controller_keys.index(caller_key)
+                target_index = controller_keys.index(ctrl_key)
 
-            # Check execution order
-            controller_keys = list(self.controllers.keys())[::-1]  # reversed execution order
-            caller_index = controller_keys.index(caller_key)
-            target_index = controller_keys.index(ctrl_key)
-
-            if caller_index > target_index:
-                raise RuntimeError(
-                    f"Controller '{caller_key}' is attempting to modify controller '{ctrl_key}' "
-                    f"during the same simulation step, but '{ctrl_key}' executes **before** '{caller_key}'.\n"
-                    f"As a result, the change will only take effect in the next simulation step.\n"
-                    f"Potential issues:\n"
-                    f"  - You may have cyclic or unintended interface calls.\n"
-                    f"  - The execution order of controllers matters; the last added controller executes first.\n"
-                    f"Suggestions to fix:\n"
-                    f"  -> Add '{caller_key}' before '{ctrl_key}' in the simulation context to execute it first.\n"
-                )
+                if caller_index > target_index:
+                    raise RuntimeError(
+                        f"Controller '{caller_key}' is attempting to modify controller '{ctrl_key}' "
+                        f"during the same simulation step, but '{ctrl_key}' executes **before** '{caller_key}'.\n"
+                        f"As a result, the change will only take effect in the next simulation step.\n"
+                        f"Potential issues:\n"
+                        f"  - You may have cyclic or unintended interface calls.\n"
+                        f"  - The execution order of controllers matters; the last added controller executes first.\n"
+                        f"Suggestions to fix:\n"
+                        f"  -> Add '{caller_key}' before '{ctrl_key}' in the simulation context to execute it first.\n"
+                    )
 
         return self.ctrl_interfaces[ctrl_key][method](*args, **kwargs)
 
-    def list_interfaces(self, controller_key=None):
+    def list_interfaces(
+        self, controller_key: str | None = None
+    ) -> list[str] | dict[str, dict[str, Callable[..., object]]]:
         if controller_key is not None:
             if controller_key not in self.controllers:
                 raise KeyError(f"No controller with key '{controller_key}' found.")
@@ -206,7 +213,7 @@ class SimulationContext:
     # -------------------------------------------------------------------------
     # Logging helpers
     # -------------------------------------------------------------------------
-    def get_labels(self):
+    def get_labels(self) -> list[str]:
         """
         Aggregate variable labels from the robot model and all controllers,
         prefixing them to avoid conflicts.
@@ -225,7 +232,7 @@ class SimulationContext:
 
         return labels
 
-    def get_data(self):
+    def get_data(self) -> dict[str, object]:
         """
         Aggregate variable data from the robot model and all controllers,
         prefixing keys to avoid conflicts.
@@ -246,7 +253,7 @@ class SimulationContext:
 
         return data
 
-    def get_settings(self):
+    def get_settings(self) -> dict[str, object]:
         """
         Aggregate settings from the robot model and all controllers,
         prefixing keys to avoid conflicts.

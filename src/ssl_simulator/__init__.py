@@ -1,23 +1,36 @@
-# ssl_simulator/__init__.py
+import importlib
 
-# Exceptions
-# Submodules
-from ssl_simulator import components, controllers, math, robot_models, visualization
+# Package public API: import subpackages and key symbols explicitly to avoid
+# polluting the top-level namespace with wildcards and to reduce eager imports.
+# Exceptions and utils modules (expose modules, not wildcard symbols)
+from . import components, controllers, exceptions, math, robot_models, utils
 
 # Configuration
-from ssl_simulator.config import CONFIG
+from .config import CONFIG
 
-# Core
-from ssl_simulator.core._controller import Controller
-from ssl_simulator.core._robot_model import RobotModel
-from ssl_simulator.core.simulation_context import SimulationContext
-from ssl_simulator.core.simulation_engine import INTEGRATORS, SimulationEngine
-from ssl_simulator.exceptions import *
+# Core classes
+from .core._controller import Controller
+from .core._robot_model import RobotModel
+from .core.simulation_context import SimulationContext
+from .core.simulation_engine import INTEGRATORS, SimulationEngine
 
-# Utils
-from ssl_simulator.utils.debug import *
-from ssl_simulator.utils.dict_ops import *
-from ssl_simulator.utils.file_ops import *
-from ssl_simulator.utils.path_ops import *
-from ssl_simulator.utils.pprz import *
-from ssl_simulator.utils.processing import *
+__all__ = [
+    "CONFIG",
+    "INTEGRATORS",
+    "Controller",
+    "RobotModel",
+    "SimulationContext",
+    "SimulationEngine",
+    "components",
+    "controllers",
+    "exceptions",
+    "math",
+    "robot_models",
+    "utils",
+]
+
+
+def __getattr__(name: str):
+    if name == "visualization":
+        return importlib.import_module("ssl_simulator.visualization")
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

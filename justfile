@@ -49,7 +49,7 @@ lint:
 
 # Run type checks
 typecheck:
-    uv run ty check src/lieplusplus
+    uv run ty check src/ssl_simulator
 
 # Test CI workflow locally with act
 act:
@@ -69,7 +69,7 @@ test-one TEST:
 
 # Run tests across multiple Python versions
 test-multi-py:
-    uv run tox -e py310,py311,py312,py313,py314
+    uv run tox -e py312,py313,py314
 
 # List all tox environments
 list:

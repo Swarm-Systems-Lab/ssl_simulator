@@ -10,7 +10,7 @@ name = "ssl_simulator"
 dynamic = ["version"]
 description = "Swarm Systems Lab Python Simulator"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Jesús Bautista Villar", email = "jesbauti20@gmail.com" }
@@ -108,7 +108,7 @@ lieplusplus_py = { index = "internal-repo" }
 [tool.ruff]
 line-length = 100
 exclude = ["output"]
-target-version = "py310" # Checks python 3.10 works
+target-version = "py312"
 
 [tool.ruff.lint]
 select = [
@@ -182,8 +182,6 @@ env_list = [
     "security",
     "tests",
     "tests-fast",
-    "py310",
-    "py311",
     "py312",
     "py313",
     "py314",
@@ -257,20 +255,6 @@ description = "Run cibuildwheel for multiplatform wheels"
 extras = ["release"]
 commands = [
     ["python", "-m", "cibuildwheel", "--output-dir", "dist"],
-]
-
-[tool.tox.env.py310]
-base_python = ["python3.10"]
-extras = ["tests"]
-commands = [
-    ["pytest", "tests"],
-]
-
-[tool.tox.env.py311]
-base_python = ["python3.11"]
-extras = ["tests"]
-commands = [
-    ["pytest", "tests"],
 ]
 
 [tool.tox.env.py312]

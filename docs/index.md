@@ -46,6 +46,7 @@ uv run python -c "import ssl_simulator; print('Ready to go!')"
 - **[Contributing](contributing.md)**: Guidelines for contributing code, tests, and documentation
 - **[API Reference](api.md)**: Complete API documentation auto-generated from docstrings
 - **[Troubleshooting](troubleshooting.md)**: Solutions to common issues
+ - **[Architecture](architecture.md)**: High-level system architecture and diagrams
 
 
 ## Key Features
