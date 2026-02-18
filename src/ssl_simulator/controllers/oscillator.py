@@ -11,18 +11,23 @@ class Oscillator(Controller):
     def __init__(self, context, A, omega, speed):
         super().__init__(context)
 
-        self.n_agents = self.context.get_robot_state().shape[0]
+        robot_state = self.context.get_robot_state()
+        if not robot_state:
+            raise ValueError("Robot state is empty. Oscillator requires a non-empty robot state.")
+        first_state = next(iter(robot_state.values()))
+        self.n_agents = first_state.shape[0]
 
         # Controller variables
         self.A = A
         self.omega = omega
         self.speed = speed
         self.gamma = None
+        self.ctrl_u = None
 
         # ---------------------------
         # Controller output variables
         self.control_vars = {
-            "u": None,
+            "u": lambda: self.ctrl_u,
         }
 
         # Controller variables to be tracked by logger
@@ -43,7 +48,7 @@ class Oscillator(Controller):
 
     def compute_control(self, time, dt):
         """Follow y = gamma(t) = A * sin(w t) at constant speed ||v|| = s."""
-        if (self.A * self.omega > self.speed).any():
+        if np.any(self.A * self.omega > self.speed):
             raise ValueError("A * omega should be <= speed!")
 
         self.gamma = self.A * np.sin(self.omega * time)

@@ -3,6 +3,7 @@ from tqdm import tqdm
 from .integrators import EulerIntegrator
 from .loggers import DataLogger
 from .simulation_context import SimulationContext
+from .types import MutableStateMap
 
 INTEGRATORS = {
     "euler": EulerIntegrator,
@@ -27,6 +28,9 @@ class SimulationEngine:
         self.log_time_step = log_time_step
         self.log_size = log_size
 
+        # last integrated state snapshot
+        self._last_state: MutableStateMap | None = None
+
         self._set_time_step(time_step)
         self.time = 0.0
         self.current_step = 1
@@ -47,7 +51,7 @@ class SimulationEngine:
             return getattr(self.context, name)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
-    def _set_time_step(self, time_step):
+    def _set_time_step(self, time_step: float) -> None:
         self.time_step = time_step
 
         # Set logger log interval_steps
@@ -60,16 +64,16 @@ class SimulationEngine:
         else:
             self.log_interval_steps = None
 
-    def _step_test(self):
+    def _step_test(self) -> None:
         self.context.compute_controls(self.time, self.time_step)
         self.context.compute_robot_dynamics(self.time)
         self.integrator.integrate(self.context, self.time_step)
 
-    def _log_data(self):
+    def _log_data(self) -> None:
         data = self.context.get_data()
         self.logger.log(self.time, data)
 
-    def run(self, duration, eta=True):
+    def run(self, duration: float, eta: bool = True) -> None:
         if not self.context.initialized:
             # Initialize logger
             labels = self.context.get_labels()  # labels of the variables to be tracked
@@ -87,7 +91,7 @@ class SimulationEngine:
         for _ in tqdm(range(steps), desc="Running simulation", disable=not eta):
             self.step()
 
-    def step(self):
+    def step(self) -> None:
         # Integrate the robots' dynamics
         self.context.compute_controls(self.time, self.time_step)
         self.context.compute_robot_dynamics(self.time)

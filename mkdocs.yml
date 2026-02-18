@@ -27,6 +27,25 @@ theme:
         icon: material/brightness-4
         name: Switch to system preference
 
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.min.js
+  - https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js
+
 plugins:
   - search
   - mkdocstrings:
@@ -44,6 +63,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Architecture: architecture.md
   - Usage: usage.md
   - API Reference: api.md
   - Golden path: golden-path.md
