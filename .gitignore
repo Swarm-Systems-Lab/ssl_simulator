@@ -84,3 +84,4 @@ site
 semgrep-results.json
 
 output/
+.benchmarks/

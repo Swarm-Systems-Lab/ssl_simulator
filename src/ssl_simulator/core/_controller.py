@@ -37,6 +37,11 @@ class Controller:
         # Validate that all required attributes are dictionaries
         validate_dict_attributes(self, ["control_vars", "tracked_vars"])
 
+        # Pre-compute whether any dicts contain callables (avoids per-step callable checks)
+        self._has_callable_control_vars = any(callable(v) for v in self.control_vars.values())
+        self._has_callable_tracked_vars = any(callable(v) for v in self.tracked_vars.values())
+        self._dirty = True
+
         self.data = {}
         resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}  # type: ignore[misc]
         resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}  # type: ignore[misc]
@@ -45,10 +50,23 @@ class Controller:
         self.settings = self.tracked_settings.copy()
 
     def update_data(self) -> None:
-        resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}  # type: ignore[misc]
-        resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}  # type: ignore[misc]
+        if not self._dirty:
+            return
+        if self._has_callable_control_vars:
+            resolved_control_vars = {
+                k: v() if callable(v) else v for k, v in self.control_vars.items()
+            }  # type: ignore[misc]
+        else:
+            resolved_control_vars = dict(self.control_vars)
+        if self._has_callable_tracked_vars:
+            resolved_tracked_vars = {
+                k: v() if callable(v) else v for k, v in self.tracked_vars.items()
+            }  # type: ignore[misc]
+        else:
+            resolved_tracked_vars = dict(self.tracked_vars)
         safe_assign(self.data, resolved_control_vars, "control_vars")
         safe_assign(self.data, resolved_tracked_vars, "tracked_vars")
+        self._dirty = False
 
     def get_labels(self) -> list[str]:
         return list(self.data.keys())
@@ -61,8 +79,9 @@ class Controller:
         return self.settings.copy()
 
     def get_control_vars(self) -> dict[str, object]:
-        resolved_control_vars = {k: v() if callable(v) else v for k, v in self.control_vars.items()}  # type: ignore[misc]
-        return resolved_control_vars
+        if self._has_callable_control_vars:
+            return {k: v() if callable(v) else v for k, v in self.control_vars.items()}  # type: ignore[misc]
+        return dict(self.control_vars)
 
     def get_interface(self) -> dict[str, Callable[..., object]]:
         return self.control_interface.copy()

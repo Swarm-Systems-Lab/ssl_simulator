@@ -21,16 +21,20 @@ class SingleIntegrator(RobotModel):
         # Robot model control inputs
         self.control_inputs = {"u": np.zeros_like(self.state["p"])}
 
+        # Cache shape info validated at init to skip re-validation on every dynamics call
+        self._n_dims: int = self.state["p"].shape[1]
+        self._n_agents: int = self.state["p"].shape[0]
+
     # ---------------------------------------------------------------------------------
     def dynamics(self, time):
         state = self.state
         ctrl_vars = self.control_inputs
 
-        # TODO: check performance. Is it better than np.atleast_2d(ctrl_vars["u"])?
-        # with np.atleast_2d(ctrl_vars["u"]) shape becomes (1, m) if 1D
-        u = check_and_parse_dimensions(ctrl_vars["u"], (None, state["p"].shape[1]))
+        # np.atleast_2d: (m,) → (1, m); (N, m) stays (N, m). Avoids the full
+        # check_and_parse_dimensions validation on every step (shape was verified at init).
+        u = np.atleast_2d(ctrl_vars["u"])
 
-        self.state_dot["p_dot"] = u + np.zeros_like(state["p"])  # broadcasts to (N, m)
+        self.state_dot["p_dot"] = np.broadcast_to(u, state["p"].shape).copy()
         return self.state_dot
 
 

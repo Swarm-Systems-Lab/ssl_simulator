@@ -65,6 +65,7 @@ class SimulationContext:
         if self.robot_model is None:
             raise RuntimeError("Robot model not set. Call `set_robot_model()` first.")
         self.robot_model.set_state(state)
+        self.robot_model._dirty = True
 
     # -------------------------------------------------------------------------
     # Controllers
@@ -130,21 +131,22 @@ class SimulationContext:
     def compute_controls(self, time: float, dt: float) -> None:
         """Compute control signals from all controllers and propagate manual connections."""
         control_vars = {}
-        for _key, controller in reversed(list(self.controllers.items())):
+        # Cache resolved control vars per controller (avoids redundant dict rebuilds)
+        ctrl_vars_cache: dict[str, dict] = {}
+        for key, controller in reversed(self.controllers.items()):
             controller.compute_control(time, dt)
-            control_vars.update(controller.get_control_vars().copy())
+            controller._dirty = True
+            cached = controller.get_control_vars()
+            ctrl_vars_cache[key] = cached
+            control_vars.update(cached)
 
         if self.robot_model is not None:
+            robot_inputs = self.robot_model.control_inputs
             for controller_key, mapping in self.connections:
-                controller = self.controllers[controller_key]
+                cached_vars = ctrl_vars_cache[controller_key]
                 for ctrl_var, robot_input in mapping.items():
-                    if (
-                        ctrl_var in controller.get_control_vars()
-                        and robot_input in self.robot_model.control_inputs
-                    ):
-                        self.robot_model.control_inputs[robot_input] = (
-                            controller.get_control_vars()[ctrl_var]
-                        )
+                    if ctrl_var in cached_vars and robot_input in robot_inputs:
+                        robot_inputs[robot_input] = cached_vars[ctrl_var]
 
         self.control_vars = control_vars
 
@@ -153,50 +155,15 @@ class SimulationContext:
         """
         Call an exposed control interface method from a specific controller.
 
-        Automatically detects the calling controller to check execution order.
+        Note: execution-order checking between controllers was removed for performance.
+        Ensure that controllers calling each other's interfaces are added in the correct
+        order (the last added controller executes first).
         """
         if ctrl_key not in self.ctrl_interfaces:
             raise KeyError(f"Controller '{ctrl_key}' not found in ctrl_interfaces.")
 
         if method not in self.ctrl_interfaces[ctrl_key]:
             raise KeyError(f"Method '{method}' not found in controller '{ctrl_key}'.")
-
-        # Attempt to automatically detect the caller object. This may fail for
-        # non-controller callers (e.g. user code), which is a valid use case.
-        stack = inspect.stack()
-        caller_self = None
-        with contextlib.suppress(Exception):
-            for frame_info in stack:
-                if "self" in frame_info.frame.f_locals:
-                    candidate = frame_info.frame.f_locals["self"]
-                    if candidate in self.controllers.values():
-                        caller_self = candidate
-                        break
-
-        # If called from within a controller, enforce execution-order safety.
-        if caller_self is not None:
-            caller_key = None
-            for key, ctrl in self.controllers.items():
-                if ctrl is caller_self:
-                    caller_key = key
-                    break
-
-            if caller_key is not None:
-                controller_keys = list(self.controllers.keys())[::-1]  # reversed execution order
-                caller_index = controller_keys.index(caller_key)
-                target_index = controller_keys.index(ctrl_key)
-
-                if caller_index > target_index:
-                    raise RuntimeError(
-                        f"Controller '{caller_key}' is attempting to modify controller '{ctrl_key}' "
-                        f"during the same simulation step, but '{ctrl_key}' executes **before** '{caller_key}'.\n"
-                        f"As a result, the change will only take effect in the next simulation step.\n"
-                        f"Potential issues:\n"
-                        f"  - You may have cyclic or unintended interface calls.\n"
-                        f"  - The execution order of controllers matters; the last added controller executes first.\n"
-                        f"Suggestions to fix:\n"
-                        f"  -> Add '{caller_key}' before '{ctrl_key}' in the simulation context to execute it first.\n"
-                    )
 
         return self.ctrl_interfaces[ctrl_key][method](*args, **kwargs)
 
