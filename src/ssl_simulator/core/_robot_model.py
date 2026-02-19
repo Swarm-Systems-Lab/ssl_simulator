@@ -36,6 +36,13 @@ class RobotModel:
         # Validate that all required attributes are dictionaries
         validate_dict_attributes(self, ["state", "state_dot", "control_inputs", "tracked_vars"])
 
+        # Pre-compute whether any dicts contain callables (avoids per-step callable checks)
+        self._has_callable_state = any(callable(v) for v in self.state.values())
+        self._has_callable_state_dot = any(callable(v) for v in self.state_dot.values())
+        self._has_callable_control_inputs = any(callable(v) for v in self.control_inputs.values())
+        self._has_callable_tracked_vars = any(callable(v) for v in self.tracked_vars.values())
+        self._dirty = True
+
         self.data = {}
         resolved_state = {k: v() if callable(v) else v for k, v in self.state.items()}
         resolved_state_dot = {k: v() if callable(v) else v for k, v in self.state_dot.items()}
@@ -50,16 +57,33 @@ class RobotModel:
         self.settings = self.tracked_settings.copy()
 
     def update_data(self) -> None:
-        resolved_state = {k: v() if callable(v) else v for k, v in self.state.items()}
-        resolved_state_dot = {k: v() if callable(v) else v for k, v in self.state_dot.items()}
-        resolved_control_inputs = {
-            k: v() if callable(v) else v for k, v in self.control_inputs.items()
-        }
-        resolved_tracked_vars = {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}  # type: ignore[misc]
+        if not self._dirty:
+            return
+        resolved_state = (
+            {k: v() if callable(v) else v for k, v in self.state.items()}
+            if self._has_callable_state
+            else dict(self.state)
+        )
+        resolved_state_dot = (
+            {k: v() if callable(v) else v for k, v in self.state_dot.items()}
+            if self._has_callable_state_dot
+            else dict(self.state_dot)
+        )
+        resolved_control_inputs = (
+            {k: v() if callable(v) else v for k, v in self.control_inputs.items()}
+            if self._has_callable_control_inputs
+            else dict(self.control_inputs)
+        )
+        resolved_tracked_vars = (
+            {k: v() if callable(v) else v for k, v in self.tracked_vars.items()}  # type: ignore[misc]
+            if self._has_callable_tracked_vars
+            else dict(self.tracked_vars)
+        )
         safe_assign(self.data, resolved_state, "state")
         safe_assign(self.data, resolved_state_dot, "state_dot")
         safe_assign(self.data, resolved_control_inputs, "control_inputs")
         safe_assign(self.data, resolved_tracked_vars, "tracked_vars")
+        self._dirty = False
 
     def get_labels(self) -> list[str]:
         return list(self.data.keys())

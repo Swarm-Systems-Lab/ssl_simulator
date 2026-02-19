@@ -49,7 +49,10 @@ def test_oscillator_control_vars_propagate_to_robot_input():
     assert sim.robot_model.control_inputs["u"].shape == (3, 2)
 
 
-def test_call_interface_execution_order_enforced_after_initialization():
+def test_call_interface_routes_correctly_after_initialization():
+    """Execution-order checking was removed for performance.
+    call_interface now simply routes the call without raising on ordering issues.
+    """
     from ssl_simulator.core import Controller, SimulationContext
     from ssl_simulator.robot_models import SingleIntegrator
 
@@ -79,8 +82,10 @@ def test_call_interface_execution_order_enforced_after_initialization():
     context.add_controller("target", TargetController)
     context.initialized = True
 
-    with pytest.raises(RuntimeError, match="attempting to modify controller"):
-        context.compute_controls(0.0, 0.1)
+    # Should not raise; execution-order enforcement was removed for performance.
+    context.compute_controls(0.0, 0.1)
+    target_ctrl = context.controllers["target"]
+    assert target_ctrl.value == 1
 
 
 def test_root_package_import_does_not_eager_import_visualization():

@@ -67,6 +67,14 @@ test-fast:
 test-one TEST:
     uv run pytest tests/ -v -k
 
+# Run performance benchmarks (all benchmark-marked tests)
+bench:
+    uv run pytest tests/benchmarks/ -m benchmark -v --benchmark-autosave --benchmark-sort=mean
+
+# Run benchmarks and compare against the last saved result
+bench-compare:
+    uv run pytest tests/benchmarks/ -m benchmark -v --benchmark-compare --benchmark-sort=mean
+
 # Run tests across multiple Python versions
 test-multi-py:
     uv run tox -e py312,py313,py314

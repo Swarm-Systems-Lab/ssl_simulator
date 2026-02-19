@@ -51,6 +51,31 @@ class SimulationEngine:
             return getattr(self.context, name)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
+    # ------------------------------------------------------------------
+    # Explicit properties for frequently accessed context attributes.
+    # These bypass __getattr__ so that every access avoids a failed dict
+    # lookup + hasattr round-trip.
+    # ------------------------------------------------------------------
+    @property
+    def robot_model(self):
+        """The robot model managed by the simulation context."""
+        return self.context.robot_model
+
+    @property
+    def controllers(self):
+        """All controllers registered in the simulation context."""
+        return self.context.controllers
+
+    @property
+    def control_vars(self):
+        """Last aggregated control variables computed by all controllers."""
+        return self.context.control_vars
+
+    @property
+    def ctrl_interfaces(self):
+        """Registered control interfaces for all controllers."""
+        return self.context.ctrl_interfaces
+
     def _set_time_step(self, time_step: float) -> None:
         self.time_step = time_step
 
@@ -88,8 +113,11 @@ class SimulationEngine:
             self.context.initialized = True
 
         steps = int(duration / self.time_step)
-        for _ in tqdm(range(steps), desc="Running simulation", disable=not eta):
-            self.step()
+        try:
+            for _ in tqdm(range(steps), desc="Running simulation", disable=not eta):
+                self.step()
+        finally:
+            self.logger.close()
 
     def step(self) -> None:
         # Integrate the robots' dynamics

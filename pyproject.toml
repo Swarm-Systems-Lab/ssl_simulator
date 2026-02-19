@@ -34,6 +34,7 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "pytest-xdist>=3.5",
+    "pytest-benchmark>=4.0",
     "pre-commit>=3.0",
     "ty>=0.0.14",
     "build>=1.2.2",
@@ -49,6 +50,7 @@ tests = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "pytest-xdist>=3.5",
+    "pytest-benchmark>=4.0",
     "matplotlib>=3.7",
     "IPython>=8.0",
 ]
@@ -153,11 +155,14 @@ addopts = [
     "-v",
     "--tb=short",
     "--strict-markers",
+    "-m",
+    "not benchmark",
 ]
 # Keep test artifacts only on failure for debugging
 tmp_path_retention_policy = "failed"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "benchmark: marks tests as performance benchmarks (deselect with '-m \"not benchmark\"')",
 ]
 
 [tool.coverage.run]
