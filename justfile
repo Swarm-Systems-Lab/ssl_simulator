@@ -3,7 +3,7 @@
 # Setup the development environment (dev deps only by default)
 setup:
     uv lock
-    ./scripts/ci/setup-env.sh --extras dev,lint,tests,type-checking,pre-commit
+    ./scripts/ci/setup-env.sh --extras dev,lint,tests,type-checking,pre-commit,examples
 
 # Sync all dependency groups
 sync:
