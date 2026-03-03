@@ -5,8 +5,6 @@ import numpy as np
 from ssl_simulator.utils.dict_ops import parse_kwargs
 from ssl_simulator.visualization import PlotterVF
 
-#######################################################################################
-
 
 class PlotterGvfIk(PlotterVF):
     def __init__(self, gvf_traj, ax, **kwargs):
@@ -164,6 +162,3 @@ class PlotterGvfIk(PlotterVF):
         cond_flags = un_norm2 < self.speed**2
         cond_flags_2d = cond_flags.reshape(self.cond_xx.shape).astype(float)
         return cond_flags_2d
-
-
-#######################################################################################

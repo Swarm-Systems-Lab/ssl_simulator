@@ -7,8 +7,6 @@ __all__ = [
 
 import numpy as np
 
-#######################################################################################
-
 
 def update_scatters(scatter_list, p_frame):
     """

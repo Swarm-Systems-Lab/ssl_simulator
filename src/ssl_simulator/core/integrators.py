@@ -5,9 +5,6 @@ import numpy as np
 
 from ssl_simulator.math import check_and_parse_dimensions
 
-#######################################################################################
-
-
 SO3 = getattr(lpp, "SO3", None)
 
 
@@ -66,5 +63,3 @@ class EulerIntegrator:
 #         k3 = dynamics(state + 0.5 * dt * k2, control_input)
 #         k4 = dynamics(state + dt * k3, control_input)
 #         return state + (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
-
-#######################################################################################

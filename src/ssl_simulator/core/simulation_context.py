@@ -11,8 +11,6 @@ from .types import ControllerProtocol, ControlMap, MutableStateMap, RobotModelPr
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 class SimulationContext:
     """Central context for managing a robot model and its controllers during a simulation."""
@@ -343,6 +341,3 @@ class SimulationContext:
             for ctrl_key, methods in self.ctrl_interfaces.items():
                 logger.info(f"  * Controller '{ctrl_key}':")
                 _print_methods(methods, pre="    ")
-
-
-#######################################################################################

@@ -5,8 +5,6 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 def safe_assign(target, source, source_name="dict"):
     """Helper to check for key conflicts during dictionary assignments."""
@@ -178,6 +176,3 @@ def print_dict(d, indent=0):
                 logger.info(f"{pad}{k}: shape {v.shape}")
         else:
             logger.info(f"{pad}{k}: {v}")
-
-
-#######################################################################################

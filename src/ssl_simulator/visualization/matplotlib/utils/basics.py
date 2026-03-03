@@ -42,8 +42,6 @@ from scipy.interpolate import UnivariateSpline, interp1d
 #     "4K"     : 3880
 #     }
 
-#######################################################################################
-
 
 def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
     """
@@ -423,6 +421,3 @@ def get_nice_ticks(vmin, vmax, max_major_ticks=6, n_minor=4):
     minor_levels = np.setdiff1d(np.round(all_minor, 10), np.round(major_levels, 10))
 
     return major_levels, minor_levels, major_step
-
-
-#######################################################################################

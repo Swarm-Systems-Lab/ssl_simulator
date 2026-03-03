@@ -9,8 +9,6 @@ from ssl_simulator.math.basics import Q_prod_xi, adapt_to_nd, exp
 
 from ._scalar_field import ScalarField
 
-#######################################################################################
-
 
 # Helper functions for clearer initialization of Qa and Qb
 def create_Qa():
@@ -95,6 +93,3 @@ class SigmaFract(ScalarField):
 
     def eval_hessian(self, X):
         return None
-
-
-#######################################################################################

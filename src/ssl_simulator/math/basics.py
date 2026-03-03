@@ -15,8 +15,6 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 def unit_vec(V, delta=0, axis=-1):
     """
@@ -258,6 +256,3 @@ def angle_of_vectors(A, B):
     cross_product = np.cross(A, B, axis=1)
     theta = np.arctan2(cross_product, dot_product)
     return theta
-
-
-#######################################################################################

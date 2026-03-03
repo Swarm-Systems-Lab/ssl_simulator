@@ -4,8 +4,6 @@ __all__ = ["R_2D_matrix", "cov_matrix", "norm_2"]
 
 import numpy as np
 
-#######################################################################################
-
 
 def R_2D_matrix(angle):
     """
@@ -93,6 +91,3 @@ def cov_matrix(X: np.ndarray, sample: bool = False) -> np.ndarray:
 
     # Return (D, D) if single dataset
     return cov[0] if cov.shape[0] == 1 else cov
-
-
-#######################################################################################

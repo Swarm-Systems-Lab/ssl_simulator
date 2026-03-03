@@ -6,8 +6,6 @@ import numpy as np
 
 from .gvf_line_heading import GvfLineHeading
 
-#######################################################################################
-
 
 class GvfLineAB(GvfLineHeading):
     def __init__(self, A, B):
@@ -26,6 +24,3 @@ class GvfLineAB(GvfLineHeading):
 
         # Call the parent class constructor
         super().__init__(A=self.A, heading=heading, line_length=line_length)
-
-
-#######################################################################################

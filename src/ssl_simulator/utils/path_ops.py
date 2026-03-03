@@ -5,8 +5,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 def create_dir(directory: str) -> None:
     """
@@ -31,6 +29,3 @@ def add_src_to_path(file=None, relative_path="", deep=0):
     sys.path.append(str(target))
 
     logger.debug(f"Added to sys.path: root={root}, target={target}")
-
-
-#######################################################################################

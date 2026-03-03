@@ -7,8 +7,6 @@ import numpy as np
 from ssl_simulator.utils.dict_ops import dict_to_json
 from ssl_simulator.utils.path_ops import create_dir
 
-#######################################################################################
-
 _INITIAL_CAPACITY = 256
 
 
@@ -134,6 +132,3 @@ class DataLogger:
 
     def __del__(self) -> None:
         self.close()
-
-
-#######################################################################################

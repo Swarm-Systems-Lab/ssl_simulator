@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 
 # from mpl_toolkits.mplot3d import Axes3D
 
-#######################################################################################
-
 
 def initialize_plot(ax=None, figsize=(8, 8), projection="3d", **kwargs):
     """

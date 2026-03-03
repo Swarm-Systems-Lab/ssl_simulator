@@ -4,8 +4,6 @@ import numpy as np
 
 from ssl_simulator.core._controller import Controller
 
-#######################################################################################
-
 
 class ConstantSignal(Controller):
     def __init__(self, context, signal):
@@ -36,6 +34,3 @@ class ConstantSignal(Controller):
 
     def compute_control(self, time, dt):
         self.ctrl_u = self.signal
-
-
-#######################################################################################

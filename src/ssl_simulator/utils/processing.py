@@ -10,8 +10,6 @@ from ssl_simulator.utils.file_ops import check_file_size
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 def load_sim(filename, max_size_mb=100, *args, **kwargs):
     check_file_size(filename, max_size_mb=max_size_mb)
@@ -78,7 +76,6 @@ def first_larger_index(times, x, epsilon=1e-8):
     return None
 
 
-#######################################################################################
 # --- Helper functions ---
 
 

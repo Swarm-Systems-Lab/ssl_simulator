@@ -299,6 +299,3 @@ class PlotterScalarField:
         # Hide the color bar if requested
         if not cbar_sw:
             self._colorbar.set_visible(False)
-
-
-#######################################################################################

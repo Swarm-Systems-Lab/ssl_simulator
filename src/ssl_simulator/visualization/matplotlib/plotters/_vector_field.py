@@ -6,8 +6,6 @@ import numpy as np
 
 from ssl_simulator.visualization import Plotter
 
-#######################################################################################
-
 
 class PlotterVF(Plotter):
     traj_points: typing.ClassVar = None
@@ -78,6 +76,3 @@ class PlotterVF(Plotter):
 
         # Set width in axis-relative units (smaller spacing -> thinner arrows)
         self.kw_vect["width"] = self.arrow_width_factor * avg_spacing
-
-
-#######################################################################################

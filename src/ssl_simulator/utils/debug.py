@@ -4,8 +4,6 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-#######################################################################################
-
 
 def debug_eig(
     A: np.ndarray, eigenvectors: bool = True, prec_values: int = 8, prec_vectors: int = 3

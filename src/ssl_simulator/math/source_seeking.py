@@ -4,8 +4,6 @@ __all__ = ["L_sigma", "calc_mu_centralized"]
 
 import numpy as np
 
-#######################################################################################
-
 
 def L_sigma(X, sigma):
     """
@@ -45,6 +43,3 @@ def calc_mu_centralized(X, sigma):
     l_sigma_hat = sigma[:, None].T @ X
     l_sigma_hat = l_sigma_hat / N
     return l_sigma_hat.flatten()
-
-
-#######################################################################################
