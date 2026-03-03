@@ -1,7 +1,3 @@
-""" """
-
-__all__ = ["check_file_size", "load_class_from_file"]
-
 import importlib.util
 import os
 from pathlib import Path

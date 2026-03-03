@@ -53,7 +53,7 @@ class DataLogger:
         self._csv_file = None
         self._csv_writer = None
         if self.filename:
-            create_dir(os.path.dirname(filename), verbose=False)
+            create_dir(os.path.dirname(filename))
             with open(self.filename, mode="w", newline="") as file:
                 file.write(f"# SETTINGS: {dict_to_json(self.settings, dump=True)}\n")
                 csv.DictWriter(file, fieldnames=self.labels).writeheader()

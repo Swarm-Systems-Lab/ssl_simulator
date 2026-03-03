@@ -1,18 +1,9 @@
-""" """
-
-__all__ = [
-    "dict_to_json",
-    "json_to_dict",
-    "parse_kwargs",
-    "print_dict",
-    "safe_assign",
-    "safe_update",
-    "validate_dict_attributes",
-]
-
 import json
+import logging
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 #######################################################################################
 
@@ -170,18 +161,23 @@ def json_to_dict(json_str):
     return convert(raw)
 
 
-def print_dict(d, indent=0, verbose=False):
-    "  " * indent
-    for _k, v in d.items():
+def print_dict(d, indent=0):
+    """Print a dictionary. Detailed output at DEBUG level."""
+    if not logger.isEnabledFor(logging.INFO):
+        return
+
+    pad = "  " * indent
+    for k, v in d.items():
         if isinstance(v, dict):
-            print_dict(v, indent + 1, verbose=verbose)
+            logger.info(f"{pad}{k}:")
+            print_dict(v, indent + 1)
         elif isinstance(v, np.ndarray):
-            if verbose:
-                pass
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"{pad}{k}: shape {v.shape} -> {v.tolist()}")
             else:
-                pass
+                logger.info(f"{pad}{k}: shape {v.shape}")
         else:
-            pass
+            logger.info(f"{pad}{k}: {v}")
 
 
 #######################################################################################

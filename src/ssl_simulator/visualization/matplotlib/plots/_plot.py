@@ -1,3 +1,4 @@
+import logging
 import os
 
 import matplotlib.pyplot as plt
@@ -6,8 +7,10 @@ from IPython.display import HTML
 from matplotlib.animation import FuncAnimation, PillowWriter
 from tqdm import tqdm
 
-from ssl_simulator.config import CONFIG
+from ssl_simulator.logging import requires_log_level
 from ssl_simulator.utils.path_ops import create_dir
+
+logger = logging.getLogger(__name__)
 
 
 class PlotBase:
@@ -57,8 +60,7 @@ class PlotBase:
             self.axes[key] = self.fig.add_axes(rect, **cfg_copy)
             self.artists[key] = {}
 
-            if CONFIG.get("DEBUG", False):
-                pass
+            logger.debug(f"Created axis '{key}' with rect={rect} and kwargs={cfg_copy}")
 
     def init_artists(self):
         """Initialize all plot elements. Must be implemented by subclass."""
@@ -173,7 +175,9 @@ class PlotBase:
 
         ani = self.animate(interval=interval, repeat=repeat)
         writer = PillowWriter(fps=fps)
+        logger.info(f"Saving GIF to {filename} ...")
         ani.save(filepath, writer=writer)
+        logger.info("GIF saved successfully.")
 
     def save_mp4(self, output_dir, filename="animation.mp4", fps=30, interval=100, repeat=False):
         """Render animation and save as MP4 (requires ffmpeg)."""
@@ -181,16 +185,20 @@ class PlotBase:
         filepath = os.path.join(output_dir, filename)
 
         ani = self.animate(interval=interval, repeat=repeat)
+        logger.info(f"Saving MP4 to {filename} ...")
         ani.save(filepath, writer="ffmpeg", fps=fps)
+        logger.info("MP4 saved successfully.")
 
     # ---------------------------------------------------------------
     # DEBUG UTILITIES
     # ---------------------------------------------------------------
+    @requires_log_level(logging.DEBUG)
     def debug_artists(self):
         """
         Print all artists in each axis with their key and type.
         Useful to inspect plot elements during development.
         """
+        logger.debug("----- PlotBase Artists Debug -----")
         total_count = 0
 
         def count_and_print(artist, prefix=""):
@@ -203,12 +211,21 @@ class PlotBase:
                 for i, a in enumerate(artist):
                     count_and_print(a, prefix=f"{prefix}[{i}]")
             elif isinstance(artist, np.ndarray):
+                logger.debug(
+                    f"{prefix} np.ndarray shape={artist.shape}, dtype={type(artist.flat[0]).__name__}"
+                )
                 total_count += artist.size
             else:
+                logger.debug(f"{prefix} {type(artist).__name__}: {artist}")
                 total_count += 1
 
         for ax_key, _ax in self.axes.items():
+            logger.debug(f"Axis '{ax_key}' ({type(_ax).__name__}):")
             group = self.artists.get(ax_key, None)
             if not group:
+                logger.debug(f"    [!] No artists in axis '{ax_key}'")
                 continue
             count_and_print(group, prefix="    ")
+
+        logger.debug(f"Total artists: {total_count}")
+        logger.debug("---------------------------------")

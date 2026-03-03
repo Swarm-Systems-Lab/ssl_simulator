@@ -1,17 +1,23 @@
-# ssl_simulator/config.py
+"""
+Configuration for ssl_simulator.
+"""
 
+import logging
 import os
 
 from numpy import pi
 
+logger = logging.getLogger(__name__)
+
 
 class Config(dict):
     def __setitem__(self, key, value):
+        logger.info(f"SSL simulator configuration updated: {key} = {value}")
         super().__setitem__(key, value)
 
     def update(self, *args, **kwargs):
-        for _key, _value in dict(*args, **kwargs).items():
-            pass
+        for key, value in dict(*args, **kwargs).items():
+            logger.info(f"SSL simulator configuration updated: {key} = {value}")
         super().update(*args, **kwargs)
 
 

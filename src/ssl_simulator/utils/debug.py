@@ -1,10 +1,8 @@
-""" """
-
-__all__ = [
-    "debug_eig",
-]
+import logging
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 #######################################################################################
 
@@ -32,18 +30,20 @@ def debug_eig(
         The function prints the eigenvalues and eigenvectors (if requested) to the console.
     """
     # Compute eigenvalues and eigenvectors
-    eigenvalues, _eigenvectors_matrix = np.linalg.eig(A)
+    eigenvalues, eigenvectors_matrix = np.linalg.eig(A)
 
     # Print eigenvalues
     with np.printoptions(precision=prec_values, suppress=True):
-        for _i, _eigval in enumerate(eigenvalues):
-            pass
+        logger.info(" --- Eigenvalues ---")
+        for i, eigval in enumerate(eigenvalues):
+            logger.info(f"lambda_{i:d} = {eigval:f}")
 
     # Print eigenvectors if requested
     if eigenvectors:
         with np.printoptions(precision=prec_vectors, suppress=True):
-            for _i in range(len(eigenvalues)):
-                pass
+            logger.info("--- Eigenvectors ---")
+            for i in range(len(eigenvalues)):
+                logger.info(f"v_{i:d} = {eigenvectors_matrix[:, i]}")
 
 
 #######################################################################################
