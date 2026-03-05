@@ -12,13 +12,10 @@ __all__ = [
     "config_axis",
     "config_data_axis",
     "get_nice_ticks",
-    "set_paper_parameters",
     "smooth_interpolation",
     "vector2d",
     "zoom_range",
 ]
-
-# Standard libraries
 
 # Third-party libraries -------------------
 
@@ -41,39 +38,6 @@ from scipy.interpolate import UnivariateSpline, interp1d
 #     "2K"     : 2560,
 #     "4K"     : 3880
 #     }
-
-
-def set_paper_parameters(fontsize=12, fontfamily="serif", uselatex=True):
-    """
-    Set Matplotlib parameters for consistent, publication-quality plots.
-
-    This function configures font styles, sizes, and LaTeX rendering options for consistent
-    figure appearance across plots.
-
-    Parameters
-    ----------
-        fontsize (int, optional): Global font size. Default is 12.
-        fontfamily (str, optional): Font family (e.g., "serif", "Arial"). Default is "serif".
-        uselatex (bool, optional): Whether to use LaTeX rendering. Default is True.
-
-    Returns
-    -------
-        None
-
-    Notes
-    -----
-        - Requires LaTeX installed if `uselatex=True`.
-        - Applies to all future plots in the session.
-        - Math rendering uses the AMS math package and Computer Modern fonts.
-
-    Example:
-        set_paper_parameters(fontsize=14, fontfamily="Arial", uselatex=False)
-    """
-    matplotlib.rc("font", **{"size": fontsize, "family": fontfamily})
-
-    matplotlib.rc("text", **{"usetex": uselatex, "latex.preamble": r"\usepackage{amsmath}"})
-
-    matplotlib.rc("mathtext", **{"fontset": "cm"})
 
 
 def smooth_interpolation(x, y, method="cubic", num_points=100):
