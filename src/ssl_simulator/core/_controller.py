@@ -4,8 +4,6 @@ from ssl_simulator.utils.dict_ops import safe_assign, safe_update, validate_dict
 
 from .types import ControlMap
 
-#######################################################################################
-
 
 class Controller:
     def __init__(self, context, *args, **kwargs):
@@ -93,6 +91,3 @@ class Controller:
     # Control law ---------------------------------------------------------------------
     def compute_control(self, time: float, dt: float) -> None:
         raise NotImplementedError("The controller has not been implemented.")
-
-
-#######################################################################################

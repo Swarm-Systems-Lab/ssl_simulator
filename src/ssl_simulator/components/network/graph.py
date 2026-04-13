@@ -6,8 +6,6 @@ import numpy as np
 
 from ssl_simulator.math import build_B, build_L_from_B
 
-#######################################################################################
-
 
 class Graph:
     def __init__(self, N, Z):
@@ -75,8 +73,6 @@ class Graph:
     def __repr__(self):
         return self.descr
 
-
-#######################################################################################
 
 # Example usage
 if __name__ == "__main__":

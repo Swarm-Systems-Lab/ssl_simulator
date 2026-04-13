@@ -8,8 +8,6 @@ from ssl_simulator.math.basics import adapt_to_nd, exp
 
 from ._scalar_field import ScalarField
 
-#######################################################################################
-
 
 class SigmaGauss(ScalarField):
     """
@@ -82,6 +80,3 @@ class SigmaGauss(ScalarField):
         H[1, 1] = self.value(X) * (g_dy * g_dy + g_dyy)
 
         return H
-
-
-#######################################################################################

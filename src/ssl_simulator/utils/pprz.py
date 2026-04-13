@@ -1,16 +1,5 @@
-""" """
-
-__all__ = [
-    "get_pprz_idx",
-    "load_pprz_data",
-    "pprz_angle",
-]
-
-
 import numpy as np
 import pandas as pd
-
-#######################################################################################
 
 
 def pprz_angle(theta_array):
@@ -113,6 +102,3 @@ def get_pprz_idx(data: pd.DataFrame, t: float, time_label: str = "Time") -> int:
         raise ValueError(f"No index found where '{time_label}' >= {t}.")
 
     return filtered_data.index[0]
-
-
-#######################################################################################

@@ -6,8 +6,6 @@ import numpy as np
 
 from ._gvf_traj import GvfTrajectory
 
-#######################################################################################
-
 
 class GvfEllipse(GvfTrajectory):
     def __init__(self, XYoff, alpha, a, b):
@@ -57,6 +55,3 @@ class GvfEllipse(GvfTrajectory):
 
     def get_config(self):
         return {"XYoff": self.XYoff, "alpha": self.alpha, "a": self.a, "b": self.b}
-
-
-#######################################################################################

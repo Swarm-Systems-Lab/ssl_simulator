@@ -4,8 +4,6 @@
 from ssl_simulator.utils.dict_ops import parse_kwargs
 from ssl_simulator.visualization import Plotter, fixedwing_patch
 
-#######################################################################################
-
 
 class PlotterFixedwing(Plotter):
     def __init__(self, ax, data, tail_len=10, **kwargs):
@@ -73,6 +71,3 @@ class PlotterFixedwing(Plotter):
             self.icons[i] = patch_f
 
             self.tails[i].set_data(x[tail_start:, i], y[tail_start:, i])
-
-
-#######################################################################################

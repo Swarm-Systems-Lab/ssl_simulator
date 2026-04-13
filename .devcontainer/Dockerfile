@@ -8,17 +8,29 @@ ARG ACT_VERSION=v0.2.69
 # Install system dependencies as root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+    # Build and development tools
     build-essential \
-    ca-certificates \
     cmake \
-    curl \
-    gdb \
-    git \
-    jq \
     ninja-build \
     pkg-config \
     python3-dev \
+    gdb \
+    # Version control and utilities
+    git \
+    curl \
+    jq \
+    ca-certificates \
+    # Container runtime
     docker.io \
+    # LaTeX/math rendering (for matplotlib, markdown, scientific computing)
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-latex-extra \
+    dvipng \
+    cm-super \
+    ghostscript \
  && rm -rf /var/lib/apt/lists/*
 
 # Install uv, just, and act globally so they are available without per-user bootstrap

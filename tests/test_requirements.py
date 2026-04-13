@@ -1,6 +1,5 @@
 """File: _requirements.py."""
 
-#######################################################################################
 # Standard Libraries
 import shutil
 
@@ -9,7 +8,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Algebra (Numerical computation)
-#######################################################################################
 import pytest
 
 # Animation Tools (For creating animations)

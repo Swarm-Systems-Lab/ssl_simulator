@@ -2,8 +2,6 @@ __all__ = ["PlotBasic"]
 
 import matplotlib.pyplot as plt
 
-#######################################################################################
-
 
 class PlotBasic:
     def __init__(self, data):
@@ -32,6 +30,3 @@ class PlotBasic:
 
     def save(self, filename, dpi=100):
         plt.savefig(filename, dpi=dpi)
-
-
-#######################################################################################

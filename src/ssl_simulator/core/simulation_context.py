@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+import logging
 from collections.abc import Callable, MutableMapping
 
 from ssl_simulator.exceptions import InitializationError
@@ -8,7 +9,7 @@ from ._controller import Controller
 from ._robot_model import RobotModel
 from .types import ControllerProtocol, ControlMap, MutableStateMap, RobotModelProtocol
 
-#######################################################################################
+logger = logging.getLogger(__name__)
 
 
 class SimulationContext:
@@ -254,21 +255,26 @@ class SimulationContext:
             If True, prints the current value and shape of each input.
         """
         if self.robot_model is None:
+            logger.info("No robot model set in the simulation context.")
             return
 
         if not hasattr(self.robot_model, "control_inputs") or not self.robot_model.control_inputs:
+            logger.info("Robot model has no control inputs defined.")
             return
 
-        for _input_name, value in self.robot_model.control_inputs.items():
+        logger.info(f"Robot model '{self.robot_model.__class__.__name__}' control inputs:")
+        for input_name, value in self.robot_model.control_inputs.items():
             if value is None:
-                pass
+                shape = "None"
             else:
-                with contextlib.suppress(AttributeError):
-                    pass
+                try:
+                    shape = value.shape
+                except AttributeError:
+                    shape = "scalar"
             if show_values:
-                pass
+                logger.info(f"  - Input: '{input_name}', Value: {value}, Shape: {shape}")
             else:
-                pass
+                logger.info(f"  - Input: '{input_name}', Shape: {shape}")
 
     def print_controllers(self, show_outputs: bool = True):
         """
@@ -280,21 +286,27 @@ class SimulationContext:
             If True, prints the control variables and their shapes.
         """
         if not self.controllers:
+            logger.info("No controllers added to the simulation context.")
             return
 
         self.compute_controls(0, 0)  # Run all controllers one step to update shape
 
-        for _key, controller in self.controllers.items():
+        logger.info("Controllers in the simulation context:")
+        for key, controller in self.controllers.items():
+            logger.info(f"  - Key: '{key}', Controller: {controller.__class__.__name__}")
             if show_outputs:
                 if not controller.get_control_vars():
-                    pass
+                    logger.info("      Control outputs: None")
                 else:
-                    for _var_name, value in controller.get_control_vars().items():
+                    for var_name, value in controller.get_control_vars().items():
                         if value is None:
-                            pass
+                            shape = None
                         else:
-                            with contextlib.suppress(AttributeError):
-                                pass
+                            try:
+                                shape = value.shape
+                            except AttributeError:
+                                shape = "scalar"
+                        logger.info(f"      Output: '{var_name}', Shape: {shape}")
 
     def print_control_interfaces(self, key=None):
         """
@@ -306,20 +318,26 @@ class SimulationContext:
             If provided, only print the interfaces of the specified controller.
         """
         if not self.ctrl_interfaces:
+            logger.info("No control interfaces registered in the simulation context.")
             return
 
         def _print_methods(methods, pre=""):
-            for _method_name, method in methods.items():
-                with contextlib.suppress(TypeError, ValueError):
-                    inspect.signature(method)
+            for method_name, method in methods.items():
+                try:
+                    sig = inspect.signature(method)
+                    logger.info(pre + f"  - {method_name}{sig}")
+                except (TypeError, ValueError):
+                    # Some callables may not have a retrievable signature
+                    logger.info(pre + f"  - {method_name}(...)")
 
         if key is not None:
             if key not in self.ctrl_interfaces:
+                logger.info(f"Controller '{key}' not found in ctrl_interfaces.")
                 return
+            logger.info(f"Control interfaces for controller '{key}':")
             _print_methods(self.ctrl_interfaces[key])
         else:
-            for _ctrl_key, methods in self.ctrl_interfaces.items():
+            logger.info("Control interfaces in the simulation context:")
+            for ctrl_key, methods in self.ctrl_interfaces.items():
+                logger.info(f"  * Controller '{ctrl_key}':")
                 _print_methods(methods, pre="    ")
-
-
-#######################################################################################

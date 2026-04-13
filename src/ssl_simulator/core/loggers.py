@@ -7,8 +7,6 @@ import numpy as np
 from ssl_simulator.utils.dict_ops import dict_to_json
 from ssl_simulator.utils.path_ops import create_dir
 
-#######################################################################################
-
 _INITIAL_CAPACITY = 256
 
 
@@ -53,7 +51,7 @@ class DataLogger:
         self._csv_file = None
         self._csv_writer = None
         if self.filename:
-            create_dir(os.path.dirname(filename), verbose=False)
+            create_dir(os.path.dirname(filename))
             with open(self.filename, mode="w", newline="") as file:
                 file.write(f"# SETTINGS: {dict_to_json(self.settings, dump=True)}\n")
                 csv.DictWriter(file, fieldnames=self.labels).writeheader()
@@ -134,6 +132,3 @@ class DataLogger:
 
     def __del__(self) -> None:
         self.close()
-
-
-#######################################################################################

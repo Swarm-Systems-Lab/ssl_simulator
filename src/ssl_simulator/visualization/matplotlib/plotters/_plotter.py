@@ -4,8 +4,6 @@ from matplotlib.pyplot import figure
 
 from ssl_simulator.utils.dict_ops import parse_kwargs
 
-#######################################################################################
-
 
 class Plotter:
     fig = None
@@ -33,6 +31,3 @@ class Plotter:
         if self.fig is None:
             raise RuntimeError("Figure not initialized; cannot save.")
         self.fig.savefig(filename, dpi=dpi, **kwargs)
-
-
-#######################################################################################

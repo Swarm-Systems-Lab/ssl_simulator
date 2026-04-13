@@ -1,45 +1,31 @@
-""" """
-
-__all__ = ["add_src_to_path", "create_dir"]
-
+import logging
 import os
 import sys
 from pathlib import Path
 
-from ssl_simulator.config import CONFIG
-
-#######################################################################################
+logger = logging.getLogger(__name__)
 
 
-def create_dir(directory: str, verbose: bool = True) -> None:
+def create_dir(directory: str) -> None:
     """
     Create a new directory if it doesn't already exist.
 
     Args:
         directory (str): The path of the directory to create.
-        verbose (bool, optional): Whether to print status messages. Defaults to True.
-
-    Returns
-    -------
-        None
     """
     try:
         os.mkdir(directory)
-        if verbose:
-            pass
+        logger.debug(f"Directory '{directory}' created!")
     except FileExistsError:
-        if verbose:
-            pass
+        logger.debug(f"The directory '{directory}' already exists!")
 
 
-def add_src_to_path(file=None, relative_path="", deep=0, debug=CONFIG["DEBUG"]):
-    """Adds the "relative_path" folder to sys.path based on the notebook's location."""
+def add_src_to_path(file=None, relative_path="", deep=0):
+    """
+    Adds the "relative_path" folder to sys.path based on 'file' or actual location.
+    """
     root = Path(file).resolve().parents[deep + 1] if file else Path.cwd().parents[deep]
     target = root / relative_path
     sys.path.append(str(target))
 
-    if debug:
-        pass
-
-
-#######################################################################################
+    logger.debug(f"Added to sys.path: root={root}, target={target}")

@@ -8,8 +8,6 @@ import numpy as np
 from ssl_simulator.utils.dict_ops import parse_kwargs
 from ssl_simulator.visualization import unicycle_patch
 
-#######################################################################################
-
 
 class PlotterUnySS:
     """Plotter for unicycle robots with status and vector fields."""
@@ -136,6 +134,3 @@ class PlotterUnySS:
         dy = mu_centralized[-1, 1] / np.linalg.norm(mu_centralized[-1, :]) * 10
         self.vector_mu.set_offsets([[pc_centralized[-1, 0], pc_centralized[-1, 1]]])
         self.vector_mu.set_UVC(dx, dy)
-
-
-#######################################################################################

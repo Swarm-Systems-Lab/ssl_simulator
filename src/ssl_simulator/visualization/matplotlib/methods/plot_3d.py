@@ -8,8 +8,6 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 from ssl_simulator.math import check_and_parse_dimensions, so3_log_map, so3_vee
 from ssl_simulator.visualization.matplotlib.utils.figure_tools import initialize_plot
 
-#######################################################################################
-
 
 def plot_3d_sphere_wf(ax: Axes3D, radius: float, projections: bool = False, surface: bool = False):
     # Creating a 3D wireframe sphere with highlighted meridians (0° and 90° longitude)

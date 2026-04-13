@@ -9,11 +9,11 @@ __all__ = [
     "unit_vec",
 ]
 
+import logging
+
 import numpy as np
 
-from ssl_simulator.config import CONFIG
-
-#######################################################################################
+logger = logging.getLogger(__name__)
 
 
 def unit_vec(V, delta=0, axis=-1):
@@ -90,6 +90,7 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
 
     # Handle special cases for expected shapes (auto-add batch dimension)
     # TODO: generalize this logic
+    orig_shape = array.shape
     changed = False
 
     if len(expected_shape) == 2 and expected_shape[0] is None and array.ndim == 1:
@@ -115,8 +116,8 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
         array = array[np.newaxis, np.newaxis, :, :]
         changed = True
 
-    if CONFIG["DEBUG"] and changed:
-        pass
+    if changed:
+        logger.debug(f"Shape changed: {orig_shape} -> {array.shape}")
 
     # Replace None values in expected_shape with fill_values if provided
     if fill_values is not None:
@@ -255,6 +256,3 @@ def angle_of_vectors(A, B):
     cross_product = np.cross(A, B, axis=1)
     theta = np.arctan2(cross_product, dot_product)
     return theta
-
-
-#######################################################################################

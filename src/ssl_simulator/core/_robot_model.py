@@ -2,8 +2,6 @@ from ssl_simulator.utils.dict_ops import safe_assign, safe_update, validate_dict
 
 from .types import ControlMap, MutableStateMap
 
-#######################################################################################
-
 
 class RobotModel:
     def __init__(self, context, *args, **kwargs):
@@ -108,6 +106,3 @@ class RobotModel:
     # Dynamics  -----------------------------------------------------------------------
     def dynamics(self, time: float) -> MutableStateMap:
         raise NotImplementedError("The dynamics have not been implemented.")
-
-
-#######################################################################################

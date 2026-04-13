@@ -7,8 +7,6 @@ import numpy as np
 # Visualization
 from matplotlib.path import Path
 
-#######################################################################################
-
 
 def unicycle_patch(XY, yaw, size=1, **patch_kwargs):
     """
@@ -117,6 +115,3 @@ def fixedwing_patch(XY, yaw, size=1, **patch_kwargs):
     path = Path(verts, codes)
 
     return patches.PathPatch(path, **patch_kwargs)
-
-
-#######################################################################################

@@ -3,8 +3,6 @@ import numpy as np
 from ssl_simulator.core._robot_model import RobotModel
 from ssl_simulator.math import check_and_parse_dimensions
 
-#######################################################################################
-
 
 class SingleIntegrator(RobotModel):
     def __init__(self, context, initial_state):
@@ -36,6 +34,3 @@ class SingleIntegrator(RobotModel):
 
         self.state_dot["p_dot"] = np.broadcast_to(u, state["p"].shape).copy()
         return self.state_dot
-
-
-#######################################################################################

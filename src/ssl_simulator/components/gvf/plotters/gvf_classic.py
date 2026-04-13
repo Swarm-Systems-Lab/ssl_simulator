@@ -7,8 +7,6 @@ from ssl_simulator.visualization import PlotterVF
 
 E = np.array([[0, 1], [-1, 0]])  # -90 degree 2D rotation matrix
 
-#######################################################################################
-
 
 class PlotterGvf(PlotterVF):
     def __init__(self, gvf_traj, ax, **kwargs):
@@ -61,6 +59,3 @@ class PlotterGvf(PlotterVF):
         vec_normalized = vec / np.clip(norm, a_min=1e-8, a_max=None)
 
         return vec_normalized
-
-
-#######################################################################################

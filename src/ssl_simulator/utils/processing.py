@@ -1,22 +1,17 @@
-""" """
-
-__all__ = ["first_larger_index", "load_class", "load_sim"]
-
-
 import importlib
 import json
+import logging
 
 import numpy as np
 import pandas as pd
 
-from ssl_simulator.config import CONFIG
 from ssl_simulator.utils.dict_ops import json_to_dict, print_dict
 from ssl_simulator.utils.file_ops import check_file_size
 
-#######################################################################################
+logger = logging.getLogger(__name__)
 
 
-def load_sim(filename, max_size_mb=100, debug=CONFIG["DEBUG"], verbose=CONFIG["DEBUG"]):
+def load_sim(filename, max_size_mb=100, *args, **kwargs):
     check_file_size(filename, max_size_mb=max_size_mb)
 
     settings, skiprows = _load_settings_line(filename)
@@ -24,8 +19,10 @@ def load_sim(filename, max_size_mb=100, debug=CONFIG["DEBUG"], verbose=CONFIG["D
 
     data_dict = _parse_dataframe(df)
 
-    if debug:
-        _debug_print(settings, data_dict, verbose)
+    logging.info("Loaded simulation data from '%s':", filename)
+    if settings:
+        print_dict(settings)
+    print_dict(data_dict)
 
     return data_dict, settings
 
@@ -79,7 +76,6 @@ def first_larger_index(times, x, epsilon=1e-8):
     return None
 
 
-#######################################################################################
 # --- Helper functions ---
 
 
@@ -104,10 +100,3 @@ def _parse_dataframe(df):
             data_dict[col] = df[col].to_numpy()
 
     return data_dict
-
-
-def _debug_print(settings, data_dict, verbose=False):
-    if settings:
-        print_dict(settings, verbose=verbose)
-
-    print_dict(data_dict)

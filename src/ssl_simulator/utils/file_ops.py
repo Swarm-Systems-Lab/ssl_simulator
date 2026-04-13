@@ -1,12 +1,6 @@
-""" """
-
-__all__ = ["check_file_size", "load_class_from_file"]
-
 import importlib.util
 import os
 from pathlib import Path
-
-#######################################################################################
 
 
 def check_file_size(filename: str, max_size_mb: int | None = None):
@@ -35,6 +29,3 @@ def load_class_from_file(module_path: str, class_name: str):
         raise AttributeError(f"Class '{class_name}' not found in {module_path_obj}")
 
     return getattr(module, class_name)
-
-
-#######################################################################################

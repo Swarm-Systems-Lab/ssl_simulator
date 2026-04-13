@@ -6,8 +6,6 @@ import numpy as np
 
 from ._gvf_traj import GvfTrajectory
 
-#######################################################################################
-
 
 class GvfLine(GvfTrajectory):
     def __init__(self, m, b, line_length=30):
@@ -36,6 +34,3 @@ class GvfLine(GvfTrajectory):
 
     def get_config(self):
         return {"m": self.m, "b": self.b, "line_length": self.line_length}
-
-
-#######################################################################################

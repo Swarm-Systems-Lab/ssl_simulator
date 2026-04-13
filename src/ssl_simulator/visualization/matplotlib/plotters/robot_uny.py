@@ -4,8 +4,6 @@
 from ssl_simulator.utils.dict_ops import parse_kwargs
 from ssl_simulator.visualization import unicycle_patch
 
-#######################################################################################
-
 
 class PlotterUny:
     def __init__(self, ax, data, tail_len=10, **kwargs):
@@ -91,6 +89,3 @@ class PlotterUny:
     # def _update_icon(self, icon, pos, angle):
     #     transform = Affine2D().rotate_around(0, 0, angle).translate(*pos)
     #     icon.set_transform(transform + self.ax.transData)
-
-
-#######################################################################################
