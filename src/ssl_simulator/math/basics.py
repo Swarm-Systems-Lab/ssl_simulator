@@ -117,7 +117,7 @@ def check_and_parse_dimensions(array, expected_shape, name=None, fill_values=Non
         changed = True
 
     if changed:
-        logger.debug(f"Shape changed: {orig_shape} -> {array.shape}")
+        logger.debug_verbose(f"Shape changed: {orig_shape} -> {array.shape}")
 
     # Replace None values in expected_shape with fill_values if provided
     if fill_values is not None:

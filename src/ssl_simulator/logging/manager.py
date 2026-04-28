@@ -5,6 +5,8 @@ import logging
 import sys
 from typing import Optional
 
+from ssl_simulator.config import CONFIG
+
 from .formatters import get_formatter
 from .levels import normalize_level
 
@@ -37,6 +39,8 @@ class LoggerManager:
         format_type: str = "compact",
         packages: list[str] | None = None,
         handler: logging.Handler | None = None,
+        inline_max_len: int | None = None,
+        inline_max_keys: int | None = None,
     ) -> None:
         """
         Configure logging for specific packages (default: ssl_simulator, ssl_vista).
@@ -48,11 +52,15 @@ class LoggerManager:
         level : int | str
             Log level for the configured packages
         format_type : str
-            Formatter preset
+            Formatter preset (simple, compact, standard, detailed, json)
         packages : list[str], optional
-            Package names to configure (default: ["ssl_simulator", "ssl_vista"])
+            Package names to configure (default: ["ssl_simulator"])
         handler : logging.Handler, optional
             Custom handler (default: StreamHandler to stdout)
+        inline_max_len : int, optional
+            Maximum line length for inline dict rendering. Edits CONFIG["LOG_INLINE_MAX_LEN"].
+        inline_max_keys : int, optional
+            Maximum keys to keep dicts inline. Edits CONFIG["LOG_INLINE_MAX_KEYS"].
 
         Examples
         --------
@@ -61,6 +69,11 @@ class LoggerManager:
         """
         if packages is None:
             packages = ["ssl_simulator"]
+
+        if inline_max_len is not None:
+            CONFIG["LOG_INLINE_MAX_LEN"] = inline_max_len
+        if inline_max_keys is not None:
+            CONFIG["LOG_INLINE_MAX_KEYS"] = inline_max_keys
 
         formatter = get_formatter(format_type)
         normalized_level = normalize_level(level)
@@ -88,7 +101,7 @@ class LoggerManager:
     def set_level(self, level: int | str, packages: list[str] | None = None) -> None:
         """Set level for specific packages."""
         if packages is None:
-            packages = list(self._handlers.keys()) or ["ssl_simulator", "ssl_vista"]
+            packages = list(self._handlers.keys()) or ["ssl_simulator"]
 
         normalized_level = normalize_level(level)
         for package_name in packages:
@@ -98,7 +111,7 @@ class LoggerManager:
     def set_format(self, format_type: str, packages: list[str] | None = None) -> None:
         """Set format for specific packages."""
         if packages is None:
-            packages = list(self._handlers.keys()) or ["ssl_simulator", "ssl_vista"]
+            packages = list(self._handlers.keys()) or ["ssl_simulator"]
 
         formatter = get_formatter(format_type)
         for package_name in packages:

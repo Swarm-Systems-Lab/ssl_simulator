@@ -3,7 +3,7 @@
 import functools
 import logging
 
-from .levels import DEBUG_VERBOSE, normalize_level
+from .levels import normalize_level
 
 
 def requires_log_level(logger: logging.Logger, minimum_level: int | str):
@@ -17,7 +17,7 @@ def requires_log_level(logger: logging.Logger, minimum_level: int | str):
                 level_name = logging.getLevelName(min_level)
                 logger.warning(
                     f"{func.__name__}() requires {level_name} level. "
-                    f"Use LoggerManager().set_level('{level_name}')"
+                    f"Use LoggerManager().set_level('{level_name}') or setup_logging(level='{level_name}') from ssl_simulator.logging to enable."
                 )
                 return
             return func(*args, **kwargs)
@@ -25,8 +25,3 @@ def requires_log_level(logger: logging.Logger, minimum_level: int | str):
         return wrapper
 
     return decorator
-
-
-def debug_verbose(logger: logging.Logger, msg: str, *args, **kwargs) -> None:
-    """Log at DEBUG_VERBOSE level."""
-    logger.log(DEBUG_VERBOSE, msg, *args, **kwargs)

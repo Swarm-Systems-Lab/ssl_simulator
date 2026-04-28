@@ -1,9 +1,10 @@
+import inspect
 import json
 import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def safe_assign(target, source, source_name="dict"):
@@ -102,6 +103,25 @@ def dict_to_json(ditc, dump=False):
         cls = obj.__class__
         return cls.__module__ not in ["builtins", "numpy"]
 
+    def has_required_init_args(obj):
+        try:
+            signature = inspect.signature(obj.__class__.__init__)
+        except (TypeError, ValueError):
+            return False
+
+        for parameter in list(signature.parameters.values())[1:]:
+            if (
+                parameter.kind
+                in (
+                    inspect.Parameter.POSITIONAL_ONLY,
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                )
+                and parameter.default is inspect.Parameter.empty
+            ):
+                return True
+
+        return False
+
     def convert(value):
         if isinstance(value, np.ndarray):
             return json.dumps(value.tolist())
@@ -116,6 +136,12 @@ def dict_to_json(ditc, dump=False):
             result = {"__class__": value.__class__.__name__}
             if hasattr(value, "get_config") and callable(value.get_config):
                 result["__params__"] = convert(value.get_config())
+            elif has_required_init_args(value):
+                _logger.warning(
+                    "Custom class %s has no get_config() method; only the class name will be saved. "
+                    "Define get_config() to preserve constructor arguments during serialization.",
+                    value.__class__.__name__,
+                )
             return result
 
         else:
@@ -157,22 +183,3 @@ def json_to_dict(json_str):
 
     raw = json.loads(json_str)
     return convert(raw)
-
-
-def print_dict(d, indent=0):
-    """Print a dictionary. Detailed output at DEBUG level."""
-    if not logger.isEnabledFor(logging.INFO):
-        return
-
-    pad = "  " * indent
-    for k, v in d.items():
-        if isinstance(v, dict):
-            logger.info(f"{pad}{k}:")
-            print_dict(v, indent + 1)
-        elif isinstance(v, np.ndarray):
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug(f"{pad}{k}: shape {v.shape} -> {v.tolist()}")
-            else:
-                logger.info(f"{pad}{k}: shape {v.shape}")
-        else:
-            logger.info(f"{pad}{k}: {v}")

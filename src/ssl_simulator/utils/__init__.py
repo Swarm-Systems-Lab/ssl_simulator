@@ -5,7 +5,6 @@ from .dict_ops import (
     dict_to_json,
     json_to_dict,
     parse_kwargs,
-    print_dict,
     safe_assign,
     safe_update,
     validate_dict_attributes,
@@ -19,7 +18,6 @@ __all__ = [  # noqa: RUF022
     # Debug utilities
     "debug_eig",
     # Dictionary operations
-    "print_dict",
     "safe_assign",
     "safe_update",
     "validate_dict_attributes",

@@ -5,14 +5,26 @@ import logging
 DEBUG_VERBOSE = 5
 logging.addLevelName(DEBUG_VERBOSE, "DEBUG_VERBOSE")
 
-# Standard levels for reference
+
+def _debug_verbose(self, msg, *args, **kwargs):
+    """Log 'msg % args' with severity DEBUG_VERBOSE."""
+    if self.isEnabledFor(DEBUG_VERBOSE):
+        self._log(DEBUG_VERBOSE, msg, args, **kwargs)
+
+
+# Attach to the Logger class so every logger instance has it
+logging.Logger.debug_verbose = _debug_verbose
+
+
+# ---------- registry ----------
+
 LEVELS = {
     "CRITICAL": logging.CRITICAL,  # 50
     "ERROR": logging.ERROR,  # 40
     "WARNING": logging.WARNING,  # 30
     "INFO": logging.INFO,  # 20
     "DEBUG": logging.DEBUG,  # 10
-    "DEBUG_VERBOSE": DEBUG_VERBOSE,
+    "DEBUG_VERBOSE": DEBUG_VERBOSE,  # 5
     "NOTSET": logging.NOTSET,  # 0
 }
 

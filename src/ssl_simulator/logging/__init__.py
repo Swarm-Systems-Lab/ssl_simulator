@@ -9,11 +9,11 @@ Provides:
 - Utilities for standalone quick configuration
 """
 
-from .decorators import debug_verbose, requires_log_level
+from .decorators import requires_log_level
 from .formatters import FORMATTERS, get_formatter
 from .levels import DEBUG_VERBOSE, LEVELS, normalize_level
 from .manager import LoggerManager
-from .utils import set_log_format, set_log_level
+from .utils import set_log_format, set_log_level, setup_logging
 
 __all__ = [  # noqa: RUF022
     # Classes
@@ -21,8 +21,8 @@ __all__ = [  # noqa: RUF022
     # Convenience functions
     "set_log_level",
     "set_log_format",
+    "setup_logging",
     # Utilities
-    "debug_verbose",
     "get_formatter",
     "normalize_level",
     # Decorators
