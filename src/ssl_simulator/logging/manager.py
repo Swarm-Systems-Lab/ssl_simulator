@@ -13,7 +13,7 @@ from .levels import normalize_level
 
 class LoggerManager:
     """
-    Manages logging specifically for ssl_simulator and ssl_vista.
+    Manages logging specifically for ssl_simulator.
 
     Does NOT touch the root logger or other packages.
     Each framework package gets its own handler.
@@ -43,7 +43,7 @@ class LoggerManager:
         inline_max_keys: int | None = None,
     ) -> None:
         """
-        Configure logging for specific packages (default: ssl_simulator, ssl_vista).
+        Configure logging for specific packages (default: ssl_simulator).
 
         This configures ONLY these packages, leaving other packages silent.
 
