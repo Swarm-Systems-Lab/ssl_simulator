@@ -2,51 +2,31 @@ import logging
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from ssl_simulator.logging import requires_log_level
+
+_logger = logging.getLogger(__name__)
 
 
-def debug_eig(
-    A: np.ndarray, eigenvectors: bool = True, prec_values: int = 8, prec_vectors: int = 3
-) -> None:
-    """
-    Debug function to display eigenvalues and optionally eigenvectors of a matrix.
+@requires_log_level(_logger, "DEBUG")
+def debug_eig(A: np.ndarray, *, include_eigenvectors: bool = True) -> None:
+    """Log eigenvalues (and optionally eigenvectors) of a matrix at DEBUG level.
+
+    Pure diagnostic — no-op when DEBUG is disabled.
 
     Parameters
     ----------
     A : np.ndarray
-        The input square matrix for which eigenvalues and eigenvectors are to be computed.
-    eigenvectors : bool, optional
-        If True, eigenvectors will be displayed along with eigenvalues (default is True).
-    prec_values : int, optional
-        The number of decimal places to display for the eigenvalues (default is 8).
-    prec_vectors : int, optional
-        The number of decimal places to display for the eigenvectors (default is 3).
-
-    Returns
-    -------
-    None
-        The function prints the eigenvalues and eigenvectors (if requested) to the console.
+        Square matrix to decompose.
+    include_eigenvectors : bool, optional
+        If True, also include the eigenvector matrix in the log payload.
     """
-    # Compute eigenvalues and eigenvectors
     eigenvalues, eigenvectors_matrix = np.linalg.eig(A)
 
-    # Print eigenvalues
-    with np.printoptions(precision=prec_values, suppress=True):
-        logger.info(" --- Eigenvalues ---")
-        for i, eigval in enumerate(eigenvalues):
-            logger.info(f"lambda_{i:d} = {eigval:f}")
+    payload = {
+        "matrix_shape": list(A.shape),
+        "eigenvalues": eigenvalues,
+    }
+    if include_eigenvectors:
+        payload["eigenvectors"] = eigenvectors_matrix
 
-    # Print eigenvectors if requested
-    if eigenvectors:
-        with np.printoptions(precision=prec_vectors, suppress=True):
-            logger.info("--- Eigenvectors ---")
-            for i in range(len(eigenvalues)):
-                logger.info(f"v_{i:d} = {eigenvectors_matrix[:, i]}")
-
-
-#######################################################################################
-
-# Example usage
-if __name__ == "__main__":
-    A = np.array([[1, 3], [2, 7]])
-    debug_eig(A)
+    _logger.debug("eigendecomposition", extra=payload)

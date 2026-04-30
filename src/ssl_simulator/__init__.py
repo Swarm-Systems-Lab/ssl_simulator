@@ -15,9 +15,6 @@ from .core.simulation_engine import INTEGRATORS, SimulationEngine
 from .logging import __all__ as _LOGGING_PUBLIC_API
 from .utils import __all__ as _UTILS_PUBLIC_API
 
-# Configure default logging for the package
-logging.setup_logging()
-
 _BASE_PUBLIC_API: Final[list[str]] = [
     # Configuration
     "CONFIG",

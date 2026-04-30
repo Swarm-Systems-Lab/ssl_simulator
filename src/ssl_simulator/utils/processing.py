@@ -5,10 +5,22 @@ import logging
 import numpy as np
 import pandas as pd
 
-from ssl_simulator.utils.dict_ops import json_to_dict, print_dict
+from ssl_simulator.logging import requires_log_level
+from ssl_simulator.utils.dict_ops import json_to_dict
 from ssl_simulator.utils.file_ops import check_file_size
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+
+
+def first_larger_index(times, x, epsilon=1e-8):
+    """
+    Return the first index where time > x.
+    If no such index exists, returns None.
+    """
+    for i, t in enumerate(times):
+        if t >= x - epsilon:
+            return i
+    return None
 
 
 def load_sim(filename, max_size_mb=100, *args, **kwargs):
@@ -19,10 +31,8 @@ def load_sim(filename, max_size_mb=100, *args, **kwargs):
 
     data_dict = _parse_dataframe(df)
 
-    logging.info("Loaded simulation data from '%s':", filename)
-    if settings:
-        print_dict(settings)
-    print_dict(data_dict)
+    if _logger.isEnabledFor(logging.INFO):
+        _info_logging(settings, data_dict)
 
     return data_dict, settings
 
@@ -65,17 +75,7 @@ def load_class(module_name: str, class_name: str, base_class=None, **init_kwargs
     return cls(**init_kwargs)
 
 
-def first_larger_index(times, x, epsilon=1e-8):
-    """
-    Return the first index where time > x.
-    If no such index exists, returns None.
-    """
-    for i, t in enumerate(times):
-        if t >= x - epsilon:
-            return i
-    return None
-
-
+#######################################################################################
 # --- Helper functions ---
 
 
@@ -100,3 +100,17 @@ def _parse_dataframe(df):
             data_dict[col] = df[col].to_numpy()
 
     return data_dict
+
+
+def _info_logging(settings, data_dict):
+    if settings:
+        payload = {"settings": settings, "data": data_dict}
+        msg = "Simulation settings & data loaded"
+    else:
+        payload = {"data": data_dict}
+        msg = "Simulation data loaded"
+
+    if _logger.isEnabledFor(logging.DEBUG):
+        _logger.debug(msg, extra=payload)
+    else:
+        _logger.info(msg, extra=payload)
