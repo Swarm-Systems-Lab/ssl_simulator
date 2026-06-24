@@ -24,7 +24,7 @@ Clone and set up the development environment:
 
 ```bash
 # Clone the repository
-git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git clone https://github.com/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
 
 # One-command setup
@@ -332,8 +332,8 @@ uv run pytest -n auto
 ### Getting Help
 
 - 📖 **Documentation**: Check [Golden Path](golden-path.md) and [Contributing](contributing.md)
-- 🐛 **Issues**: Search or create an issue at [https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/issues](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/issues)
-- 💬 **Discussions**: Ask questions at [https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/discussions](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/discussions)
+- 🐛 **Issues**: Search or create an issue at [https://github.com/Swarm-Systems-Lab/ssl-simulator/issues](https://github.com/Swarm-Systems-Lab/ssl-simulator/issues)
+- 💬 **Discussions**: Ask questions at [https://github.com/Swarm-Systems-Lab/ssl-simulator/discussions](https://github.com/Swarm-Systems-Lab/ssl-simulator/discussions)
 - 📧 **Email**: Contact jesbauti20@gmail.com
 
 ## Next Steps

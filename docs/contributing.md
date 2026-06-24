@@ -20,7 +20,7 @@ Follow these exact steps to set up your development environment:
 
 ```bash
 # Fork and clone the repository
-git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git clone https://github.com/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
 
 # Setup environment (installs uv if needed, creates .venv, installs deps)
@@ -112,7 +112,7 @@ git clone https://github.com/YOUR_USERNAME/ssl_simulator
 cd ssl_simulator
 
 # Add upstream remote
-git remote add upstream https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git remote add upstream https://github.com/Swarm-Systems-Lab/ssl-simulator
 
 # Create feature branch
 git checkout -b feature/your-feature-name
@@ -639,8 +639,8 @@ Version follows [Semantic Versioning](https://semver.org/):
 - 📖 [Golden Path Documentation](golden-path.md)
 - 🔧 [Usage Guide](usage.md)
 - 🐛 [Troubleshooting](troubleshooting.md)
-- 💬 [GitHub Discussions](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/discussions)
-- 🐛 [Issue Tracker](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/issues)
+- 💬 [GitHub Discussions](https://github.com/Swarm-Systems-Lab/ssl-simulator/discussions)
+- 🐛 [Issue Tracker](https://github.com/Swarm-Systems-Lab/ssl-simulator/issues)
 
 ### Community
 

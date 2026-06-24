@@ -179,7 +179,7 @@ just setup
 
 ```bash
 # Clone and setup
-git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git clone https://github.com/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
 just setup
 

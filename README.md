@@ -2,7 +2,7 @@
 
 Swarm Systems Lab Python Simulator
 
-⚠️ **Warning:** This project is a work in progress and uses Generative AI for both documentation and code generation.
+⚠️ **Warning:** This project is a work in progress
 
 ## Installation
 
@@ -28,7 +28,7 @@ This project follows the **SSL Golden Path** for streamlined Python development.
 
 ```bash
 # Clone the repository
-git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git clone https://github.com/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
 
 # One-command setup (installs uv, creates .venv, installs dependencies)
@@ -95,7 +95,7 @@ ssl_simulator/
 ## Documentation
 
 
-Full documentation is available at [https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/blob/main/docs](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/blob/main/docs)
+Full documentation is available at [https://github.com/Swarm-Systems-Lab/ssl-simulator/blob/main/docs](https://github.com/Swarm-Systems-Lab/ssl-simulator/blob/main/docs)
 
 
 **Build locally:**

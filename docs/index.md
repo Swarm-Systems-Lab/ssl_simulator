@@ -20,7 +20,7 @@ Get up and running in minutes:
 
 ```bash
 # Clone the repository
-git clone https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+git clone https://github.com/Swarm-Systems-Lab/ssl-simulator
 cd ssl_simulator
 
 # One-command setup (installs uv if needed, creates .venv, installs deps)
@@ -115,7 +115,7 @@ just docs-build      # Build static docs
 
 ## Support & Community
 
-- 🐛 **Issues**: Report bugs or request features on [https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator](https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator/issues)
+- 🐛 **Issues**: Report bugs or request features on [https://github.com/Swarm-Systems-Lab/ssl-simulator](https://github.com/Swarm-Systems-Lab/ssl-simulator/issues)
 - 📧 **Contact**: jesbauti20@gmail.com
 - 📄 **License**: MIT
 
