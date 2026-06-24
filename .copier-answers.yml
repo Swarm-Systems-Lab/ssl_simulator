@@ -9,5 +9,5 @@ include_examples: true
 license: MIT
 package_name: ssl_simulator
 project_name: ssl_simulator
-repo_url: https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+repo_url: https://github.com/Swarm-Systems-Lab/ssl_simulator
 use_docker: true

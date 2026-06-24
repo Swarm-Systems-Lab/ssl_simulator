@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
-    { name = "Jesús Bautista Villar", email = "jesbauti20@gmail.com" }
+    { name = "Jesus Bautista Villar", email = "jesbauti20@gmail.com" }
 ]
 dependencies = [
     "numpy>=1.23",
@@ -97,14 +97,6 @@ packages = ["src/ssl_simulator"]
 [tool.hatch.build.targets.sdist]
 include = ["src", "README.md", "LICENSE"]
 exclude = ["tests", "examples", "output"]
-
-[[tool.uv.index]]
-name = "internal-repo"
-url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/"
-explicit = true
-
-[tool.uv.sources]
-lieplusplus_py = { index = "internal-repo" }
 
 # --- Tool Configuration ---
 [tool.ruff]
@@ -198,7 +190,6 @@ env_list = [
 [tool.tox.env_run_base]
 # Pass environment variables to test environments
 passenv = ["*"]
-setenv = { UV_EXTRA_INDEX_URL = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" }
 
 [tool.tox.env.pre-commit]
 description = "Run pre-commit hooks"

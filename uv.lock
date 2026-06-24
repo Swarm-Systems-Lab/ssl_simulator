@@ -745,6 +745,7 @@ dependencies = [
     { name = "griffecli" },
     { name = "griffelib" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/04/56/28a0accac339c164b52a92c6cfc45a903acc0c174caa5c1713803467b533/griffe-2.0.0.tar.gz", hash = "sha256:c68979cd8395422083a51ea7cf02f9c119d889646d99b7b656ee43725de1b80f", size = 293906, upload-time = "2026-03-23T21:06:53.402Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8b/94/ee21d41e7eb4f823b94603b9d40f86d3c7fde80eacc2c3c71845476dddaa/griffe-2.0.0-py3-none-any.whl", hash = "sha256:5418081135a391c3e6e757a7f3f156f1a1a746cc7b4023868ff7d5e2f9a980aa", size = 5214, upload-time = "2026-02-09T19:09:44.105Z" },
 ]
@@ -757,6 +758,7 @@ dependencies = [
     { name = "colorama" },
     { name = "griffelib" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/a4/f8/2e129fd4a86e52e58eefe664de05e7d502decf766e7316cc9e70fdec3e18/griffecli-2.0.0.tar.gz", hash = "sha256:312fa5ebb4ce6afc786356e2d0ce85b06c1c20d45abc42d74f0cda65e159f6ef", size = 56213, upload-time = "2026-03-23T21:06:54.8Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/ed/d93f7a447bbf7a935d8868e9617cbe1cadf9ee9ee6bd275d3040fbf93d60/griffecli-2.0.0-py3-none-any.whl", hash = "sha256:9f7cd9ee9b21d55e91689358978d2385ae65c22f307a63fb3269acf3f21e643d", size = 9345, upload-time = "2026-02-09T19:09:42.554Z" },
 ]
@@ -765,6 +767,7 @@ wheels = [
 name = "griffelib"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/06/eccbd311c9e2b3ca45dbc063b93134c57a1ccc7607c5e545264ad092c4a9/griffelib-2.0.0.tar.gz", hash = "sha256:e504d637a089f5cab9b5daf18f7645970509bf4f53eda8d79ed71cce8bd97934", size = 166312, upload-time = "2026-03-23T21:06:55.954Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/51/c936033e16d12b627ea334aaaaf42229c37620d0f15593456ab69ab48161/griffelib-2.0.0-py3-none-any.whl", hash = "sha256:01284878c966508b6d6f1dbff9b6fa607bc062d8261c5c7253cb285b06422a7f", size = 142004, upload-time = "2026-02-09T19:09:40.561Z" },
 ]
@@ -1145,17 +1148,16 @@ wheels = [
 
 [[package]]
 name = "lieplusplus-py"
-version = "0.4.1"
-source = { registry = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" }
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.1/lieplusplus_py-0.4.1.tar.gz", hash = "sha256:884beeaefb552898643a0adccdd840ce812b43f71d3f4e55f22173ca7748ee7a" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/a4/12cebaca3db1618f962889c7559a5607c806afa290b6002dc6c61a7afae7/lieplusplus_py-0.5.1.tar.gz", hash = "sha256:5c14464e34b0bf560696544a104fdcc3ff1839a16a50ebcffb5c3990b23abf66", size = 121046, upload-time = "2026-06-24T12:35:24.296Z" }
 wheels = [
-    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.1/lieplusplus_py-0.4.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6296918d5dc7902884e7d5b2ca69aa8bcd95de662f5118450734804cf1855529" },
-    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.1/lieplusplus_py-0.4.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:dcc08772278152096bfbdd3aa8ca2bf512e6eddfd7e4d7ec87111dd6d8f2d1bb" },
-    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.1/lieplusplus_py-0.4.1-cp314-cp314-linux_x86_64.whl", hash = "sha256:cf0eee0171711382dcd6c8b044b903ab28a7f7c77714f91c12b66ed62bcc7071" },
-    { url = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/files/lieplusplus-py/0.4.1/lieplusplus_py-0.4.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bbb9fbed3f40bf058f5830703cb37b2441cb9e531dc8e7b7d585feb64a1bc1b0" },
+    { url = "https://files.pythonhosted.org/packages/e9/07/075f10858e6c7bfc93ebcfab041cb5a9b7d325a42280bda5e22742ac4e67/lieplusplus_py-0.5.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ff65a69c9c9d01c2e7a4af3b9762b174eb357ee0ec02b7ace60ba3a36dea3eda", size = 2044302, upload-time = "2026-06-24T12:35:19.702Z" },
+    { url = "https://files.pythonhosted.org/packages/54/0a/b2ef50e4c339e26d614acc4a904c2e2e7e2d6d835213c69ed9fd069795b5/lieplusplus_py-0.5.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:eb77a97114f3a8a2211ec6e0072c8dbc62f4a94ca5f7ae080e3c30997f79ee55", size = 2044285, upload-time = "2026-06-24T12:35:21.531Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/24/74f69c95aee6ce6f1c434ca6402afe3099d762551c2a22442e1ccaa79e8d/lieplusplus_py-0.5.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:eee1b4366b099df07ae20354ed7d707507318c2a35bbc1616ef725d8ad0d40d0", size = 2044662, upload-time = "2026-06-24T12:35:22.896Z" },
 ]
 
 [[package]]
@@ -2872,7 +2874,7 @@ requires-dist = [
     { name = "ipykernel", marker = "extra == 'examples'" },
     { name = "ipython", marker = "extra == 'examples'", specifier = ">=8.0" },
     { name = "ipython", marker = "extra == 'tests'", specifier = ">=8.0" },
-    { name = "lieplusplus-py", specifier = ">=0.3", index = "http://gitea.lyapunov.local/api/packages/Swarm-Systems-Lab/pypi/simple/" },
+    { name = "lieplusplus-py", specifier = ">=0.3" },
     { name = "matplotlib", marker = "extra == 'examples'", specifier = ">=3.7" },
     { name = "matplotlib", marker = "extra == 'tests'", specifier = ">=3.7" },
     { name = "matplotlib-inline", marker = "extra == 'examples'", specifier = ">=0.1.6,<0.3" },

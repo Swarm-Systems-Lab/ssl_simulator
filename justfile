@@ -51,10 +51,6 @@ lint:
 typecheck:
     uv run ty check src/ssl_simulator
 
-# Test CI workflow locally with act
-act:
-    ./scripts/ci/test_workflows.sh
-
 # Run tests (fast, no coverage)
 test:
     uv run tox -e tests

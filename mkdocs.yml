@@ -3,7 +3,7 @@ site_description: "⚠️ Warning: This project is a work in progress and uses G
 site_author: Jesús Bautista Villar
 copyright: Copyright &copy; 2024 Jesús Bautista Villar
 
-repo_url: https://gitea.lyapunov.local/Swarm-Systems-Lab/ssl-simulator
+repo_url: https://github.com/Swarm-Systems-Lab/ssl_simulator
 
 theme:
   name: material
