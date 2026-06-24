@@ -1,0 +1,10 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    uses: Swarm-Systems-Lab/ssl_ci/.github/workflows/publish.yml@v1
+    secrets: inherit
