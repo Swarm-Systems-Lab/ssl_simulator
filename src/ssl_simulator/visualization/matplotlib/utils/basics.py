@@ -162,7 +162,7 @@ def zoom_range(begin, end, center, scale_factor):
         tuple (float, float): The new (min, max) bounds of the zoomed range.
 
     Reference:
-        Adapted from: https://gist.github.com/dukelec/e8d4171ef4d12f9998295cfcbe3027ce
+        Adapted from: https://gist.github.com/dukelec/e8d4171ef4d12f9998295cfcbe3027ce  # nosemgrep: long-hex-secret
     """
     if begin < end:
         min_, max_ = begin, end

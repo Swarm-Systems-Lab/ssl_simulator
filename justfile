@@ -85,9 +85,13 @@ test-multi-py:
 list:
     uv run tox list
 
+# Test GitHub Actions workflows locally with act
+act:
+    ssl-pydev act
+
 # Run security scans
 security:
-    uv run semgrep --config p/ci --config .semgrep.yml
+    ssl-pydev security
 
 
 # Start the documentation server (serves while watching for changes)

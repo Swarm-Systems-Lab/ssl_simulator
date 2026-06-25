@@ -13,7 +13,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
-    { name = "Jesus Bautista Villar", email = "jesbauti20@gmail.com" }
+    { name = "Jesus Bautista Villar", email = "jesbauti20@gmail.com" },
+    { name = "Jose Hinojosa Hidalgo"}
 ]
 dependencies = [
     "numpy>=1.23",
@@ -30,7 +31,6 @@ dev = [
     "tox>=4.18",
     "tox-uv>=1.9",
     "ruff>=0.9.0",
-    "semgrep>=1.54.0",
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "pytest-xdist>=3.5",
@@ -44,7 +44,6 @@ dev = [
 # Targeted extras so tox envs stay reproducible
 lint = [
     "ruff>=0.9.0",
-    "semgrep>=1.54.0",
 ]
 tests = [
     "pytest>=7.0",
@@ -176,7 +175,6 @@ requires = ["tox-uv>=1.0"]
 env_list = [
     "pre-commit",
     "lint",
-    "security",
     "tests",
     "tests-fast",
     "py312",
@@ -204,13 +202,6 @@ extras = ["lint"]
 commands = [
     ["ruff", "check", "src", "tests"],
     ["ruff", "format", "--check", "src", "tests"],
-]
-
-[tool.tox.env.security]
-description = "Run semgrep security scans"
-extras = ["lint"]
-commands = [
-    ["semgrep", "--config", "p/ci", "--config", ".semgrep.yml"],
 ]
 
 [tool.tox.env.type-checking]
