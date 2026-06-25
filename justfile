@@ -2,8 +2,18 @@
 
 # Setup the development environment (dev deps only by default)
 setup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v ssl-pydev >/dev/null 2>&1; then
+        uv tool install ssl_pydev
+    fi
+    if ! command -v ssl-pydev >/dev/null 2>&1; then
+        echo "error: ssl-pydev was installed but is not on PATH." >&2
+        echo "check https://github.com/Swarm-Systems-Lab/ssl_pydev#install" >&2
+        exit 1
+    fi
     uv lock
-    ./scripts/ci/setup-env.sh --extras dev,lint,tests,type-checking,pre-commit,examples
+    ssl-pydev setup-env --extras dev,lint,tests,type-checking,pre-commit,examples
 
 # Sync all dependency groups
 sync:
@@ -17,21 +27,17 @@ template-prune:
 build:
     uv build
 
-# Build wheels (cibuildwheel) for release
-build-release:
-    ./scripts/release/build_publish.sh
-
 # Publish artifacts with uv (requires UV_PUBLISH_* env vars)
 publish:
-    ./scripts/release/publish.sh
+    ssl-pydev publish
 
 # Publish artifacts with twine (CI-friendly; requires TWINE_* env vars)
 publish-ci:
-    ./scripts/release/publish_ci.sh
+    ssl-pydev publish-ci
 
 # Clean build artifacts
 clean:
-    rm -rf build dist src/lieplusplus.egg-info .pytest_cache .ruff_cache __pycache__ .venv site cov.xml .coverage .tox
+    rm -rf build dist src/ssl_simulator.egg-info .pytest_cache .ruff_cache __pycache__ .venv site cov.xml .coverage .tox
     uv clean
 
 # Run the basic usage example
@@ -104,4 +110,4 @@ clean-docs:
 
 # Validate built documentation
 validate-docs:
-    ./scripts/docs/validate_docs.sh
+    ssl-pydev validate-docs

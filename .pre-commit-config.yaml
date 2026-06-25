@@ -9,7 +9,9 @@ repos:
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
+        exclude: '\.pyi$'
       - id: end-of-file-fixer
+        exclude: '\.pyi$'
       - id: check-yaml
         args: [--unsafe]
       - id: check-added-large-files
