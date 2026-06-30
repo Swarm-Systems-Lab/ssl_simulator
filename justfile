@@ -109,7 +109,7 @@ act:
 
 # Clean all build and test artifacts
 clean:
-    rm -rf build dist .pytest_cache .ruff_cache .venv site cov.xml .coverage .tox .mypy_cache .test_projects
+    rm -rf build dist *.egg-info .pytest_cache .ruff_cache __pycache__ .venv cov.xml .coverage .tox .mypy_cache .test_projects
     rm -rf tests/.pytest_cache
     find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
@@ -123,7 +123,7 @@ check-all: lint security typecheck pre-commit test
 
 # Show help information
 help:
-    @echo "Template Development Commands"
+    @echo "Development Commands"
     @echo "========================================"
     @echo ""
     @echo "Setup & Environment:"
